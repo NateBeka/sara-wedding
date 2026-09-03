@@ -4,6 +4,13 @@
   "admin_passcode": "sara_tewodros_2026",
   "admins": [
     {
+      "id": "group",
+      "name": "Sara & Tewodros Wedding",
+      "role": "Organizer",
+      "telegram_username": "https://t.me/+3WRHqclWRQJlYzBk",
+      "chat_id": null
+    },
+    {
       "id": "nate",
       "name": "Nate Beka",
       "role": "Organizer",
