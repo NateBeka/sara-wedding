@@ -43,11 +43,11 @@ const translations = {
         music_label: "Play Song",
         music_playing: "Playing",
         splash_subtitle: "Wedding Invitation",
-        splash_title: "Dr. Sara & Eng. Tewodros",
+        splash_title: "Eng. Tewodros & Dr. Sara",
         splash_tap: "✨ Open Invitation ✨",
         splash_hint: "✦ Tap anywhere to enter ✦",
         middle_date_main: "Sunday, September 20, 2026",
-        fancy_title: "DR. SARA AYELE & ENG. TEWODROS BELAY",
+        fancy_title: "ENG. TEWODROS BELAY & DR. SARA AYELE",
         hero_tagline: "Eternal Love & Blessings",
         hero_meta: "🗓️ September 20, 2026 • 📍 Hawassa, Ethiopia",
         btn_rsvp_hero: "Send RSVP",
@@ -74,22 +74,22 @@ const translations = {
         timeline_subtitle: "Wedding Day Schedule & Procession",
         timeline_1_time: "10:00 AM - 12:00 PM",
         timeline_1_title: "Journey to Bride's Residence",
-        timeline_1_desc: "Departure of the wedding entourage to the Bride's residence in Dila",
-        timeline_2_time: "12:00 PM - 12:15 PM",
-        timeline_2_title: "Arrival at Bride's Residence",
-        timeline_2_desc: "Arrival and warm welcoming reception at the Bride's family residence",
-        timeline_3_time: "12:15 PM - 3:00 PM",
-        timeline_3_title: "Blessings & Luncheon at Bride's House",
-        timeline_3_desc: "Parental blessings, wedding feast, luncheon, and portraits at Dila",
-        timeline_4_time: "3:00 PM - 5:00 PM",
-        timeline_4_title: "Grand Procession to Hawassa",
-        timeline_4_desc: "Joyous convoy and motorcade procession traveling to Hawassa",
-        timeline_5_time: "5:00 PM - 6:00 PM",
-        timeline_5_title: "Rest & Hotel Refreshment",
-        timeline_5_desc: "Hotel check-in, rest, and preparation for the evening celebration",
-        timeline_6_time: "6:00 PM - 9:00 PM",
-        timeline_6_title: "Gala Celebration at Central Hotel Hawassa",
-        timeline_6_desc: "Dinner reception, ceremonial cake-cutting, and dancing celebration at Central Hotel Hawassa!",
+        timeline_1_sub1: "Gathering, car decoration & entourage preparation in Dila",
+        timeline_1_sub2: "Departure & celebratory procession to the Bride's residence",
+        timeline_2_time: "12:00 PM - 3:00 PM",
+        timeline_2_title: "Stay at Bride's Residence",
+        timeline_2_sub1: "Warm welcoming reception & ceremonial entrance",
+        timeline_2_sub2: "Parental blessings & wedding feast luncheon",
+        timeline_2_sub3: "Commemorative family portraits & affectionate farewell",
+        timeline_3_time: "3:00 PM - 6:00 PM",
+        timeline_3_title: "Journey to Hawassa",
+        timeline_3_sub1: "Joyous wedding motorcade & grand procession to Hawassa",
+        timeline_3_sub2: "Hotel check-in, rest & refreshment for the gala evening",
+        timeline_4_time: "6:00 PM - 9:00 PM",
+        timeline_4_title: "Central Hotel Celebration",
+        timeline_4_sub1: "Grand royal entrance of the Bride & Groom",
+        timeline_4_sub2: "Gala dinner banquet & ceremonial cake cutting",
+        timeline_4_sub3: "Celebratory music, dancing & closing blessings",
         locations_tag: "Directions",
         locations_heading: '<span class="title-icon">📍</span> <span class="title-text">Event Locations</span>',
         locations_subtitle: "Easily find your way with interactive maps and navigation",
@@ -127,18 +127,18 @@ const translations = {
         share_tag: "Live Upload",
         qr_title: '<span class="title-icon">📸</span> <span class="title-text">Share Your Moments</span>',
         qr_subtitle: "Capture high-res memories during the celebration and send them directly to our Telegram Bot!",
-        footer_text: "Dr. Sara Ayele & Eng. Tewodros Belay — Eternal Love | September 20, 2026 | Hawassa, Ethiopia",
+        footer_text: "Eng. Tewodros Belay & Dr. Sara Ayele — Eternal Love | September 20, 2026 | Hawassa, Ethiopia",
         footer_credits: "Celebrated with heartfelt joy, faith, and blessings 💛"
     },
     am: {
         music_label: "ሙዚቃ አጫውት",
         music_playing: "እየተጫወተ ነው",
         splash_subtitle: "የክብር የጋብቻ ጥሪ",
-        splash_title: "ዶ/ር ሳራ እና ኢ/ር ቴዎድሮስ",
+        splash_title: "ኢ/ር ቴዎድሮስ እና ዶ/ር ሳራ",
         splash_tap: "✨ ጥሪውን ይክፈቱ ✨",
         splash_hint: "✦ ለመግባት የትም ይንኩ ✦",
         middle_date_main: "እሑድ መስከረም 10 ቀን 2018 ዓ.ም",
-        fancy_title: "ዶ/ር ሳራ አየለ እና ኢ/ር ቴዎድሮስ በላይ",
+        fancy_title: "ኢ/ር ቴዎድሮስ በላይ እና ዶ/ር ሳራ አየለ",
         hero_tagline: "ዘላለማዊ ፍቅርና በረከት",
         hero_meta: "🗓️ እሑድ መስከረም 10 ቀን 2018 ዓ.ም • 📍 ሀዋሳ ፣ ኢትዮጵያ",
         btn_rsvp_hero: "ምላሽ ይላኩ",
@@ -161,26 +161,26 @@ const translations = {
         card_header: '<span class="title-icon">📜</span> <span class="title-text">ኦፊሴላዊ የጥሪ ካርድ</span>',
         scripture: '"ሁሉን ያዘጋጀ ግን እግዚአብሔር ነው::" — ዕብ 3:4',
         timeline_tag: "የቀኑ መርሐ-ግብር",
-        timeline_heading: '<span class="title-icon">📅</span> <span class="title-text">የአጁቢዎች ፕሮግራም</span>',
-        timeline_subtitle: "የሠርጉ ቀን ዝግጅትና የጉዞ መርሐ-ግብር",
+        timeline_heading: '<span class="title-icon">📅</span> <span class="title-text">የሠርጉ ቀን መርሐ-ግብር</span>',
+        timeline_subtitle: "የክብረ በዓሉ ቅደም ተከተልና የጉዞ ዝግጅት",
         timeline_1_time: "ከጠዋቱ 4:00 - 6:00",
         timeline_1_title: "ጉዞ ወደ ሙሽሪት ቤት",
-        timeline_1_desc: "የአጁቢዎች ጉዞ ወደ ሙሽሪት መኖሪያ ቤት (ዲላ)",
-        timeline_2_time: "ቀን 6:00 - 6:15",
-        timeline_2_title: "ሙሽሪት ቤት መድረስ",
-        timeline_2_desc: "ሙሽሪት ቤት በደስታ መድረስ እና አቀባበል",
-        timeline_3_time: "ቀን 6:15 - 9:00",
-        timeline_3_title: "ቆይታ በሙሽሪት ቤትና የምሳ ግብዣ",
-        timeline_3_desc: "የወላጆች ምርቃት፣ የምሳ ግብዣና የፎቶ ፕሮግራም በዲላ",
-        timeline_4_time: "ከቀኑ 9:00 - 11:00",
-        timeline_4_title: "ጉዞ ወደ ሀዋሳ",
-        timeline_4_desc: "ጥንዶቹን በማጀብ በደማቅ ሰልፍ ወደ ሀዋሳ ከተማ የሚደረግ ጉዞ",
-        timeline_5_time: "ከቀኑ 11:00 - 12:00",
-        timeline_5_title: "ዕረፍትና ዝግጅት",
-        timeline_5_desc: "የሆቴል ዕረፍት፣ መታደስ እና ለምሽቱ ፕሮግራም ዝግጅት",
-        timeline_6_time: "ከምሽቱ 12:00 - 3:00",
-        timeline_6_title: "ቆይታ በ ሴንትራል ሆቴል",
-        timeline_6_desc: "የምሽት የእራት ግብዣ፣ ኬክ መቁረጥና ጭፈራ በሴንትራል ሆቴል!",
+        timeline_1_sub1: "የአጁቢዎች መሰብሰብ፣ የተሸከርካሪዎች ጌጥና ዝግጅት",
+        timeline_1_sub2: "ወደ ዲላ መኖሪያ ቤት የሚደረግ ደማቅ ጉዞ",
+        timeline_2_time: "ቀን 6:00 - 9:00",
+        timeline_2_title: "ቆይታ በሙሽሪት ቤት",
+        timeline_2_sub1: "ሙሽሪት ቤት በደስታ መድረስ እና ደማቅ አቀባበል",
+        timeline_2_sub2: "የተከበሩ የወላጆች ምርቃትና የምሳ ግብዣ",
+        timeline_2_sub3: "የመታሰቢያ ፎቶ ፕሮግራም እና የስንብት ስነ-ስርዓት",
+        timeline_3_time: "ከቀኑ 9:00 - 12:00",
+        timeline_3_title: "ወደ ሀዋሳ ጉዞ",
+        timeline_3_sub1: "ጥንዶቹን በማጀብ በደማቅ የክብር ሰልፍ ወደ ሀዋሳ ጉዞ",
+        timeline_3_sub2: "ሆቴል መድረስ፣ ዕረፍትና ለምሽቱ ዝግጅት",
+        timeline_4_time: "ከምሽቱ 12:00 - 3:00",
+        timeline_4_title: "ሴንትራል ሆቴል",
+        timeline_4_sub1: "የክቡራን ሙሽሮች ደማቅ የክብር አገባብ",
+        timeline_4_sub2: "የምሽት የክብር እራት ግብዣ እና ኬክ መቁረጥ",
+        timeline_4_sub3: "ጭፈራ፣ ታላቅ ደስታና የበረከት ምርቃት",
         locations_tag: "የቦታ መመሪያ",
         locations_heading: '<span class="title-icon">📍</span> <span class="title-text">የክብረ በዓሉ ቦታዎች</span>',
         locations_subtitle: "በቀላሉ ወደ ቦታዎቹ ለመድረስ የካርታ መመሪያዎችን ይጠቀሙ",
@@ -218,7 +218,7 @@ const translations = {
         share_tag: "ቀጥታ ይላኩ",
         qr_title: '<span class="title-icon">📸</span> <span class="title-text">ፎቶዎችና ቪዲዮዎችን ያጋሩ</span>',
         qr_subtitle: "በሠርጉ ላይ የሚያነሷቸውን ልዩ ፎቶዎችና ቪዲዮዎች ለቴሌግራም ቦቱ በቀጥታ ይላኩ!",
-        footer_text: "ዶ/ር ሳራ አየለ እና ኢ/ር ቴዎድሮስ በላይ — ዘላለማዊ ፍቅር | እሑድ መስከረም 10 ቀን 2018 ዓ.ም | ሀዋሳ ፣ ኢትዮጵያ",
+        footer_text: "ኢ/ር ቴዎድሮስ በላይ እና ዶ/ር ሳራ አየለ — ዘላለማዊ ፍቅር | እሑድ መስከረም 10 ቀን 2018 ዓ.ም | ሀዋሳ ፣ ኢትዮጵያ",
         footer_credits: "በታላቅ ደስታና ፍቅር የተዘጋጀ 💛"
     }
 };
@@ -843,8 +843,11 @@ const cardModal = document.getElementById('cardModal');
 const closeCardModalBtn = document.getElementById('closeCardModalBtn');
 const invitationCardPreview = document.getElementById('invitationCardPreview');
 
+let galleryInitialized = false;
+
 function initGallery() {
-    if (!galleryFilmstrip) return;
+    if (galleryInitialized || !galleryFilmstrip) return;
+    galleryInitialized = true;
     galleryFilmstrip.innerHTML = '';
 
     PHOTO_ARRAY.forEach((src, idx) => {
@@ -856,6 +859,7 @@ function initGallery() {
         img.src = src;
         img.alt = `Wedding Portrait ${idx + 1}`;
         img.loading = 'lazy';
+        img.decoding = 'async';
         thumb.appendChild(img);
 
         thumb.addEventListener('click', () => {
@@ -868,6 +872,23 @@ function initGallery() {
 
     selectPhoto(0);
     startAutoSlide();
+}
+
+function setupLazyGallery() {
+    const gallerySec = document.getElementById('gallerySection');
+    if (!gallerySec || !('IntersectionObserver' in window)) {
+        initGallery();
+        return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                initGallery();
+                observer.disconnect();
+            }
+        });
+    }, { rootMargin: '350px 0px' });
+    observer.observe(gallerySec);
 }
 
 function selectPhoto(index) {
@@ -1317,7 +1338,7 @@ function triggerScrollRevealCheck() {
 // --------------------------------------------------------------------------
 function initApp() {
     initSparkles();
-    initGallery();
+    setupLazyGallery();
     setLanguage(currentLang);
     applyTheme(currentTheme);
     updateGuestVisibility();

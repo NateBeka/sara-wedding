@@ -6,29 +6,29 @@
   "photos_group_link": "https://t.me/+3WRHqclWRQJlYzBk",
   "admins": [
     {
-      "id": "nate",
-      "name": "Nate Beka",
-      "role": "Organizer",
-      "telegram_username": "nate_beka",
-      "chat_id": 7984548544
-    },
-    {
-      "id": "sara",
-      "name": "Dr. Sara Ayele",
-      "role": "Bride",
-      "telegram_username": "",
-      "chat_id": null
-    },
-    {
       "id": "tewodros",
       "name": "Eng. Tewodros Belay",
       "role": "Groom",
       "telegram_username": "",
       "chat_id": null
+    },
+    {
+      "id": "sara",
+      "name": "Dr. Sara Ayele",
+      "role": "Bride",
+      "telegram_username": "Sa_ay",
+      "chat_id": null
+    },
+    {
+      "id": "nate",
+      "name": "Nate Beka",
+      "role": "Organizer",
+      "telegram_username": "nate_beka",
+      "chat_id": 7984548544
     }
   ],
   "event": {
-    "couple": "Dr. Sara Ayele & Eng. Tewodros Belay",
+    "couple": "Eng. Tewodros Belay & Dr. Sara Ayele",
     "scripture": "\"For every house is built by someone, but God is the builder of everything.\" — Hebrews 3:4",
     "date_western": "Sunday, September 20, 2026",
     "date_ethiopian": "መስከረም 10, 2018 ዓ.ም",

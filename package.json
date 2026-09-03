@@ -1,7 +1,7 @@
 {
   "name": "sara-wedding",
   "version": "1.0.0",
-  "description": "Dr. Sara Ayele & Eng. Tewodros Belay Wedding Web App & Telegram Bot",
+  "description": "Eng. Tewodros Belay & Dr. Sara Ayele Wedding Web App & Telegram Bot",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -364,9 +364,9 @@ function getWelcomeMessage(userLang = 'en', user = {}) {
     const safeName = escapeHtml(user.first_name || 'Honored Guest');
     if (userLang === 'am') {
         return (
-            `💒 <b>የዶ/ር ሳራ አየለ እና ኢ/ር ቴዎድሮስ በላይ የሰርግ በዓል</b> 💒\n` +
+            `💒 <b>የኢ/ር ቴዎድሮስ በላይ እና የዶ/ር ሳራ አየለ የሰርግ በዓል</b> 💒\n` +
             `✦ ══════════════════════════ ✦\n\n` +
-            `እንኳን ወደ <b>ዶ/ር ሳራ አየለ</b> እና <b>ኢ/ር ቴዎድሮስ በላይ</b> ይፋዊ የሰርግ ቦት በደህና መጡ፣ <b>${safeName}</b>!\n\n` +
+            `እንኳን ወደ <b>ኢ/ር ቴዎድሮስ በላይ</b> እና <b>ዶ/ር ሳራ አየለ</b> ይፋዊ የሰርግ ቦት በደህና መጡ፣ <b>${safeName}</b>!\n\n` +
             `🕊️ <i>"ቤት ሁሉ በአንድ ሰው ይዘጋጃል፥ ሁሉን ያዘጋጀ ግን እግዚአብሔር ነው።"</i>\n` +
             `— <b>ዕብራውያን 3:4</b>\n\n` +
             `📅 <b>የሰርግ ቀን:</b> እሁድ መስከረም 10 ቀን 2018 ዓ.ም (September 20, 2026)\n` +
@@ -377,9 +377,9 @@ function getWelcomeMessage(userLang = 'en', user = {}) {
 
     return (
         `💒 <b>WEDDING CELEBRATION</b> 💒\n` +
-        `<b>Dr. Sara Ayele & Eng. Tewodros Belay</b>\n` +
+        `<b>Eng. Tewodros Belay & Dr. Sara Ayele</b>\n` +
         `✦ ══════════════════════════ ✦\n\n` +
-        `Welcome, <b>${safeName}</b>! It is our greatest honor to celebrate the holy matrimony of <b>Dr. Sara & Eng. Tewodros</b>.\n\n` +
+        `Welcome, <b>${safeName}</b>! It is our greatest honor to celebrate the holy matrimony of <b>Eng. Tewodros & Dr. Sara</b>.\n\n` +
         `🕊️ <i>"For every house is built by someone, but God is the builder of everything."</i>\n` +
         `— <b>Hebrews 3:4</b>\n\n` +
         `📅 <b>Date:</b> Sunday, September 20, 2026 (መስከረም 10, 2018 ዓ.ም)\n` +
@@ -550,7 +550,7 @@ async function handleRsvpStep(botToken, chatId, session, action, callbackQuery =
 
             const msg = isAm
                 ? `💌 መልእክትዎን ተቀብለናል! ለሙሽሮቹ የመልካም ምኞት እና የበረከት ቃል መጻፍ ይፈልጋሉ?\n\n<i>መልእክትዎን ጽፈው ይላኩ ወይም 'ዝለል' የሚለውን ይጫኑ:</i>`
-                : `💌 We will miss you! Would you like to leave a warm blessing or congratulations for Dr. Sara & Eng. Tewodros?\n\n<i>Type your message below, or tap 'Skip':</i>`;
+                : `💌 We will miss you! Would you like to leave a warm blessing or congratulations for Eng. Tewodros & Dr. Sara?\n\n<i>Type your message below, or tap 'Skip':</i>`;
 
             const markup = {
                 inline_keyboard: [
@@ -593,7 +593,7 @@ async function handleRsvpStep(botToken, chatId, session, action, callbackQuery =
 
         const msg = isAm
             ? `✍️ <b>ለሙሽሮቹ የመልካም ምኞት እና የበረከት ቃል ይጻፉ:</b>\n\n<i>(ምክር፣ ጸሎት ወይም የበረከት ቃል ጽፈው ይላኩ፣ ወይም 'ዝለል' ይጫኑ)</i>`
-            : `✍️ <b>Share your heartfelt blessings & wishes for Dr. Sara & Eng. Tewodros:</b>\n\n<i>(Type your message below, or tap 'Skip')</i>`;
+            : `✍️ <b>Share your heartfelt blessings & wishes for Eng. Tewodros & Dr. Sara:</b>\n\n<i>(Type your message below, or tap 'Skip')</i>`;
 
         const markup = {
             inline_keyboard: [
@@ -690,7 +690,7 @@ async function handleAdminPanel(botToken, chatId, user, userLang = 'en') {
             `💒 <b>WEDDING ADMIN ACCESS</b>\n` +
             `✦ ══════════════════════════ ✦\n\n` +
             `Welcome! This section is reserved for the Wedding Organizers & Couple:\n` +
-            `<b>Dr. Sara Ayele & Eng. Tewodros Belay</b>.\n\n` +
+            `<b>Eng. Tewodros Belay & Dr. Sara Ayele</b>.\n\n` +
             `Please type your private Admin Passcode below or run:\n` +
             `<code>/claim_admin &lt;passcode&gt;</code>\n\n` +
             `<i>(Once verified, your Telegram account will receive instant alerts for all RSVPs and shared photos.)</i>`;
@@ -711,7 +711,7 @@ async function handleAdminPanel(botToken, chatId, user, userLang = 'en') {
 
     const adminMsg =
         `💒 <b>WEDDING ADMIN CONTROL CENTER</b>\n` +
-        `<b>Dr. Sara Ayele & Eng. Tewodros Belay</b>\n` +
+        `<b>Eng. Tewodros Belay & Dr. Sara Ayele</b>\n` +
         `✦ ══════════════════════════ ✦\n\n` +
         `📊 <b>Live RSVP Statistics:</b>\n` +
         `• 💐 <b>Confirmed Parties:</b> ${attendingCount}\n` +
@@ -735,14 +735,23 @@ async function handleAdminClaim(botToken, chatId, user, passcodeProvided, userLa
         // Bind user as admin immediately
         let existingAdmin = config.admins.find(a => String(a.chat_id) === String(user.id));
         if (!existingAdmin) {
-            existingAdmin = {
-                id: 'admin_' + user.id,
-                name: [user.first_name, user.last_name].filter(Boolean).join(' ') || (user.username ? `@${user.username}` : 'Admin'),
-                role: 'Administrator',
-                telegram_username: user.username || '',
-                chat_id: user.id
-            };
-            config.admins.push(existingAdmin);
+            // Check if there is an unlinked profile in config (e.g. Groom Tewodros)
+            const unlinkedSlot = config.admins.find(a => a.id === 'tewodros' && !a.chat_id) || config.admins.find(a => !a.chat_id);
+            if (unlinkedSlot) {
+                unlinkedSlot.chat_id = user.id;
+                if (user.username) unlinkedSlot.telegram_username = user.username;
+                existingAdmin = unlinkedSlot;
+                console.log(`[Admin Bound]: Linked ${existingAdmin.name} (${existingAdmin.role}) to Chat ID: ${user.id}`);
+            } else {
+                existingAdmin = {
+                    id: 'admin_' + user.id,
+                    name: [user.first_name, user.last_name].filter(Boolean).join(' ') || (user.username ? `@${user.username}` : 'Admin'),
+                    role: 'Administrator',
+                    telegram_username: user.username || '',
+                    chat_id: user.id
+                };
+                config.admins.push(existingAdmin);
+            }
             saveConfig(config);
         }
 
@@ -1034,7 +1043,7 @@ async function processUpdate(botToken, update) {
                 let sent = 0;
                 let failed = 0;
                 const safeBroadcastText = escapeHtml(text);
-                const broadcastMsg = `📢 <b>WEDDING ANNOUNCEMENT</b>\n<b>From Dr. Sara & Eng. Tewodros:</b>\n\n${safeBroadcastText}`;
+                const broadcastMsg = `📢 <b>WEDDING ANNOUNCEMENT</b>\n<b>From Eng. Tewodros & Dr. Sara:</b>\n\n${safeBroadcastText}`;
 
                 await sendMessage(botToken, chatId, `📢 <i>Sending announcement to ${guestIds.length} registered guests...</i>`);
 
@@ -1279,8 +1288,8 @@ async function processUpdate(botToken, update) {
                 lang: userLang
             });
             const prompt = userLang === 'am'
-                ? `✍️ <b>ለዶ/ር ሳራ እና ኢ/ር ቴዎድሮስ የበረከት ቃል ይጻፉ:</b>\n\n<i>መልእክትዎን ጽፈው ይላኩ...</i>`
-                : `✍️ <b>Share your heartfelt blessings for Dr. Sara & Eng. Tewodros:</b>\n\n<i>Type your message below and send...</i>`;
+                ? `✍️ <b>ለኢ/ር ቴዎድሮስ እና ዶ/ር ሳራ የበረከት ቃል ይጻፉ:</b>\n\n<i>መልእክትዎን ጽፈው ይላኩ...</i>`
+                : `✍️ <b>Share your heartfelt blessings for Eng. Tewodros & Dr. Sara:</b>\n\n<i>Type your message below and send...</i>`;
             await sendMessage(botToken, chatId, prompt);
             return;
         }

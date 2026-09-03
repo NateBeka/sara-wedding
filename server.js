@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const zlib = require('zlib');
 const { startPolling, notifyAdmins, loadConfig, loadData, saveData, escapeHtml } = require('./bot');
 
 const PORT = process.env.PORT || 8080;
@@ -51,7 +52,7 @@ const server = http.createServer((req, res) => {
     const config = loadConfig();
     sendJsonResponse(res, 200, {
       status: 'ok',
-      couple: 'Dr. Sara Ayele & Eng. Tewodros Belay',
+      couple: 'Eng. Tewodros Belay & Dr. Sara Ayele',
       bot_configured: Boolean(config && config.bot_token),
       bot_username: config ? config.bot_username : 'sara_tewodros_wedding_bot'
     });
@@ -220,20 +221,43 @@ ${partyLine}💑 <b>Relation:</b> ${escapeHtml(rsvpEntry.relation)}
 
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+    const isCompressible = ['.html', '.css', '.js', '.json', '.svg'].includes(ext);
+    const acceptEncoding = req.headers['accept-encoding'] || '';
 
-    res.writeHead(200, {
+    // Optimized Caching Strategy:
+    // - Static media, images, audio: 7 days
+    // - Stylesheets & Scripts: 1 day
+    // - HTML: 2 minutes
+    let cacheControl = 'public, max-age=604800';
+    if (ext === '.html') {
+      cacheControl = 'public, max-age=120';
+    } else if (ext === '.css' || ext === '.js') {
+      cacheControl = 'public, max-age=86400';
+    }
+
+    const headers = {
       'Content-Type': contentType,
-      'Cache-Control': 'no-cache',
-      'Access-Control-Allow-Origin': '*'
-    });
+      'Cache-Control': cacheControl,
+      'Access-Control-Allow-Origin': '*',
+      'Vary': 'Accept-Encoding'
+    };
 
-    const stream = fs.createReadStream(filePath);
-    stream.pipe(res);
+    if (isCompressible && acceptEncoding.includes('gzip')) {
+      headers['Content-Encoding'] = 'gzip';
+      res.writeHead(200, headers);
+      const rawStream = fs.createReadStream(filePath);
+      const gzip = zlib.createGzip({ level: 6 });
+      rawStream.pipe(gzip).pipe(res);
+    } else {
+      res.writeHead(200, headers);
+      const stream = fs.createReadStream(filePath);
+      stream.pipe(res);
+    }
   });
 });
 
 server.listen(PORT, () => {
-  console.log(`✨ Dr. Sara & Eng. Tewodros Wedding Server is live at http://localhost:${PORT}/`);
+  console.log(`✨ Eng. Tewodros & Dr. Sara Wedding Server is live at http://localhost:${PORT}/`);
   // Automatically start Telegram Bot engine
   startPolling();
 });
