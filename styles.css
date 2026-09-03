@@ -1716,47 +1716,96 @@ body.theme-light .orb-4 {
 }
 
 /* ==========================================================================
-   AJUBI PROGRAM (EVENT TIMELINE / FULL PROGRAM) - FIXED BACKGROUND APPROACH
+   AJUBI PROGRAM (EVENT TIMELINE / FULL PROGRAM) - TRUE PARALLAX WINDOW EFFECT
    Adopted from Asnake & Tsion wedding with photo_10 fixed parallax background
    ========================================================================== */
 #timelineSection {
   position: relative;
+  border-radius: 40px;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(9, 12, 20, 0.84), rgba(26, 20, 8, 0.88));
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(212, 175, 55, 0.12);
+  clip-path: inset(0 round 40px);
+  -webkit-clip-path: inset(0 round 40px);
+  border: 1px solid rgba(212, 175, 55, 0.42);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(212, 175, 55, 0.16);
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
+#timelineSection.is-visible {
+  transform: none !important; /* Prevents transform from breaking viewport-fixed coordinates */
+}
+
+/* Fallback fixed attachment */
 #timelineSection::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background-image: url('images/photo_10_2026-09-03_19-04-18.jpg');
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
   z-index: 0;
-  opacity: 0.38;
+  opacity: 0.85;
   pointer-events: none;
-  transition: opacity 0.5s ease;
 }
 
-#timelineSection > * {
-  position: relative;
+/* True Viewport-Fixed Parallax Background Window Layer */
+#timelineSection .timeline-parallax-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('images/photo_10_2026-09-03_19-04-18.jpg');
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.88; /* Highly visible couple portrait */
+  will-change: transform;
+}
+
+/* Atmospheric Tint Overlay for Pristine Readability */
+#timelineSection .timeline-parallax-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(8, 10, 16, 0.58) 0%, rgba(24, 18, 6, 0.65) 100%);
   z-index: 1;
-}
-
-body.theme-light #timelineSection {
-  background: linear-gradient(135deg, rgba(246, 242, 234, 0.85), rgba(238, 226, 206, 0.88));
-  border: 1px solid rgba(184, 134, 11, 0.32);
+  pointer-events: none;
 }
 
 body.theme-light #timelineSection::before {
-  opacity: 0.22;
+  opacity: 0.65;
+}
+
+body.theme-light #timelineSection .timeline-parallax-bg {
+  opacity: 0.78;
+}
+
+body.theme-light #timelineSection .timeline-parallax-overlay {
+  background: linear-gradient(135deg, rgba(246, 242, 234, 0.68) 0%, rgba(235, 222, 202, 0.74) 100%);
+}
+
+#timelineSection > *:not(.timeline-parallax-bg):not(.timeline-parallax-overlay) {
+  position: relative;
+  z-index: 2;
+}
+
+/* Translucent step cards so photo is clearly visible through the schedule */
+#timelineSection .step-content {
+  background: rgba(14, 18, 28, 0.46) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(212, 175, 55, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+body.theme-light #timelineSection .step-content {
+  background: rgba(255, 255, 255, 0.62) !important;
+  border: 1px solid rgba(184, 134, 11, 0.35) !important;
 }
 
 .timeline-stepper {
