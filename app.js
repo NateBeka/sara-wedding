@@ -1078,6 +1078,8 @@ if (cardModal) {
     });
 }
 
+
+
 // Global Keyboard Navigation (Escape, Arrows)
 window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {

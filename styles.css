@@ -132,9 +132,27 @@ body.theme-light .music-pill-label {
 
 body.theme-light .royal-splash {
   background-image: url('images/photo_23_2026-09-03_19-04-18.jpg');
-  background-position: center 20%;
+  background-position: center 28%;
   background-size: cover;
   background-repeat: no-repeat;
+}
+
+@media (min-width: 768px) {
+  body.theme-light .royal-splash {
+    background-position: center 42%;
+  }
+}
+
+@media (min-width: 1024px) {
+  body.theme-light .royal-splash {
+    background-position: center 48%;
+  }
+}
+
+@media (min-width: 1440px) {
+  body.theme-light .royal-splash {
+    background-position: center 52%;
+  }
 }
 
 body.theme-light .royal-splash::before {
@@ -879,7 +897,7 @@ body.theme-light .orb-4 {
   justify-content: flex-end;
   align-items: center;
   background-image: url('images/photo_23_2026-09-03_19-04-18.jpg');
-  background-position: center 22%;
+  background-position: center 28%;
   background-size: cover;
   background-repeat: no-repeat;
   cursor: pointer;
@@ -887,6 +905,24 @@ body.theme-light .orb-4 {
   overflow: hidden;
   padding: 1.5rem 1.2rem 2.8rem;
   box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .royal-splash {
+    background-position: center 42%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .royal-splash {
+    background-position: center 48%;
+  }
+}
+
+@media (min-width: 1440px) {
+  .royal-splash {
+    background-position: center 52%;
+  }
 }
 
 .royal-splash::before {
@@ -1043,14 +1079,12 @@ body.theme-light .orb-4 {
   z-index: 10;
   min-height: 100vh;
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 1s ease, transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 1s ease;
   padding-bottom: 5rem;
 }
 
 .main-content.show {
   opacity: 1;
-  transform: translateY(0);
 }
 
 .container {
@@ -1244,9 +1278,21 @@ body.theme-light .orb-4 {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 42%;
+  object-position: center 38%;
   display: block;
   transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 1024px) {
+  .hero-image-wrap img {
+    object-position: center 28%;
+  }
+}
+
+@media (min-width: 1440px) {
+  .hero-image-wrap img {
+    object-position: center 22%;
+  }
 }
 
 .hero-card:hover .hero-image-wrap img {
@@ -1716,82 +1762,72 @@ body.theme-light .orb-4 {
 }
 
 /* ==========================================================================
-   AJUBI PROGRAM (EVENT TIMELINE / FULL PROGRAM) - TRUE PARALLAX WINDOW EFFECT
-   Adopted from Asnake & Tsion wedding with photo_10 fixed parallax background
+   AJUBI PROGRAM (EVENT TIMELINE / FULL PROGRAM) - FIXED BACKGROUND (ASNAKE STYLE)
+   The background image position is fixed while the page is scrolling
    ========================================================================== */
 #timelineSection {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.72), rgba(30, 20, 5, 0.82)) !important;
+  border-radius: 40px !important;
   position: relative;
-  border-radius: 40px;
   overflow: hidden;
-  clip-path: inset(0 round 40px);
-  -webkit-clip-path: inset(0 round 40px);
-  border: 1px solid rgba(212, 175, 55, 0.42);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(212, 175, 55, 0.16);
-  background: transparent !important;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.55);
+  transform: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
 
-#timelineSection.is-visible {
-  transform: none !important; /* Prevents transform from breaking viewport-fixed coordinates */
+#timelineSection:hover {
+  transform: none !important;
 }
 
-/* Fallback fixed attachment */
 #timelineSection::before {
   content: "";
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-image: url('images/photo_10_2026-09-03_19-04-18.jpg');
-  background-position: center center;
+  background-position: center 25%;
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
   z-index: 0;
-  opacity: 0.85;
+  opacity: 0.55;
   pointer-events: none;
 }
 
-/* True Viewport-Fixed Parallax Background Window Layer */
-#timelineSection .timeline-parallax-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-image: url('images/photo_10_2026-09-03_19-04-18.jpg');
-  background-position: center center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.88; /* Highly visible couple portrait */
-  will-change: transform;
+@media (min-width: 768px) {
+  #timelineSection::before {
+    background-position: center 20%;
+  }
 }
 
-/* Atmospheric Tint Overlay for Pristine Readability */
-#timelineSection .timeline-parallax-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(8, 10, 16, 0.58) 0%, rgba(24, 18, 6, 0.65) 100%);
+@media (min-width: 1024px) {
+  #timelineSection::before {
+    background-position: center 12%;
+  }
+}
+
+@media (min-width: 1440px) {
+  #timelineSection::before {
+    background-position: center 6%;
+  }
+}
+
+#timelineSection > * {
+  position: relative;
   z-index: 1;
-  pointer-events: none;
+}
+
+body.theme-light #timelineSection {
+  background: linear-gradient(135deg, rgba(246, 242, 234, 0.82), rgba(235, 222, 202, 0.88)) !important;
+  border: 1px solid rgba(184, 134, 11, 0.35);
 }
 
 body.theme-light #timelineSection::before {
-  opacity: 0.65;
-}
-
-body.theme-light #timelineSection .timeline-parallax-bg {
-  opacity: 0.78;
-}
-
-body.theme-light #timelineSection .timeline-parallax-overlay {
-  background: linear-gradient(135deg, rgba(246, 242, 234, 0.68) 0%, rgba(235, 222, 202, 0.74) 100%);
-}
-
-#timelineSection > *:not(.timeline-parallax-bg):not(.timeline-parallax-overlay) {
-  position: relative;
-  z-index: 2;
+  opacity: 0.35;
 }
 
 /* Translucent step cards so photo is clearly visible through the schedule */
@@ -2112,9 +2148,15 @@ body.theme-light #timelineSection .step-content {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center 30%;
   transition: opacity 0.5s ease, transform 0.5s ease;
   cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+  .featured-photo-box img {
+    object-position: center 25%;
+  }
 }
 
 .gallery-nav-btn {
