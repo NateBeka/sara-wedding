@@ -274,17 +274,128 @@ body.theme-light .step-desc {
   color: #5e5246;
 }
 
+body.theme-light .card {
+  background: #ffffff;
+  border: 1px solid rgba(180, 140, 45, 0.3);
+  box-shadow: 0 12px 35px rgba(60, 45, 30, 0.08);
+}
+
+body.theme-light .section-tag {
+  background: rgba(180, 140, 45, 0.14);
+  color: #7a5416;
+  border-color: rgba(180, 140, 45, 0.35);
+}
+
+body.theme-light .gold-divider {
+  color: #a8811d;
+}
+
+body.theme-light .cal-year-badge {
+  background: rgba(180, 140, 45, 0.14);
+  color: #7a5416;
+  border-color: rgba(180, 140, 45, 0.35);
+}
+
+body.theme-light .countdown-label-dynamic {
+  color: #7a5416;
+}
+
+body.theme-light .pill-time-accent {
+  background: rgba(180, 140, 45, 0.16);
+  color: #5c4107;
+  border-color: rgba(180, 140, 45, 0.45);
+}
+
+body.theme-light .pill-time-greg {
+  background: #f4ede2;
+  color: #6b5a4a;
+}
+
 body.theme-light .featured-photo-box {
-  border-color: rgba(180, 140, 45, 0.3);
-  box-shadow: 0 16px 40px rgba(60, 45, 30, 0.12);
+  background: #ffffff;
+  border: 1.5px solid rgba(180, 140, 45, 0.35);
+  box-shadow: 0 16px 42px rgba(60, 45, 30, 0.12);
+}
+
+body.theme-light .gallery-nav-btn {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(180, 140, 45, 0.5);
+  color: #5c4107;
+  box-shadow: 0 4px 18px rgba(60, 45, 30, 0.2);
+}
+
+body.theme-light .gallery-nav-btn:hover {
+  background: linear-gradient(135deg, #d4a72d 0%, #b88d22 50%, #9c7414 100%);
+  color: #ffffff;
+  border-color: #9c7414;
+  box-shadow: 0 6px 22px rgba(180, 140, 45, 0.45);
+}
+
+body.theme-light .gallery-counter-badge {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(180, 140, 45, 0.45);
+  color: #3b2c16;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(60, 45, 30, 0.14);
+}
+
+body.theme-light .gallery-thumb {
+  background: #ffffff;
+  border: 1.5px solid rgba(180, 140, 45, 0.3);
+  box-shadow: 0 3px 10px rgba(60, 45, 30, 0.08);
+}
+
+body.theme-light .gallery-thumb.active {
+  border-color: #a8811d;
+  box-shadow: 0 0 16px rgba(180, 140, 45, 0.55);
+}
+
+body.theme-light .btn-secondary {
+  background: #ffffff;
+  color: #4a3810;
+  font-weight: 700;
+  border: 1.5px solid rgba(180, 140, 45, 0.45);
+  box-shadow: 0 4px 14px rgba(60, 45, 30, 0.08);
+}
+
+body.theme-light .btn-secondary:hover {
+  background: rgba(212, 175, 55, 0.14);
+  border-color: #a8811d;
+  color: #2b1d03;
+  box-shadow: 0 6px 20px rgba(60, 45, 30, 0.15);
+}
+
+body.theme-light .btn-primary,
+body.theme-light .full-action-btn,
+body.theme-light .rsvp-submit-btn,
+body.theme-light .splash-action-btn {
+  background: linear-gradient(135deg, #c59b27 0%, #a8811d 50%, #8c6810 100%);
+  color: #ffffff;
+  font-weight: 800;
+  border: none;
+  box-shadow: 0 6px 22px rgba(168, 129, 29, 0.35);
+}
+
+body.theme-light .btn-primary:hover,
+body.theme-light .full-action-btn:hover,
+body.theme-light .rsvp-submit-btn:hover,
+body.theme-light .splash-action-btn:hover {
+  background: linear-gradient(135deg, #d4a72d 0%, #b88d22 50%, #9c7414 100%);
+  box-shadow: 0 8px 28px rgba(168, 129, 29, 0.5);
+  color: #ffffff;
 }
 
 body.theme-light .rsvp-input,
 body.theme-light .rsvp-select,
 body.theme-light .rsvp-textarea {
-  background: #fbf8f3;
-  border-color: rgba(180, 140, 45, 0.3);
+  background: #ffffff;
+  border: 1.5px solid rgba(180, 140, 45, 0.3);
   color: #251e18;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 body.theme-light .rsvp-input:focus,
@@ -292,30 +403,50 @@ body.theme-light .rsvp-select:focus,
 body.theme-light .rsvp-textarea:focus {
   background: #ffffff;
   border-color: #a8811d;
+  box-shadow: 0 0 0 3px rgba(180, 140, 45, 0.18);
 }
 
 body.theme-light .attendance-pill-radio {
-  background: #fbf8f3;
-  border-color: rgba(180, 140, 45, 0.25);
+  background: #ffffff;
+  border: 1.5px solid rgba(180, 140, 45, 0.25);
   color: #5e5246;
+  box-shadow: 0 2px 8px rgba(60, 45, 30, 0.04);
 }
 
 body.theme-light .attendance-pill-radio.active {
-  background: rgba(180, 140, 45, 0.14);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(184, 134, 11, 0.08));
   border-color: #a8811d;
-  color: #251e18;
+  color: #2b1d03;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(180, 140, 45, 0.15);
 }
 
 body.theme-light .qr-glass-card {
   background: #ffffff;
-  border-color: rgba(180, 140, 45, 0.3);
-  box-shadow: 0 10px 30px rgba(60, 45, 30, 0.1);
+  border: 1.5px solid rgba(180, 140, 45, 0.32);
+  box-shadow: 0 12px 35px rgba(60, 45, 30, 0.1);
 }
 
-body.theme-light .btn-secondary {
-  background: #fbf8f3;
-  color: #251e18;
-  border-color: rgba(180, 140, 45, 0.35);
+body.theme-light .qr-label-pill {
+  background: rgba(180, 140, 45, 0.12);
+  color: #7a5416;
+  border: 1px solid rgba(180, 140, 45, 0.35);
+}
+
+body.theme-light .qr-tap-instruction {
+  color: #8c6a17;
+}
+
+body.theme-light .lightbox-close-btn {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1.5px solid rgba(180, 140, 45, 0.5);
+  color: #4a3810;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+body.theme-light .lightbox-close-btn:hover {
+  background: linear-gradient(135deg, #c59b27 0%, #a8811d 100%);
+  color: #ffffff;
 }
 
 body.theme-light footer {
