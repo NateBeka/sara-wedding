@@ -2,14 +2,9 @@
   "bot_token": "8805482813:AAGUKSu-t5vYBOjCzXp5ZKhL7dGoOfVBoXk",
   "bot_username": "sara_tewodros_wedding_bot",
   "admin_passcode": "sara_tewodros_2026",
+  "photos_group_id": null,
+  "photos_group_link": "https://t.me/+3WRHqclWRQJlYzBk",
   "admins": [
-    {
-      "id": "group",
-      "name": "Sara & Tewodros Wedding",
-      "role": "Organizer",
-      "telegram_username": "https://t.me/+3WRHqclWRQJlYzBk",
-      "chat_id": null
-    },
     {
       "id": "nate",
       "name": "Nate Beka",

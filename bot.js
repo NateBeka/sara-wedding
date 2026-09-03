@@ -75,9 +75,10 @@ function loadConfig() {
             bot_token: '',
             bot_username: 'sara_tewodros_wedding_bot',
             admin_passcode: 'sara_tewodros_2026',
+            photos_group_id: null,
+            photos_group_link: 'https://t.me/+3WRHqclWRQJlYzBk',
             admins: [
-                { id: 'group', name: 'Sara & Tewodros Wedding', role: 'Organizer', telegram_username: 'https://t.me/+3WRHqclWRQJlYzBk', chat_id: 581789098 },
-                { id: 'nate', name: 'Nate Beka', role: 'Organizer', telegram_username: 'nate_beka', chat_id: 581789098 },
+                { id: 'nate', name: 'Nate Beka', role: 'Organizer', telegram_username: 'nate_beka', chat_id: 7984548544 },
                 { id: 'sara', name: 'Dr. Sara Ayele', role: 'Bride', telegram_username: '', chat_id: null },
                 { id: 'tewodros', name: 'Eng. Tewodros Belay', role: 'Groom', telegram_username: '', chat_id: null }
             ]
@@ -88,6 +89,8 @@ function loadConfig() {
     if (process.env.TELEGRAM_BOT_TOKEN) cfg.bot_token = process.env.TELEGRAM_BOT_TOKEN;
     if (process.env.TELEGRAM_BOT_USERNAME) cfg.bot_username = process.env.TELEGRAM_BOT_USERNAME;
     if (process.env.ADMIN_PASSCODE) cfg.admin_passcode = process.env.ADMIN_PASSCODE;
+    if (process.env.PHOTOS_GROUP_ID) cfg.photos_group_id = process.env.PHOTOS_GROUP_ID;
+    if (process.env.PHOTOS_GROUP_LINK) cfg.photos_group_link = process.env.PHOTOS_GROUP_LINK;
     if (process.env.SARA_CHAT_ID && cfg.admins) {
         const sara = cfg.admins.find(a => a.id === 'sara');
         if (sara) sara.chat_id = isNaN(process.env.SARA_CHAT_ID) ? process.env.SARA_CHAT_ID : Number(process.env.SARA_CHAT_ID);
@@ -949,6 +952,26 @@ async function processUpdate(botToken, update) {
         // Auto-detect and link admin chat ID
         autoBindAdmin(config, user);
 
+        // Handle Telegram Group / Supergroup messages & connection
+        const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
+        if (isGroup) {
+            const isConnectCommand = text === '/connect_group' || text === '/link_group' || text.startsWith('/connect_group');
+            const isBotAdded = (msg.new_chat_members || []).some(m => m.is_bot && m.username === config.bot_username);
+
+            if (isConnectCommand || isBotAdded) {
+                config.photos_group_id = msg.chat.id;
+                saveConfig(config);
+                const title = msg.chat.title || 'Sara & Tewodros Wedding Photo Stream';
+                await sendMessage(botToken, msg.chat.id,
+                    `🎉 <b>WEDDING PHOTO STREAM CONNECTED!</b>\n✦ ══════════════════════════ ✦\n\n` +
+                    `<b>"${escapeHtml(title)}"</b> is now officially connected as the Live Wedding Photo Group for Dr. Sara & Eng. Tewodros! 💛\n\n` +
+                    `All celebration photos and videos sent by guests to @${config.bot_username || 'bot'} will appear here automatically in real time! 📸✨`
+                );
+                return;
+            }
+            return;
+        }
+
         // Save user to directory
         if (!dataStore.guest_users[chatId]) {
             dataStore.guest_users[chatId] = {
@@ -1054,9 +1077,31 @@ async function processUpdate(botToken, update) {
                 ? `📸 <b>እናመሰግናለን ${escapeHtml(user.first_name || 'እንግዳችን')}!</b>\nየሰርግ ፎቶዎ በሰርግ አልበም ውስጥ ተቀምጧል እንዲሁም ለዶ/ር ሳራ እና ኢ/ር ቴዎድሮስ ደርሷል! 💛`
                 : `📸 <b>Thank you so much, ${escapeHtml(user.first_name || 'Guest')}!</b>\nYour wedding photo has been saved to the album and safely delivered to Dr. Sara & Eng. Tewodros! 💛`;
 
-            await sendMessage(botToken, chatId, thanksMsg);
+            const thanksMarkup = config.photos_group_link ? {
+                inline_keyboard: [
+                    [{ text: '📸 Open Live Wedding Photo Stream', url: config.photos_group_link }]
+                ]
+            } : null;
 
-            // 4. FORWARD MEDIA IN REAL TIME TO ALL REGISTERED ADMINS
+            await sendMessage(botToken, chatId, thanksMsg, thanksMarkup);
+
+            // 4. POST IMAGES ONLY TO THE CONNECTED WEDDING PHOTO GROUP STREAM
+            if (config.photos_group_id && msg.photo) {
+                try {
+                    const groupCaption = `📸 Shared by <b>${escapeHtml(fullSender)}</b>\n${msg.caption ? `<i>"${escapeHtml(msg.caption)}"</i>\n` : ''}<i>Dr. Sara & Eng. Tewodros Wedding</i> 💛`;
+                    await callTelegram(botToken, 'sendPhoto', {
+                        chat_id: config.photos_group_id,
+                        photo: fileId,
+                        caption: groupCaption,
+                        parse_mode: 'HTML'
+                    });
+                    console.log(`[Group Stream]: Posted image to Wedding Photo Group (${config.photos_group_id})`);
+                } catch (groupErr) {
+                    console.error('[Group Stream Error]:', groupErr.message);
+                }
+            }
+
+            // 5. FORWARD MEDIA IN REAL TIME TO ALL REGISTERED ADMINS
             const adminCaption = `📸 <b>NEW WEDDING PHOTO SHARED!</b>\nFrom: <b>${escapeHtml(fullSender)}</b>\n${msg.caption ? `Caption: <i>"${escapeHtml(msg.caption)}"</i>\n` : ''}⏰ Time: ${new Date().toLocaleTimeString('en-US')}`;
             const adminIds = getActiveAdminChatIds(config);
 
@@ -1147,7 +1192,12 @@ async function processUpdate(botToken, update) {
             const prompt = userLang === 'am'
                 ? `📸 <b>የሰርግ ፎቶዎችና ቪዲዮዎችን ይላኩ</b>\n✦ ══════════════════════════ ✦\n\nበሰርጉ ወቅት ያነሷቸውን ምርጥ ፎቶዎችና ቪዲዮዎች እዚህ በቀጥታ ይላኩ። ፎቶዎችዎ በቀጥታ ለዶ/ር ሳራ እና ኢ/ር ቴዎድሮስ የሰርግ አልበም ይደርሳሉ! 💛`
                 : `📸 <b>SHARE YOUR WEDDING MOMENTS</b>\n✦ ══════════════════════════ ✦\n\nCapture memories during the celebration and send your photos/videos directly to this chat. They will be shared exclusively with Dr. Sara & Eng. Tewodros! 💛`;
-            await sendMessage(botToken, chatId, prompt, getMainKeyboard(userLang));
+            const photosMarkup = config.photos_group_link ? {
+                inline_keyboard: [
+                    [{ text: '📸 Open Live Wedding Photo Stream', url: config.photos_group_link }]
+                ]
+            } : null;
+            await sendMessage(botToken, chatId, prompt, photosMarkup);
             return;
         }
 
