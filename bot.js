@@ -807,6 +807,24 @@ async function processUpdate(botToken, update) {
     const config = loadConfig();
     const dataStore = loadData();
 
+    // 0. Handle Bot Added to Group / Promoted to Admin (my_chat_member)
+    if (update.my_chat_member) {
+        const mcm = update.my_chat_member;
+        const chat = mcm.chat;
+        const newStatus = mcm.new_chat_member ? mcm.new_chat_member.status : null;
+        console.log(`[my_chat_member]: Chat ${chat.id} ("${chat.title}") status changed to: ${newStatus}`);
+
+        if (chat.type === 'group' || chat.type === 'supergroup') {
+            if (newStatus === 'administrator' || newStatus === 'member') {
+                config.photos_group_id = chat.id;
+                saveConfig(config);
+                console.log(`[Group Auto-Linked via my_chat_member]: Linked photos_group_id to ${chat.id}`);
+                await notifyAdmins(botToken, `📸 <b>Wedding Photo Group Automatically Connected!</b>\n✦ ══════════════════════════ ✦\n\nGroup Title: <b>"${escapeHtml(chat.title || 'Wedding Photo Stream')}"</b>\nChat ID: <code>${chat.id}</code>\nBot Status: <b>${newStatus}</b>\n\nAll photos sent by guests to @${config.bot_username} will now be streamed directly into this group in real time! ✨`);
+            }
+        }
+        return;
+    }
+
     // 1. Handle Callback Queries (Inline Buttons)
     if (update.callback_query) {
         const cq = update.callback_query;
@@ -955,14 +973,17 @@ async function processUpdate(botToken, update) {
         // Handle Telegram Group / Supergroup messages & connection (STRICTLY SILENT: NO TEXT, NO MENU)
         const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
         if (isGroup) {
-            const isConnectCommand = text === '/connect_group' || text === '/link_group' || text.startsWith('/connect_group');
+            const isConnectCommand = text === '/connect_group' || text === '/link_group' ||
+                                     text.startsWith('/connect_group') || text.startsWith('/link_group') ||
+                                     text.startsWith('/set_group');
             const isBotAdded = (msg.new_chat_members || []).some(m => m.is_bot && m.username === config.bot_username);
 
-            if (isConnectCommand || isBotAdded) {
+            // Connect if command used, bot added, or if group is not linked yet
+            if (isConnectCommand || isBotAdded || !config.photos_group_id) {
                 config.photos_group_id = msg.chat.id;
                 saveConfig(config);
                 console.log(`[Group Connected]: Silently linked photos_group_id to ${msg.chat.id}`);
-                await notifyAdmins(botToken, `📸 Wedding Photo Group connected (Chat ID: <code>${msg.chat.id}</code>). The bot will send images only to this group.`);
+                await notifyAdmins(botToken, `📸 <b>Wedding Photo Group Connected!</b>\n✦ ══════════════════════════ ✦\n\nGroup Title: <b>"${escapeHtml(msg.chat.title || 'Wedding Photo Stream')}"</b>\nChat ID: <code>${msg.chat.id}</code>\n\nAll photos sent by guests to @${config.bot_username} will now stream directly into this group! ✨`);
                 return;
             }
             // In groups, NEVER send any text, messages, or menus
@@ -1085,14 +1106,23 @@ async function processUpdate(botToken, update) {
             // 4. POST PURE IMAGE ONLY (NO CAPTION, NO MENU, NO OTHER TEXT) TO THE GROUP
             if (config.photos_group_id && msg.photo) {
                 try {
-                    await callTelegram(botToken, 'sendPhoto', {
+                    const sendRes = await callTelegram(botToken, 'sendPhoto', {
                         chat_id: config.photos_group_id,
                         photo: fileId
                     });
-                    console.log(`[Group Stream]: Posted pure image to Wedding Photo Group (${config.photos_group_id})`);
+                    if (sendRes && sendRes.ok) {
+                        console.log(`[Group Stream]: Posted pure image to Wedding Photo Group (${config.photos_group_id})`);
+                    } else {
+                        const errDesc = (sendRes && sendRes.description) || 'Unknown error';
+                        console.error('[Group Stream Error]:', errDesc);
+                        await notifyAdmins(botToken, `⚠️ <b>Could not stream photo to Wedding Group:</b>\n<i>${escapeHtml(errDesc)}</i>\n\nTarget Group ID: <code>${config.photos_group_id}</code>\n<i>Tip: Ensure @${config.bot_username} is an <b>Administrator</b> in the group with permission to send photos!</i>`);
+                    }
                 } catch (groupErr) {
                     console.error('[Group Stream Error]:', groupErr.message);
                 }
+            } else if (!config.photos_group_id && msg.photo) {
+                console.warn('[Group Stream]: Guest photo received, but photos_group_id is not set.');
+                await notifyAdmins(botToken, `⚠️ <b>Photo received from guest, but Wedding Photo Group is not connected!</b>\n\nTo connect the group:\n1. Make @${config.bot_username} an <b>Admin</b> in the group.\n2. Type <code>/connect_group@${config.bot_username}</code> in the group, or send <code>/set_group &lt;chat_id&gt;</code> here.`);
             }
 
             // 5. FORWARD MEDIA IN REAL TIME TO ALL REGISTERED ADMINS
@@ -1141,6 +1171,32 @@ async function processUpdate(botToken, update) {
             const code = parts.slice(1).join(' ').trim();
             await handleAdminClaim(botToken, chatId, user, code, userLang);
             return;
+        }
+
+        if (text.startsWith('/set_group')) {
+            if (!isUserAdmin(config, user)) {
+                await sendMessage(botToken, chatId, `🔒 <i>Access restricted to Wedding Administrators.</i>`);
+                return;
+            }
+            const parts = text.split(/\s+/);
+            const targetGroupId = parts[1];
+            if (!targetGroupId) {
+                await sendMessage(botToken, chatId, `⚠️ <b>Please specify the group Chat ID:</b>\n\nUsage: <code>/set_group -100xxxxxxxxxx</code>\n\nCurrent Group ID: <code>${config.photos_group_id || 'Not set (null)'}</code>`);
+                return;
+            }
+            config.photos_group_id = isNaN(targetGroupId) ? targetGroupId : Number(targetGroupId);
+            saveConfig(config);
+            await sendMessage(botToken, chatId, `✅ <b>Wedding Photo Group Saved!</b>\n\nPhotos Group ID set to: <code>${config.photos_group_id}</code>\nAll guest celebration photos will now be automatically streamed to this group! 📸✨`);
+            return;
+        }
+
+        if (text === '/group_status' || text === '/status') {
+            if (isUserAdmin(config, user)) {
+                const momentsCount = (dataStore.moments || []).length;
+                const statusMsg = `📊 <b>BOT SYSTEM STATUS:</b>\n✦ ══════════════════════════ ✦\n• Bot: @${config.bot_username}\n• Photo Stream Group ID: <code>${config.photos_group_id || '⚠️ NOT CONNECTED (null)'}</code>\n• Group Link: ${config.photos_group_link || 'None'}\n• Moments Stored: ${momentsCount}\n• Registered Guests: ${Object.keys(dataStore.guest_users || {}).length}`;
+                await sendMessage(botToken, chatId, statusMsg);
+                return;
+            }
         }
 
         if (text === '/get_photos' || text === '/moments') {
@@ -1259,7 +1315,8 @@ async function startPolling() {
     (async () => {
         while (pollingActive) {
             try {
-                const url = `https://api.telegram.org/bot${config.bot_token}/getUpdates?offset=${offset}&timeout=20`;
+                const allowedUpdates = JSON.stringify(['message', 'callback_query', 'my_chat_member', 'chat_member']);
+                const url = `https://api.telegram.org/bot${config.bot_token}/getUpdates?offset=${offset}&timeout=20&allowed_updates=${encodeURIComponent(allowedUpdates)}`;
                 const res = await fetch(url, { signal: pollingAbortController.signal });
                 const data = await res.json();
 

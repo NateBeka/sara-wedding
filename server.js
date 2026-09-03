@@ -74,8 +74,49 @@ const server = http.createServer((req, res) => {
     const dataStore = loadData();
     sendJsonResponse(res, 200, {
       success: true,
+      photos_group_id: (config && config.photos_group_id) || null,
+      photos_group_link: (config && config.photos_group_link) || null,
       rsvps: dataStore.rsvps || [],
       moments: dataStore.moments || []
+    });
+    return;
+  }
+
+  // --------------------------------------------------------------------------
+  // API ROUTE: POST /api/admin/set-group (SET PHOTOS GROUP ID)
+  // --------------------------------------------------------------------------
+  if (pathname === '/api/admin/set-group' && req.method === 'POST') {
+    const config = loadConfig();
+    const providedPasscode = parsedUrl.searchParams.get('passcode') || req.headers['x-admin-passcode'];
+    const expectedPasscode = (config && config.admin_passcode) || 'sara_tewodros_2026';
+
+    if (providedPasscode !== expectedPasscode) {
+      sendJsonResponse(res, 401, { success: false, error: 'Unauthorized: invalid passcode' });
+      return;
+    }
+
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+      if (body.length > 1e4) req.destroy();
+    });
+
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        if (payload.photos_group_id !== undefined) {
+          config.photos_group_id = payload.photos_group_id;
+          saveConfig(config);
+          sendJsonResponse(res, 200, {
+            success: true,
+            photos_group_id: config.photos_group_id
+          });
+        } else {
+          sendJsonResponse(res, 400, { success: false, error: 'photos_group_id is required' });
+        }
+      } catch (err) {
+        sendJsonResponse(res, 400, { success: false, error: 'Invalid JSON payload' });
+      }
     });
     return;
   }
