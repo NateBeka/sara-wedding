@@ -49,30 +49,28 @@ const translations = {
         middle_date_main: "Sunday, September 20, 2026",
         fancy_title: "DR. SARA AYELE & ENG. TEWODROS BELAY",
         hero_tagline: "Eternal Love & Blessings",
-        hero_meta: "📅 September 20, 2026 &nbsp;•&nbsp; 📍 Hawassa, Ethiopia",
-        btn_rsvp_hero: "💌 Send RSVP",
-        btn_view_program: "📅 View Program ↓",
+        hero_meta: "🗓️ September 20, 2026 • 📍 Hawassa, Ethiopia",
+        btn_rsvp_hero: "Send RSVP",
+        btn_view_program: "View Program ↓",
         save_date_badge: "Save The Date",
-        save_date_title: "Join Our Celebration",
+        save_date_title: '<span class="title-icon">💍</span> <span class="title-text">Join Our Celebration</span>',
         save_date_subtitle: "Sunday, September 20, 2026",
         countdown_heading: "Countdown to the Joyous Day",
-        countdown_header: "⏳ Countdown",
+        countdown_header: "Countdown",
         timer_label: "Days until our wedding",
         unit_days: "Days",
         unit_hrs: "Hours",
         unit_min: "Mins",
         unit_sec: "Secs",
-        btn_add_calendar: "📅 Add to My Calendar",
+        btn_add_calendar: "Add to My Calendar",
         calendar_header: "September 2026",
         cal_badge_day: "Sept 20",
         day_sun: "Sun", day_mon: "Mon", day_tue: "Tue", day_wed: "Wed", day_thu: "Thu", day_fri: "Fri", day_sat: "Sat",
         card_tag: "Official Invitation",
-        card_header: "📜 The Official Invitation Card",
+        card_header: '<span class="title-icon">📜</span> <span class="title-text">The Official Invitation Card</span>',
         scripture: '"For every house is built by someone, but God is the builder of everything." — Hebrews 3:4',
-        hint_inspect: "🔍 Tap to inspect",
-        btn_download_card: "📥 Download Invitation Card",
         timeline_tag: "Full Program",
-        timeline_heading: "📅 Event Schedule",
+        timeline_heading: '<span class="title-icon">📅</span> <span class="title-text">Event Schedule</span>',
         timeline_subtitle: "Wedding Day Schedule & Procession",
         timeline_1_time: "10:00 AM - 12:00 PM",
         timeline_1_title: "Journey to Bride's Residence",
@@ -93,26 +91,26 @@ const translations = {
         timeline_6_title: "Gala Celebration at Central Hotel Hawassa",
         timeline_6_desc: "Dinner reception, ceremonial cake-cutting, and dancing celebration at Central Hotel Hawassa!",
         locations_tag: "Directions",
-        locations_heading: "📍 Event Locations",
+        locations_heading: '<span class="title-icon">📍</span> <span class="title-text">Event Locations</span>',
         locations_subtitle: "Easily find your way with interactive maps and navigation",
-        loc_badge_day: "Morning & Luncheon",
-        loc_bulala_title: "🏠 Bride's Residence",
+        loc_badge_day: "12:00 PM - 3:00 PM • Morning & Luncheon",
+        loc_bulala_title: "Bride's Residence",
         loc_bulala_desc: "Near Bulala Branch School, Bulala, Ethiopia",
-        loc_badge_night: "Evening Reception & Banquet",
-        loc_central_title: "🏨 Central Hotel",
+        loc_badge_night: "6:00 PM - 9:00 PM • Evening Banquet & Gala",
+        loc_central_title: "Central Hotel",
         loc_central_desc: "Central Hotel, Hawassa, Ethiopia",
-        btn_maps: "📍 Open in Google Maps",
+        btn_maps: "Open in Google Maps",
         gallery_tag: "Memories",
-        photos_heading: "✨ Our Wedding Moments in Photos ✨",
+        photos_heading: '<span class="title-icon">✨</span> <span class="title-text">Our Wedding Moments in Photos</span> <span class="title-icon">✨</span>',
         photos_subtitle: "A cherished collection of 29 portraits and love-filled memories",
-        btn_view_fullscreen: "🔍 View in Fullscreen Lightbox",
+        btn_view_fullscreen: "View in Fullscreen Lightbox",
         rsvp_tag: "RSVP",
-        rsvp_heading: "💌 Will You Attend?",
+        rsvp_heading: '<span class="title-icon">💌</span> <span class="title-text">Will You Attend?</span>',
         rsvp_subtitle: "Kindly let us know so we can reserve your seat",
         lbl_name: "Full Name *",
         lbl_attendance: "Attendance *",
-        opt_attend_yes: "💐 Yes, Delighted!",
-        opt_attend_no: "💌 Unfortunately No",
+        opt_attend_yes: "Yes, Delighted!",
+        opt_attend_no: "Unfortunately No",
         lbl_guests: "Number of Guests",
         guest_1: "1 Person (Self)",
         guest_2: "2 Persons (+ Companion)",
@@ -125,9 +123,9 @@ const translations = {
         opt_rel_fam: "Extended Family",
         opt_rel_col: "Colleague",
         lbl_wishes: "Warm Wishes & Blessings",
-        btn_rsvp_submit: "Send RSVP 💐",
+        btn_rsvp_submit: "Send RSVP",
         share_tag: "Live Upload",
-        qr_title: "📸 Share Your Moments & Photos",
+        qr_title: '<span class="title-icon">📸</span> <span class="title-text">Share Your Moments & Photos</span>',
         qr_subtitle: "Capture high-res memories during the celebration and send them directly to our Telegram Bot!",
         footer_text: "Dr. Sara Ayele & Eng. Tewodros Belay — Eternal Love | September 20, 2026 | Hawassa, Ethiopia",
         footer_credits: "Celebrated with heartfelt joy, faith, and blessings 💛"
@@ -141,30 +139,28 @@ const translations = {
         middle_date_main: "እሑድ መስከረም 10 ቀን 2018 ዓ.ም",
         fancy_title: "ዶ/ር ሳራ አየለ እና ኢ/ር ቴዎድሮስ በላይ",
         hero_tagline: "ዘላለማዊ ፍቅርና በረከት",
-        hero_meta: "📅 እሑድ መስከረም 10 ቀን 2018 ዓ.ም &nbsp;•&nbsp; 📍 ቡላላ እና ሀዋሳ",
-        btn_rsvp_hero: "💌 ምላሽ ይላኩ",
-        btn_view_program: "📅 ፕሮግራሙን ይመልከቱ ↓",
+        hero_meta: "🗓️ እሑድ መስከረም 10 ቀን 2018 ዓ.ም • 📍 ሀዋሳ ፣ ኢትዮጵያ",
+        btn_rsvp_hero: "ምላሽ ይላኩ",
+        btn_view_program: "ፕሮግራሙን ይመልከቱ ↓",
         save_date_badge: "ቀኑን ያስቀምጡ",
-        save_date_title: "በደስታችን አብረውን ይሁኑ",
+        save_date_title: '<span class="title-icon">💍</span> <span class="title-text">በደስታችን አብረውን ይሁኑ</span>',
         save_date_subtitle: "እሑድ መስከረም 10 ቀን 2018 ዓ.ም",
         countdown_heading: "ወደ ደማቁ የሠርግ ቀን ቆጠራ",
-        countdown_header: "⏳ የሠርግ ቆጠራ",
-        timer_label: "ወደ ሠርጋችን የሚቀረው ጊዜ",
+        countdown_header: "የሠርግ ቆጠራ",
+        timer_label: "ለሠርጋችን የሚቀረው ጊዜ",
         unit_days: "ቀናት",
         unit_hrs: "ሰዓታት",
         unit_min: "ደቂቃዎች",
         unit_sec: "ሰከንዶች",
-        btn_add_calendar: "📅 ወደ Google Calendar ያክሉ",
+        btn_add_calendar: "ወደ Google Calendar ያክሉ",
         calendar_header: "መስከረም 2018 ዓ.ም",
         cal_badge_day: "መስከረም 10",
         day_sun: "እሑድ", day_mon: "ሰኞ", day_tue: "ማክሰ", day_wed: "ረቡዕ", day_thu: "ሐሙስ", day_fri: "ዓርብ", day_sat: "ቅዳሜ",
         card_tag: "የጥሪ ካርድ",
-        card_header: "📜 ኦፊሴላዊ የጥሪ ካርድ",
+        card_header: '<span class="title-icon">📜</span> <span class="title-text">ኦፊሴላዊ የጥሪ ካርድ</span>',
         scripture: '"ሁሉን ያዘጋጀ ግን እግዚአብሔር ነው::" — ዕብ 3:4',
-        hint_inspect: "🔍 ለመመልከት ይጫኑ",
-        btn_download_card: "📥 የጥሪ ካርዱን አውርድ",
         timeline_tag: "የቀኑ መርሐ-ግብር",
-        timeline_heading: "📅 የአጁቢዎች ፕሮግራም",
+        timeline_heading: '<span class="title-icon">📅</span> <span class="title-text">የአጁቢዎች ፕሮግራም</span>',
         timeline_subtitle: "የሠርጉ ቀን ዝግጅትና የጉዞ መርሐ-ግብር",
         timeline_1_time: "ከጠዋቱ 4:00 - 6:00",
         timeline_1_title: "ጉዞ ወደ ሙሽሪት ቤት",
@@ -185,26 +181,26 @@ const translations = {
         timeline_6_title: "ቆይታ በ ሴንትራል ሆቴል",
         timeline_6_desc: "የምሽት የእራት ግብዣ፣ ኬክ መቁረጥና ጭፈራ በሴንትራል ሆቴል!",
         locations_tag: "የቦታ መመሪያ",
-        locations_heading: "📍 የዝግጅቱ ቦታዎች",
+        locations_heading: '<span class="title-icon">📍</span> <span class="title-text">የክብረ በዓሉ ቦታዎች</span>',
         locations_subtitle: "በቀላሉ ወደ ቦታዎቹ ለመድረስ የካርታ መመሪያዎችን ይጠቀሙ",
-        loc_badge_day: "የጠዋትና የምሳ ዝግጅት",
-        loc_bulala_title: "🏠 የሙሽሪት መኖሪያ ቤት (ቡላላ)",
+        loc_badge_day: "12:00 - 3:00 • የጠዋትና የምሳ ዝግጅት",
+        loc_bulala_title: "የሙሽሪት መኖሪያ ቤት (ቡላላ)",
         loc_bulala_desc: "ቡላላ ቅርንጫፍ ት/ቤት አጠገብ ፣ ቡላላ ፣ ኢትዮጵያ",
-        loc_badge_night: "የምሽት የእራት ግብዣ",
-        loc_central_title: "🏨 ሴንትራል ሆቴል",
+        loc_badge_night: "6:00 - 9:00 • የምሽት የእራት ግብዣ",
+        loc_central_title: "ሴንትራል ሆቴል",
         loc_central_desc: "ሴንትራል ሆቴል ፣ ሀዋሳ ፣ ኢትዮጵያ",
-        btn_maps: "📍 በጎግል ካርታ ክፈት",
+        btn_maps: "በጎግል ካርታ ክፈት",
         gallery_tag: "ትዝታዎች",
-        photos_heading: "✨ የሠርጋችን ፎቶዎች ✨",
-        photos_subtitle: "ልዩ የፍቅርና የደስታ አፍታዎች ስብስብ (29 ፎቶዎች)",
-        btn_view_fullscreen: "🔍 በሙሉ ገጽ ይመልከቱ",
+        photos_heading: '<span class="title-icon">✨</span> <span class="title-text">የሠርጋችን የትዝታ ምስሎች</span> <span class="title-icon">✨</span>',
+        photos_subtitle: "ልዩ የፍቅርና የደስታ  ፎቶዎች ስብስብ (29 ፎቶዎች)",
+        btn_view_fullscreen: "በሙሉ ገጽ ይመልከቱ",
         rsvp_tag: "የግብዣ ምላሽ",
-        rsvp_heading: "💌 በሰርጋችን ላይ ይገኛሉ?",
+        rsvp_heading: '<span class="title-icon">💌</span> <span class="title-text">በሠርጋችን ላይ ይገኛሉ?</span>',
         rsvp_subtitle: "ክብርዎን እንድንጠብቅ እባክዎ መገኘትዎን ያሳውቁን",
         lbl_name: "ሙሉ ስም *",
         lbl_attendance: "መገኘት *",
-        opt_attend_yes: "💐 በደስታ እገኛለሁ",
-        opt_attend_no: "💌 አልችልም",
+        opt_attend_yes: "በደስታ እገኛለሁ",
+        opt_attend_no: "አልችልም",
         lbl_guests: "የእንግዶች ብዛት",
         guest_1: "1 ሰው (ብቻዬን)",
         guest_2: "2 ሰዎች (+ አጋር)",
@@ -217,9 +213,9 @@ const translations = {
         opt_rel_fam: "ቤተሰብ",
         opt_rel_col: "የሥራ ባልደረባ",
         lbl_wishes: "የምርቃት መልዕክትና መልካም ምኞት",
-        btn_rsvp_submit: "ምላሽዎን ይላኩ 💐",
+        btn_rsvp_submit: "ምላሽዎን ይላኩ",
         share_tag: "ቀጥታ ይላኩ",
-        qr_title: "📸 ፎቶዎችን ያጋሩ",
+        qr_title: '<span class="title-icon">📸</span> <span class="title-text">ፎቶዎችና ቪዲዮዎችን ያጋሩ</span>',
         qr_subtitle: "በሠርጉ ላይ የሚያነሷቸውን ልዩ ፎቶዎችና ቪዲዮዎች ለቴሌግራም ቦቱ በቀጥታ ይላኩ!",
         footer_text: "ዶ/ር ሳራ አየለ እና ኢ/ር ቴዎድሮስ በላይ — ዘላለማዊ ፍቅር | እሑድ መስከረም 10 ቀን 2018 ዓ.ም | ሀዋሳ ፣ ኢትዮጵያ",
         footer_credits: "በታላቅ ደስታና ፍቅር የተዘጋጀ 💛"
@@ -233,30 +229,28 @@ const translations = {
         middle_date_main: "Dilbata, Fulbaana 10, 2018 A.L.I",
         fancy_title: "DR. SAARAA AYYALEE & INJ. TEWODROS BELAAY",
         hero_tagline: "Jaalala Barabaraa fi Eebba",
-        hero_meta: "📅 Dilbata, Fulbaana 10, 2018 &nbsp;•&nbsp; 📍 Bulaalaa fi Hawaasaa",
-        btn_rsvp_hero: "💌 Deebii Ergaa",
-        btn_view_program: "📅 Sagantaa Ilaalaa ↓",
+        hero_meta: "🗓️ Fulbaana 10, 2018 • 📍 Hawaasaa, Itoophiyaa",
+        btn_rsvp_hero: "Deebii Ergaa",
+        btn_view_program: "Sagantaa Ilaalaa ↓",
         save_date_badge: "Guyyaa Qabadhaa",
-        save_date_title: "Gammachuu Keenya Qooddhadhaa",
+        save_date_title: '<span class="title-icon">💍</span> <span class="title-text">Gammachuu Keenya Qooddhadhaa</span>',
         save_date_subtitle: "Dilbata, Fulbaana 10, 2018 A.L.I",
         countdown_heading: "Lakkoofsa Guyyaa Gammachuu",
-        countdown_header: "⏳ Lakkoofsa Cidhaa",
+        countdown_header: "Lakkoofsa Cidhaa",
         timer_label: "Hanga Guyyaa Cidhaatti",
         unit_days: "Guyyoota",
         unit_hrs: "Sa'aatii",
         unit_min: "Daqiiqaa",
         unit_sec: "Sekondii",
-        btn_add_calendar: "📅 Google Calendar irratti Dabali",
+        btn_add_calendar: "Google Calendar irratti Dabali",
         calendar_header: "Fulbaana 2018",
         cal_badge_day: "Fulbaana 10",
         day_sun: "Dil", day_mon: "Wix", day_tue: "Kib", day_wed: "Rob", day_thu: "Kam", day_fri: "Jim", day_sat: "San",
         card_tag: "Kaardii Waamichaa",
-        card_header: "📜 Kaardii Waamicha Cidhaa",
+        card_header: '<span class="title-icon">📜</span> <span class="title-text">Kaardii Waamicha Cidhaa</span>',
         scripture: '"Wanti hundi namaan ijaarama, hundumaa kan ijaare garuu Waaqayyodha." — Ibroota 3:4',
-        hint_inspect: "🔍 Ilaaluuf Tuqaa",
-        btn_download_card: "📥 Kaardii Waamichaa Buufadhaa",
         timeline_tag: "Sagantaa Guutuu",
-        timeline_heading: "📅 Sagantaa Ajuubii",
+        timeline_heading: '<span class="title-icon">📅</span> <span class="title-text">Sagantaa Ajuubii</span>',
         timeline_subtitle: "Sagantaa guutuu qophii fi imala cidha misirrootaa",
         timeline_1_time: "Sa'aatii 4:00 - 6:00",
         timeline_1_title: "Gara Mana Misirrootti Imaluu",
@@ -277,26 +271,26 @@ const translations = {
         timeline_6_title: "Qophii Hoteela Seentiraal",
         timeline_6_desc: "Affeerraa galgalaa guddaa fi sirba Hoteela Seentiraalitti!",
         locations_tag: "Qajeelfama Iddoo",
-        locations_heading: "📍 Iddoowwan Qophii",
+        locations_heading: '<span class="title-icon">📍</span> <span class="title-text">Iddoowwan Qophii</span>',
         locations_subtitle: "Kaartaa fayyadamuun iddoowwan qophii salphatti argadhaa",
-        loc_badge_day: "Qophii Ganamaa fi Laaqanaa",
-        loc_bulala_title: "🏠 Mana Misirroo (Bulaalaa)",
+        loc_badge_day: "12:00 - 3:00 • Qophii Ganamaa fi Laaqanaa",
+        loc_bulala_title: "Mana Misirroo (Bulaalaa)",
         loc_bulala_desc: "Mana Barumsaa Damee Bulaalaa Cinaa, Bulaalaa",
-        loc_badge_night: "Irbaata Galgalaa fi Sirba",
-        loc_central_title: "🏨 Hoteela Seentiraal",
+        loc_badge_night: "6:00 - 9:00 • Irbaata Galgalaa fi Sirba",
+        loc_central_title: "Hoteela Seentiraal",
         loc_central_desc: "Central Hotel, Hawaasaa, Itoophiyaa",
-        btn_maps: "📍 Google Maps irratti Bani",
+        btn_maps: "Google Maps irratti Bani",
         gallery_tag: "Yaadannoo",
-        photos_heading: "✨ Suuraalee Cidha Keenyaa ✨",
+        photos_heading: '<span class="title-icon">✨</span> <span class="title-text">Suuraalee Cidha Keenyaa</span> <span class="title-icon">✨</span>',
         photos_subtitle: "Kuusaa suuraalee jaalalaa fi gammachuu (Suuraalee 29)",
-        btn_view_fullscreen: "🔍 Suuraalee Bal'inaan Ilaalaa",
+        btn_view_fullscreen: "Suuraalee Bal'inaan Ilaalaa",
         rsvp_tag: "Deebii Waamichaa",
-        rsvp_heading: "💌 Cidha Keenya irratti Ni Argamtuu?",
+        rsvp_heading: '<span class="title-icon">💌</span> <span class="title-text">Cidha Keenya irratti Ni Argamtuu?</span>',
         rsvp_subtitle: "Teessoo kabajaa isiniif qopheessuuf deebii keessan nuuf ergaa",
         lbl_name: "Maqaa Guutuu *",
         lbl_attendance: "Argamuu *",
-        opt_attend_yes: "💐 Eeyyee, Gammachuun Dhufa!",
-        opt_attend_no: "💌 Hin Danda'u",
+        opt_attend_yes: "Eeyyee, Gammachuun Dhufa!",
+        opt_attend_no: "Hin Danda'u",
         lbl_guests: "Baay'ina Keessummootaa",
         guest_1: "Nama 1 (Kophaa koo)",
         guest_2: "Nama 2 (+ Hiriyaa)",
@@ -309,9 +303,9 @@ const translations = {
         opt_rel_fam: "Maatii",
         opt_rel_col: "Hiriyaa Hojii",
         lbl_wishes: "Dhaamsa Eebbaa fi Hawwii Gaarii",
-        btn_rsvp_submit: "Deebii Ergaa 💐",
+        btn_rsvp_submit: "Deebii Ergaa",
         share_tag: "Kallattiin Ergaa",
-        qr_title: "📸 Suuraa fi Viidiyoo Qoodaa",
+        qr_title: '<span class="title-icon">📸</span> <span class="title-text">Suuraa fi Viidiyoo Qoodaa</span>',
         qr_subtitle: "Suuraalee fi viidiyoowwan qophii irratti kaastan Telegram Bot irratti nuuf ergaa!",
         footer_text: "Dr. Saaraa Ayyalee & Inj. Tewodros Belaay — Jaalala Barabaraa | Fulbaana 10, 2018 | Hawaasaa",
         footer_credits: "Gammachuu fi jaalala guddaadhaan qophaa'e 💛"
@@ -324,7 +318,9 @@ function setLanguage(lang) {
     if (!translations[lang]) return;
     currentLang = lang;
     localStorage.setItem('sara_wedding_lang', lang);
-    document.body.className = `lang-${lang}`;
+    document.body.classList.remove('lang-en', 'lang-am', 'lang-ao');
+    document.body.classList.add(`lang-${lang}`);
+    document.documentElement.setAttribute('lang', lang);
 
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.lang === lang);
@@ -779,7 +775,6 @@ const openLightboxBtn = document.getElementById('openLightboxBtn');
 const cardModal = document.getElementById('cardModal');
 const closeCardModalBtn = document.getElementById('closeCardModalBtn');
 const invitationCardPreview = document.getElementById('invitationCardPreview');
-const zoomCardBtn = document.getElementById('zoomCardBtn');
 
 function initGallery() {
     if (!galleryFilmstrip) return;
@@ -931,12 +926,6 @@ if (invitationCardPreview) {
             e.preventDefault();
             openCardModal();
         }
-    });
-}
-if (zoomCardBtn) {
-    zoomCardBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        openCardModal();
     });
 }
 if (closeCardModalBtn) {
@@ -1093,6 +1082,33 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
 });
 
 // --------------------------------------------------------------------------
+// 8.1. LIGHT / DARK THEME SYSTEM (ALABASTER IVORY & GOLD / OBSIDIAN ROYALE)
+// --------------------------------------------------------------------------
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const themeIcon = document.getElementById('themeIcon');
+let currentTheme = localStorage.getItem('sara_wedding_theme') || 'dark';
+
+function applyTheme(theme) {
+    currentTheme = theme;
+    localStorage.setItem('sara_wedding_theme', theme);
+    if (theme === 'light') {
+        document.body.classList.add('theme-light');
+        if (themeIcon) themeIcon.textContent = '🌙';
+        if (themeToggleBtn) themeToggleBtn.title = 'Switch to Dark Mode';
+    } else {
+        document.body.classList.remove('theme-light');
+        if (themeIcon) themeIcon.textContent = '☀️';
+        if (themeToggleBtn) themeToggleBtn.title = 'Switch to Light Mode';
+    }
+}
+
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+        applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+    });
+}
+
+// --------------------------------------------------------------------------
 // 9. DYNAMIC TELEGRAM BOT SYNC
 // --------------------------------------------------------------------------
 async function syncBotInfo() {
@@ -1123,6 +1139,7 @@ function initApp() {
     initSparkles();
     initGallery();
     setLanguage(currentLang);
+    applyTheme(currentTheme);
     updateGuestVisibility();
     syncBotInfo();
 }

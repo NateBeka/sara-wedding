@@ -2,307 +2,784 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr. Sara & Eng. Tewodros — Wedding Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Dr. Sara & Eng. Tewodros — VIP Wedding Dashboard</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
-        .dashboard-body {
-            background-color: #06070a;
-            color: #f7eed7;
-            min-height: 100vh;
-            padding: 2rem 1.2rem 4rem;
+        /* ==========================================================================
+           MOBILE-FIRST VIP ADMIN DASHBOARD
+           Default styles optimized for smartphones (320px - 480px),
+           progressively enhanced for tablets and desktop.
+           ========================================================================== */
+        :root {
+            --dash-bg: #07080b;
+            --dash-card-bg: rgba(16, 18, 26, 0.88);
+            --dash-card-border: rgba(212, 175, 55, 0.32);
+            --dash-gold: #d4af37;
+            --dash-gold-bright: #fceda9;
+            --dash-text: #fbf8f2;
+            --dash-text-muted: #b8b1a3;
         }
+
+        body.theme-light {
+            --dash-bg: #f6f1ea;
+            --dash-card-bg: #ffffff;
+            --dash-card-border: rgba(180, 140, 45, 0.3);
+            --dash-gold: #a8811d;
+            --dash-gold-bright: #6b5114;
+            --dash-text: #251e18;
+            --dash-text-muted: #5e5246;
+        }
+
+        .dashboard-body {
+            background-color: var(--dash-bg);
+            color: var(--dash-text);
+            min-height: 100vh;
+            padding: 0.75rem 0.75rem 3rem;
+            font-family: var(--font-body);
+            -webkit-font-smoothing: antialiased;
+        }
+
         .dashboard-container {
-            max-width: 1200px;
+            width: 100%;
+            max-width: 1100px;
             margin: 0 auto;
         }
-        .dashboard-header {
+
+        /* --------------------------------------------------------------------------
+           DASHBOARD HEADER (Mobile-First)
+           -------------------------------------------------------------------------- */
+        .dash-header {
             text-align: center;
-            margin-bottom: 2.5rem;
-            padding-bottom: 1.8rem;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+            padding: 1.2rem 0.5rem 1.4rem;
+            margin-bottom: 1.2rem;
+            border-bottom: 1px solid var(--dash-card-border);
             position: relative;
         }
-        .dash-crown {
-            font-size: 2.5rem;
+
+        .dash-header-crest {
+            font-size: 2rem;
+            line-height: 1;
+            margin-bottom: 0.35rem;
+            filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.4));
+        }
+
+        .dash-header-pill {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--dash-gold-bright);
+            background: rgba(212, 175, 55, 0.12);
+            border: 1px solid var(--dash-card-border);
+            padding: 3px 12px;
+            border-radius: var(--radius-full);
             margin-bottom: 0.5rem;
         }
-        .dash-title {
+
+        .dash-header-title {
             font-family: var(--font-display);
-            font-size: 2.2rem;
+            font-size: 1.45rem;
+            font-weight: 700;
+            line-height: 1.25;
             background: var(--gold-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.5px;
         }
-        .dash-subtitle {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            letter-spacing: 1px;
+
+        .dash-header-subtitle {
+            font-size: 0.8rem;
+            color: var(--dash-text-muted);
+            max-width: 480px;
+            margin: 0 auto 1rem;
+            line-height: 1.4;
         }
-        .dash-top-actions {
-            position: absolute;
-            top: 0;
-            right: 0;
+
+        .dash-header-actions {
             display: flex;
-            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 0.8rem;
         }
-        @media (max-width: 768px) {
-            .dash-top-actions {
-                position: static;
-                justify-content: center;
-                margin-top: 1rem;
-            }
-        }
-        .dash-back-btn {
+
+        .dash-action-pill {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid var(--gold-border);
+            padding: 7px 14px;
+            background: var(--dash-card-bg);
+            border: 1px solid var(--dash-card-border);
             border-radius: var(--radius-full);
-            color: var(--gold-200);
+            color: var(--dash-gold-bright);
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             font-weight: 600;
+            cursor: pointer;
             transition: var(--transition-smooth);
+            touch-action: manipulation;
         }
-        .dash-back-btn:hover {
-            background: rgba(212, 175, 55, 0.2);
-            color: #fff;
+
+        .dash-action-pill:active,
+        .dash-action-pill:hover {
+            border-color: var(--dash-gold);
+            transform: scale(0.98);
         }
-        /* Passcode Modal */
-        .auth-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(6, 7, 10, 0.95);
-            backdrop-filter: blur(15px);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-        }
-        .auth-overlay.hidden { display: none; }
-        .auth-box {
-            background: rgba(14, 16, 24, 0.95);
-            border: 1.5px solid var(--gold-border-bright);
-            border-radius: var(--radius-lg);
-            padding: 2.5rem 2rem;
-            max-width: 440px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px rgba(212, 175, 55, 0.25);
-        }
-        .auth-input {
-            width: 100%;
-            padding: 14px 18px;
-            background: rgba(8, 10, 15, 0.9);
-            border: 1.5px solid var(--gold-border);
-            border-radius: var(--radius-md);
-            color: #f7eed7;
-            font-size: 1.1rem;
-            text-align: center;
-            letter-spacing: 2px;
-            margin: 1.5rem 0 1rem;
-            outline: none;
-            transition: var(--transition-smooth);
-        }
-        .auth-input:focus {
-            border-color: var(--gold-400);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.35);
-        }
-        .auth-error {
-            color: #ff7575;
-            font-size: 0.85rem;
-            margin-top: 0.5rem;
-            min-height: 20px;
-        }
-        /* Stat Cards */
+
+        /* --------------------------------------------------------------------------
+           STATS TILES (Mobile 2x2 Grid)
+           -------------------------------------------------------------------------- */
         .dash-stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.4rem;
-            margin-bottom: 2.5rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 1.4rem;
         }
-        .dash-stat-card {
-            background: rgba(14, 16, 24, 0.85);
-            border: 1px solid var(--gold-border);
-            border-radius: var(--radius-md);
-            padding: 1.6rem 1.4rem;
+
+        .dash-stat-tile {
+            background: var(--dash-card-bg);
+            border: 1px solid var(--dash-card-border);
+            border-radius: var(--radius-sm);
+            padding: 1rem 0.8rem;
             text-align: center;
-            box-shadow: var(--shadow-subtle);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
             position: relative;
             overflow: hidden;
-            transition: var(--transition-smooth);
         }
-        .dash-stat-card::before {
+
+        .dash-stat-tile::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
+            height: 2px;
             background: var(--gold-gradient);
         }
-        .dash-stat-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--gold-400);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 20px rgba(212, 175, 55, 0.2);
-        }
-        .dash-stat-number {
-            font-family: var(--font-display);
-            font-size: 2.8rem;
-            font-weight: 700;
+
+        .dash-stat-icon {
+            font-size: 1.2rem;
             line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .dash-stat-val {
+            font-family: var(--font-display);
+            font-size: 1.85rem;
+            font-weight: 700;
+            line-height: 1.1;
             background: var(--gold-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin: 0.4rem 0 0.3rem;
+            margin-bottom: 0.2rem;
         }
+
         .dash-stat-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--dash-text-muted);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
         }
-        /* Table Controls */
-        .dash-controls-bar {
+
+        .dash-stat-note {
+            font-size: 0.65rem;
+            color: var(--dash-gold-bright);
+            margin-top: 0.2rem;
+            opacity: 0.85;
+        }
+
+        /* --------------------------------------------------------------------------
+           TAB NAVIGATION (RSVPs vs Shared Moments)
+           -------------------------------------------------------------------------- */
+        .dash-tabs-bar {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 1.2rem;
             background: rgba(14, 16, 24, 0.7);
-            border: 1px solid var(--gold-border);
-            border-radius: var(--radius-md);
-            padding: 1rem 1.2rem;
+            border: 1px solid var(--dash-card-border);
+            border-radius: var(--radius-full);
+            padding: 4px;
+            margin-bottom: 1.2rem;
+            gap: 4px;
         }
-        .dash-search-input {
+
+        body.theme-light .dash-tabs-bar {
+            background: rgba(240, 234, 224, 0.85);
+        }
+
+        .dash-tab-btn {
             flex: 1;
-            min-width: 240px;
-            background: rgba(8, 10, 15, 0.9);
-            border: 1px solid var(--gold-border);
-            border-radius: var(--radius-full);
-            color: #f7eed7;
-            padding: 10px 18px;
-            font-size: 0.9rem;
-            outline: none;
-        }
-        .dash-search-input:focus {
-            border-color: var(--gold-400);
-        }
-        .dash-filter-pills {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .filter-pill {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            color: var(--gold-200);
-            padding: 6px 14px;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 12px;
             border-radius: var(--radius-full);
-            font-size: 0.8rem;
+            border: none;
+            background: transparent;
+            color: var(--dash-text-muted);
+            font-size: 0.82rem;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition-smooth);
+            touch-action: manipulation;
         }
-        .filter-pill.active,
-        .filter-pill:hover {
+
+        .dash-tab-btn.active {
             background: var(--gold-gradient);
             color: #0b0c10;
-            border-color: #fff;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
         }
-        .dash-export-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #28a745, #1e7e34);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
+
+        .dash-tab-badge {
+            background: rgba(0, 0, 0, 0.2);
+            color: inherit;
+            font-size: 0.72rem;
+            padding: 2px 7px;
             border-radius: var(--radius-full);
             font-weight: 700;
+        }
+
+        /* --------------------------------------------------------------------------
+           CONTROLS BAR (Mobile Stacked)
+           -------------------------------------------------------------------------- */
+        .dash-controls-card {
+            background: var(--dash-card-bg);
+            border: 1px solid var(--dash-card-border);
+            border-radius: var(--radius-md);
+            padding: 1rem 0.9rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dash-search-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .dash-search-input {
+            width: 100%;
+            padding: 11px 38px 11px 38px;
+            background: rgba(8, 10, 15, 0.85);
+            border: 1px solid var(--dash-card-border);
+            border-radius: var(--radius-full);
+            color: var(--dash-text);
             font-size: 0.88rem;
-            cursor: pointer;
+            outline: none;
             transition: var(--transition-smooth);
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.35);
         }
-        .dash-export-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.55);
+
+        body.theme-light .dash-search-input {
+            background: #ffffff;
         }
-        /* Table */
-        .dash-table-wrapper {
-            background: rgba(14, 16, 24, 0.85);
-            border: 1px solid var(--gold-border);
+
+        .dash-search-input:focus {
+            border-color: var(--dash-gold);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+        }
+
+        .dash-search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .dash-search-clear {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--dash-text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 4px;
+            display: none;
+        }
+
+        .dash-filters-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .dash-filter-chips {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .dash-chip-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--dash-card-border);
+            color: var(--dash-gold-bright);
+            padding: 6px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            touch-action: manipulation;
+            transition: var(--transition-smooth);
+        }
+
+        body.theme-light .dash-chip-btn {
+            background: #fcf9f4;
+            color: #6b5114;
+        }
+
+        .dash-chip-btn.active {
+            background: var(--gold-gradient);
+            color: #0b0c10;
+            border-color: transparent;
+            font-weight: 700;
+        }
+
+        .dash-view-toggle {
+            display: flex;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: var(--radius-full);
+            padding: 2px;
+            border: 1px solid var(--dash-card-border);
+        }
+
+        .dash-view-btn {
+            background: none;
+            border: none;
+            color: var(--dash-text-muted);
+            padding: 5px 9px;
+            font-size: 0.75rem;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+        }
+
+        .dash-view-btn.active {
+            background: var(--dash-card-border);
+            color: var(--dash-text);
+            font-weight: 600;
+        }
+
+        .dash-export-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #2b9348 0%, #1e7035 100%);
+            color: #ffffff;
+            border: none;
+            padding: 11px 16px;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(43, 147, 72, 0.35);
+            touch-action: manipulation;
+            transition: var(--transition-smooth);
+        }
+
+        .dash-export-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* --------------------------------------------------------------------------
+           MOBILE GUEST CARDS (Zero Horizontal Scroll on Phones)
+           -------------------------------------------------------------------------- */
+        .dash-cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dash-guest-card {
+            background: var(--dash-card-bg);
+            border: 1px solid var(--dash-card-border);
+            border-radius: var(--radius-sm);
+            padding: 1rem 0.95rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.18);
+            transition: var(--transition-smooth);
+        }
+
+        .dash-guest-card:hover {
+            border-color: var(--dash-gold);
+        }
+
+        .guest-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 0.6rem;
+        }
+
+        .guest-card-name {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--dash-gold-bright);
+            line-height: 1.25;
+            word-break: break-word;
+        }
+
+        .guest-card-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 9px;
+            border-radius: var(--radius-full);
+            font-size: 0.72rem;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .guest-card-status.yes {
+            background: rgba(40, 167, 69, 0.18);
+            color: #5ed678;
+            border: 1px solid rgba(40, 167, 69, 0.45);
+        }
+
+        .guest-card-status.no {
+            background: rgba(220, 53, 69, 0.18);
+            color: #ff7575;
+            border: 1px solid rgba(220, 53, 69, 0.45);
+        }
+
+        .guest-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 0.7rem;
+            font-size: 0.75rem;
+            color: var(--dash-text-muted);
+        }
+
+        .guest-meta-pill {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        body.theme-light .guest-meta-pill {
+            background: rgba(180, 140, 45, 0.08);
+            border-color: rgba(180, 140, 45, 0.2);
+        }
+
+        .guest-wishes-quote {
+            background: rgba(212, 175, 55, 0.06);
+            border-left: 2.5px solid var(--dash-gold);
+            padding: 8px 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.82rem;
+            font-style: italic;
+            color: var(--dash-text);
+            line-height: 1.4;
+            margin-top: 0.5rem;
+            word-break: break-word;
+        }
+
+        .guest-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0.6rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.12);
+            font-size: 0.7rem;
+            color: var(--dash-text-muted);
+        }
+
+        .guest-copy-btn {
+            background: none;
+            border: none;
+            color: var(--dash-gold-bright);
+            font-size: 0.72rem;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* --------------------------------------------------------------------------
+           DESKTOP/EXPANDED TABLE VIEW
+           -------------------------------------------------------------------------- */
+        .dash-table-container {
+            display: none;
+            background: var(--dash-card-bg);
+            border: 1px solid var(--dash-card-border);
             border-radius: var(--radius-md);
             overflow-x: auto;
-            box-shadow: var(--shadow-subtle);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            -webkit-overflow-scrolling: touch;
         }
+
         .dash-table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 0.84rem;
             text-align: left;
-            font-size: 0.9rem;
         }
+
         .dash-table th {
             background: rgba(8, 10, 15, 0.95);
-            color: var(--gold-300);
+            color: var(--dash-gold-bright);
             font-weight: 700;
-            padding: 14px 16px;
-            border-bottom: 1.5px solid var(--gold-border);
+            padding: 12px 14px;
+            border-bottom: 1.5px solid var(--dash-card-border);
             text-transform: uppercase;
-            font-size: 0.78rem;
-            letter-spacing: 1px;
+            font-size: 0.72rem;
+            letter-spacing: 0.8px;
             white-space: nowrap;
         }
+
+        body.theme-light .dash-table th {
+            background: #fbf8f3;
+            color: #6b5114;
+        }
+
         .dash-table td {
-            padding: 14px 16px;
+            padding: 12px 14px;
             border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-            color: #f7eed7;
+            color: var(--dash-text);
             vertical-align: middle;
         }
+
         .dash-table tr:hover td {
             background: rgba(212, 175, 55, 0.05);
         }
-        .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: var(--radius-full);
+
+        /* --------------------------------------------------------------------------
+           SHARED MOMENTS TAB (Mobile-First Photo Grid)
+           -------------------------------------------------------------------------- */
+        .moments-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .moment-card {
+            background: var(--dash-card-bg);
+            border: 1px solid var(--dash-card-border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .moment-img-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #000;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .moment-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .moment-img-wrap:hover img {
+            transform: scale(1.04);
+        }
+
+        .moment-info {
+            padding: 8px 10px;
             font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .moment-author {
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: var(--dash-gold-bright);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .status-yes {
-            background: rgba(40, 167, 69, 0.2);
-            color: #6be285;
-            border: 1px solid rgba(40, 167, 69, 0.4);
+
+        .moment-caption {
+            font-size: 0.7rem;
+            color: var(--dash-text-muted);
+            line-height: 1.3;
+            max-height: 2.6em;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .status-no {
-            background: rgba(220, 53, 69, 0.2);
-            color: #ff7575;
-            border: 1px solid rgba(220, 53, 69, 0.4);
-        }
-        .dash-wishes-quote {
-            font-style: italic;
-            color: var(--gold-100);
-            max-width: 320px;
-            line-height: 1.4;
-        }
-        .empty-state {
+
+        .empty-view-state {
             text-align: center;
-            padding: 3rem 1.5rem;
-            color: var(--text-muted);
+            padding: 2.5rem 1rem;
+            color: var(--dash-text-muted);
+            font-size: 0.88rem;
+        }
+
+        /* --------------------------------------------------------------------------
+           PASSCODE AUTH SCREEN (Mobile-First)
+           -------------------------------------------------------------------------- */
+        .auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 7, 10, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .auth-overlay.hidden { display: none; }
+
+        .auth-card {
+            background: var(--dash-card-bg);
+            border: 1.5px solid var(--dash-card-border);
+            border-radius: var(--radius-md);
+            padding: 2rem 1.4rem;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 25px rgba(212, 175, 55, 0.2);
+        }
+
+        .auth-card-title {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            color: var(--dash-gold-bright);
+            margin: 0.4rem 0 0.2rem;
+        }
+
+        .auth-input-group {
+            position: relative;
+            margin: 1.2rem 0 0.8rem;
+        }
+
+        .auth-pass-input {
+            width: 100%;
+            padding: 12px 42px 12px 16px;
+            background: rgba(8, 10, 15, 0.9);
+            border: 1.5px solid var(--dash-card-border);
+            border-radius: var(--radius-sm);
+            color: var(--dash-text);
+            font-size: 1.05rem;
+            letter-spacing: 2px;
+            text-align: center;
+            outline: none;
+        }
+
+        body.theme-light .auth-pass-input {
+            background: #ffffff;
+        }
+
+        .auth-pass-input:focus {
+            border-color: var(--dash-gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.35);
+        }
+
+        .auth-toggle-pass {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--dash-text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .auth-submit-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.9rem;
+            border-radius: var(--radius-full);
+            touch-action: manipulation;
+        }
+
+        .auth-error-msg {
+            color: #ff7575;
+            font-size: 0.78rem;
+            min-height: 20px;
+            margin-top: 0.5rem;
+        }
+
+        /* --------------------------------------------------------------------------
+           PROGRESSIVE ENHANCEMENT FOR LARGER SCREENS (Tablet & Desktop >= 768px)
+           -------------------------------------------------------------------------- */
+        @media (min-width: 768px) {
+            .dashboard-body {
+                padding: 1.8rem 1.5rem 4rem;
+            }
+
+            .dash-header-title {
+                font-size: 2rem;
+            }
+
+            .dash-header-crest {
+                font-size: 2.6rem;
+            }
+
+            .dash-stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+            }
+
+            .dash-stat-tile {
+                padding: 1.3rem 1rem;
+            }
+
+            .dash-stat-val {
+                font-size: 2.3rem;
+            }
+
+            .dash-controls-card {
+                flex-direction: row;
+                align-items: center;
+                gap: 12px;
+                padding: 0.9rem 1.2rem;
+            }
+
+            .dash-search-wrapper {
+                flex: 1;
+                min-width: 240px;
+            }
+
+            .dash-export-btn {
+                width: auto;
+                padding: 10px 18px;
+            }
+
+            .moments-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 14px;
+            }
         }
     </style>
 </head>
@@ -310,102 +787,192 @@
 
     <!-- Passcode Authentication Modal -->
     <div class="auth-overlay" id="authOverlay">
-        <div class="auth-box">
-            <div class="dash-crown">👑</div>
-            <h2 style="font-family: var(--font-display); color: var(--gold-300); margin-bottom: 0.4rem;">VIP Admin Portal</h2>
-            <p style="font-size: 0.88rem; color: var(--text-muted);">Private Access for Dr. Sara Ayele & Eng. Tewodros Belay</p>
+        <div class="auth-card">
+            <div style="font-size: 2.5rem; line-height: 1;">👑</div>
+            <h2 class="auth-card-title">VIP Admin Portal</h2>
+            <p style="font-size: 0.8rem; color: var(--dash-text-muted);">Dr. Sara Ayele & Eng. Tewodros Belay</p>
             <form id="authForm" onsubmit="handleAuth(event)">
-                <input type="password" id="passcodeInput" class="auth-input" placeholder="Enter Royal Passcode" autofocus autocomplete="current-password">
-                <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Unlock Dashboard ✨</button>
-                <div class="auth-error" id="authError"></div>
+                <div class="auth-input-group">
+                    <input type="password" id="passcodeInput" class="auth-pass-input" placeholder="Passcode" autofocus autocomplete="current-password">
+                    <button type="button" class="auth-toggle-pass" onclick="togglePasscodeVisibility()" aria-label="Toggle password visibility">👁️</button>
+                </div>
+                <button type="submit" class="btn-primary auth-submit-btn">Unlock Dashboard ✨</button>
+                <div class="auth-error-msg" id="authError"></div>
             </form>
-            <p style="font-size: 0.75rem; color: #666; margin-top: 1rem;">Hint: default wedding passcode configured in bot_config.json</p>
+            <p style="font-size: 0.72rem; color: var(--dash-text-muted); margin-top: 0.8rem; opacity: 0.8;">
+                🔒 Secure couple & wedding coordinator access
+            </p>
         </div>
     </div>
 
-    <!-- Dashboard Main View -->
+    <!-- Main Dashboard View -->
     <div class="dashboard-container" id="dashContainer" style="display: none;">
-        <div class="dashboard-header">
-            <div class="dash-crown">👑</div>
-            <h1 class="dash-title">Dr. Sara & Eng. Tewodros</h1>
-            <p class="dash-subtitle">Wedding Guest List, RSVP Responses & Wishes Dashboard</p>
+        
+        <!-- Header Section -->
+        <header class="dash-header">
+            <div class="dash-header-crest">👑</div>
+            <span class="dash-header-pill">VIP Wedding Command Center</span>
+            <h1 class="dash-header-title">Dr. Sara & Eng. Tewodros</h1>
+            <p class="dash-header-subtitle">Live RSVP responses, heartfelt guest wishes, and shared celebration photos</p>
             
-            <div class="dash-top-actions">
-                <a href="index.html" class="dash-back-btn">🌐 View Website</a>
-                <button type="button" class="dash-back-btn" onclick="logout()" style="cursor: pointer;">🔒 Lock</button>
+            <div class="dash-header-actions">
+                <a href="index.html" class="dash-action-pill">🌐 Website</a>
+                <button type="button" class="dash-action-pill" onclick="toggleTheme()" id="dashThemeBtn">🌓 Light Mode</button>
+                <button type="button" class="dash-action-pill" onclick="loadRsvpData(true)">🔄 Refresh</button>
+                <button type="button" class="dash-action-pill" onclick="logout()">🔒 Lock</button>
             </div>
-        </div>
+        </header>
 
-        <!-- Real-time Stats Grid -->
-        <div class="dash-stats-grid">
-            <div class="dash-stat-card">
-                <div class="dash-stat-label">👥 Total Expected Guests</div>
-                <div class="dash-stat-number" id="statTotalGuests">0</div>
-                <small style="color: var(--text-muted); font-size: 0.75rem;">Including party sizes</small>
+        <!-- 2x2 Mobile Stat Grid (Expands to 4-col on desktop) -->
+        <section class="dash-stats-grid" aria-label="Wedding Statistics">
+            <div class="dash-stat-tile">
+                <div class="dash-stat-icon">👥</div>
+                <div class="dash-stat-val" id="statTotalGuests">0</div>
+                <div class="dash-stat-label">Expected Guests</div>
+                <div class="dash-stat-note">Including party sizes</div>
             </div>
-            <div class="dash-stat-card">
-                <div class="dash-stat-label">✅ Attending (Yes)</div>
-                <div class="dash-stat-number" id="statAttending">0</div>
-                <small style="color: #6be285; font-size: 0.75rem;">Confirmed celebrations</small>
-            </div>
-            <div class="dash-stat-card">
-                <div class="dash-stat-label">❌ Regrets (No)</div>
-                <div class="dash-stat-number" id="statDeclined">0</div>
-                <small style="color: #ff7575; font-size: 0.75rem;">Sent warm blessings</small>
-            </div>
-            <div class="dash-stat-card">
-                <div class="dash-stat-label">💌 Total Responses</div>
-                <div class="dash-stat-number" id="statResponses">0</div>
-                <small style="color: var(--gold-300); font-size: 0.75rem;">Online & Bot RSVPs</small>
-            </div>
-        </div>
 
-        <!-- Controls: Search, Filters & Export -->
-        <div class="dash-controls-bar">
-            <input type="text" id="searchInput" class="dash-search-input" placeholder="🔍 Search by guest name, relation, or message..." oninput="filterRsvps()">
-            <div class="dash-filter-pills">
-                <button type="button" class="filter-pill active" data-filter="all" onclick="setFilter('all', this)">All</button>
-                <button type="button" class="filter-pill" data-filter="yes" onclick="setFilter('yes', this)">Attending (Yes)</button>
-                <button type="button" class="filter-pill" data-filter="no" onclick="setFilter('no', this)">Declined (No)</button>
+            <div class="dash-stat-tile">
+                <div class="dash-stat-icon">✅</div>
+                <div class="dash-stat-val" id="statAttending" style="color: #6be285;">0</div>
+                <div class="dash-stat-label">Attending (Yes)</div>
+                <div class="dash-stat-note" style="color: #6be285;">Confirmed celebrations</div>
             </div>
-            <button type="button" class="dash-export-btn" onclick="exportCsv()">
-                📥 Export to Excel / CSV
+
+            <div class="dash-stat-tile">
+                <div class="dash-stat-icon">❌</div>
+                <div class="dash-stat-val" id="statDeclined" style="color: #ff7575;">0</div>
+                <div class="dash-stat-label">Declined (No)</div>
+                <div class="dash-stat-note" style="color: #ff7575;">Sent warm blessings</div>
+            </div>
+
+            <div class="dash-stat-tile">
+                <div class="dash-stat-icon">💌</div>
+                <div class="dash-stat-val" id="statResponses">0</div>
+                <div class="dash-stat-label">Total RSVPs</div>
+                <div class="dash-stat-note">Web & Bot submissions</div>
+            </div>
+        </section>
+
+        <!-- View Tabs Bar: RSVPs vs Shared Moments -->
+        <nav class="dash-tabs-bar" aria-label="Dashboard views">
+            <button type="button" class="dash-tab-btn active" id="tabBtnRsvps" onclick="switchTab('rsvps')">
+                💌 Guest RSVPs <span class="dash-tab-badge" id="badgeRsvpCount">0</span>
             </button>
+            <button type="button" class="dash-tab-btn" id="tabBtnMoments" onclick="switchTab('moments')">
+                📸 Shared Moments <span class="dash-tab-badge" id="badgeMomentsCount">0</span>
+            </button>
+        </nav>
+
+        <!-- SECTION 1: RSVPs VIEW -->
+        <div id="viewRsvps">
+            <!-- Controls Toolbar: Search, Filters, View Mode & Export -->
+            <div class="dash-controls-card">
+                <div class="dash-search-wrapper">
+                    <span class="dash-search-icon">🔍</span>
+                    <input type="text" id="searchInput" class="dash-search-input" placeholder="Search by name, relation, or message..." oninput="onSearchInput()">
+                    <button type="button" class="dash-search-clear" id="searchClearBtn" onclick="clearSearch()">✕</button>
+                </div>
+
+                <div class="dash-filters-row">
+                    <div class="dash-filter-chips">
+                        <button type="button" class="dash-chip-btn active" data-filter="all" onclick="setFilter('all', this)">All</button>
+                        <button type="button" class="dash-chip-btn" data-filter="yes" onclick="setFilter('yes', this)">✅ Attending</button>
+                        <button type="button" class="dash-chip-btn" data-filter="no" onclick="setFilter('no', this)">❌ Declined</button>
+                    </div>
+
+                    <div class="dash-view-toggle" id="viewToggleGroup">
+                        <button type="button" class="dash-view-btn active" id="btnModeCards" onclick="setViewMode('cards')">🗂️ Cards</button>
+                        <button type="button" class="dash-view-btn" id="btnModeTable" onclick="setViewMode('table')">📊 Table</button>
+                    </div>
+                </div>
+
+                <button type="button" class="dash-export-btn" onclick="exportCsv()">
+                    📥 Export Guest List (CSV / Excel)
+                </button>
+            </div>
+
+            <!-- Mobile-First Cards View (Default on phones) -->
+            <div class="dash-cards-list" id="rsvpCardsContainer">
+                <div class="empty-view-state">Loading RSVPs...</div>
+            </div>
+
+            <!-- Table View (Available via toggle and for widescreen) -->
+            <div class="dash-table-container" id="rsvpTableContainer">
+                <table class="dash-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Guest Name</th>
+                            <th>Status</th>
+                            <th>Party</th>
+                            <th>Relation</th>
+                            <th>Personal Wishes</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rsvpTableBody">
+                        <tr>
+                            <td colspan="7" class="empty-view-state">Loading RSVPs...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <!-- Guest List Table -->
-        <div class="dash-table-wrapper">
-            <table class="dash-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Guest Name</th>
-                        <th>Status</th>
-                        <th>Party Size</th>
-                        <th>Relation</th>
-                        <th>Personal Wishes & Blessings</th>
-                        <th>Submitted At</th>
-                    </tr>
-                </thead>
-                <tbody id="rsvpTableBody">
-                    <tr>
-                        <td colspan="7" class="empty-state">Loading RSVPs...</td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- SECTION 2: SHARED MOMENTS / PHOTOS VIEW -->
+        <div id="viewMoments" style="display: none;">
+            <div class="moments-grid" id="momentsGrid">
+                <div class="empty-view-state" style="grid-column: 1 / -1;">No celebration photos shared yet.</div>
+            </div>
         </div>
+
     </div>
 
     <script>
         const DEFAULT_PASSCODE = 'sara_tewodros_royal_2026';
         let allRsvps = [];
+        let allMoments = [];
         let currentFilter = 'all';
+        let currentTab = 'rsvps';
+        let currentViewMode = window.innerWidth >= 900 ? 'table' : 'cards';
+
+        // Initialize Theme from LocalStorage
+        function initTheme() {
+            const savedTheme = localStorage.getItem('wedding_theme');
+            const btn = document.getElementById('dashThemeBtn');
+            if (savedTheme === 'light') {
+                document.body.classList.add('theme-light');
+                if (btn) btn.textContent = '🌙 Dark Mode';
+            } else {
+                document.body.classList.remove('theme-light');
+                if (btn) btn.textContent = '🌓 Light Mode';
+            }
+        }
+
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('theme-light');
+            const btn = document.getElementById('dashThemeBtn');
+            if (isLight) {
+                localStorage.setItem('wedding_theme', 'light');
+                if (btn) btn.textContent = '🌙 Dark Mode';
+            } else {
+                localStorage.setItem('wedding_theme', 'dark');
+                if (btn) btn.textContent = '🌓 Light Mode';
+            }
+        }
 
         function checkSession() {
+            initTheme();
             const saved = sessionStorage.getItem('wedding_admin_auth');
             if (saved === DEFAULT_PASSCODE) {
                 unlockDashboard();
             }
+        }
+
+        function togglePasscodeVisibility() {
+            const input = document.getElementById('passcodeInput');
+            input.type = input.type === 'password' ? 'text' : 'password';
         }
 
         function handleAuth(e) {
@@ -430,23 +997,26 @@
             loadRsvpData();
         }
 
-        async function loadRsvpData() {
+        async function loadRsvpData(isManualRefresh = false) {
             try {
-                // Try fetching from server API first
                 const res = await fetch('/api/admin/rsvps?passcode=' + encodeURIComponent(DEFAULT_PASSCODE));
                 if (res.ok) {
                     const data = await res.json();
-                    if (data && Array.isArray(data.rsvps)) {
-                        allRsvps = data.rsvps;
+                    if (data) {
+                        allRsvps = Array.isArray(data.rsvps) ? data.rsvps : [];
+                        allMoments = Array.isArray(data.moments) ? data.moments : [];
                         renderDashboard();
+                        if (isManualRefresh) {
+                            showToast('✅ Data refreshed successfully');
+                        }
                         return;
                     }
                 }
             } catch (err) {
-                console.log('API not reachable directly, checking local store / fallback');
+                console.log('Server fetch fallback');
             }
 
-            // Fallback: check localStorage for submissions on static deployment
+            // Fallback for static demo environments
             const local = localStorage.getItem('wedding_local_rsvps');
             if (local) {
                 try {
@@ -463,7 +1033,8 @@
             let declined = 0;
 
             allRsvps.forEach(r => {
-                if (r.isAttending || r.attending === 'Yes') {
+                const isYes = (r.isAttending || r.attending === 'Yes');
+                if (isYes) {
                     attending++;
                     totalGuests += parseInt(r.guestCount || '1', 10);
                 } else {
@@ -476,19 +1047,78 @@
             document.getElementById('statDeclined').textContent = declined;
             document.getElementById('statResponses').textContent = allRsvps.length;
 
+            document.getElementById('badgeRsvpCount').textContent = allRsvps.length;
+            document.getElementById('badgeMomentsCount').textContent = allMoments.length;
+
             filterRsvps();
+            renderMoments();
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const btnRsvps = document.getElementById('tabBtnRsvps');
+            const btnMoments = document.getElementById('tabBtnMoments');
+            const viewRsvps = document.getElementById('viewRsvps');
+            const viewMoments = document.getElementById('viewMoments');
+
+            if (tab === 'rsvps') {
+                btnRsvps.classList.add('active');
+                btnMoments.classList.remove('active');
+                viewRsvps.style.display = 'block';
+                viewMoments.style.display = 'none';
+            } else {
+                btnMoments.classList.add('active');
+                btnRsvps.classList.remove('active');
+                viewMoments.style.display = 'block';
+                viewRsvps.style.display = 'none';
+            }
+        }
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            const btnCards = document.getElementById('btnModeCards');
+            const btnTable = document.getElementById('btnModeTable');
+            const cardsContainer = document.getElementById('rsvpCardsContainer');
+            const tableContainer = document.getElementById('rsvpTableContainer');
+
+            if (mode === 'cards') {
+                btnCards.classList.add('active');
+                btnTable.classList.remove('active');
+                cardsContainer.style.display = 'flex';
+                tableContainer.style.display = 'none';
+            } else {
+                btnTable.classList.add('active');
+                btnCards.classList.remove('active');
+                cardsContainer.style.display = 'none';
+                tableContainer.style.display = 'block';
+            }
         }
 
         function setFilter(filter, btn) {
             currentFilter = filter;
-            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.dash-chip-btn').forEach(p => p.classList.remove('active'));
             btn.classList.add('active');
+            filterRsvps();
+        }
+
+        function onSearchInput() {
+            const input = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('searchClearBtn');
+            clearBtn.style.display = input.value.trim() ? 'block' : 'none';
+            filterRsvps();
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('searchInput');
+            input.value = '';
+            document.getElementById('searchClearBtn').style.display = 'none';
             filterRsvps();
         }
 
         function filterRsvps() {
             const search = document.getElementById('searchInput').value.toLowerCase().trim();
-            const tbody = document.getElementById('rsvpTableBody');
+            const cardsContainer = document.getElementById('rsvpCardsContainer');
+            const tableBody = document.getElementById('rsvpTableBody');
 
             const filtered = allRsvps.filter(r => {
                 const isAttending = (r.isAttending || r.attending === 'Yes');
@@ -505,34 +1135,138 @@
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="empty-state">No matching RSVPs found.</td></tr>`;
+                cardsContainer.innerHTML = `<div class="empty-view-state">No matching RSVPs found.</div>`;
+                tableBody.innerHTML = `<tr><td colspan="7" class="empty-view-state">No matching RSVPs found.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = filtered.map((r, i) => {
+            // 1. Render Mobile-First Cards
+            cardsContainer.innerHTML = filtered.map((r, i) => {
+                const isYes = (r.isAttending || r.attending === 'Yes');
+                const statusClass = isYes ? 'yes' : 'no';
+                const statusText = isYes ? `✅ Attending (${r.guestCount || 1})` : `❌ Declined`;
+                const dateStr = r.timestamp ? new Date(r.timestamp).toLocaleDateString() + ' • ' + new Date(r.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '—';
+                const safeName = escapeHtml(r.guestName || 'Valued Guest');
+                const safeRel = escapeHtml(r.relation || 'Friend');
+                const safeSource = escapeHtml(r.source || 'Website');
+
+                return `
+                <div class="dash-guest-card">
+                    <div class="guest-card-top">
+                        <div class="guest-card-name">${safeName}</div>
+                        <span class="guest-card-status ${statusClass}">${statusText}</span>
+                    </div>
+
+                    <div class="guest-card-meta">
+                        <span class="guest-meta-pill">🏷️ ${safeRel}</span>
+                        <span class="guest-meta-pill">👥 Party: ${isYes ? (r.guestCount || '1') : '0'}</span>
+                        <span class="guest-meta-pill">📱 ${safeSource}</span>
+                    </div>
+
+                    ${r.message ? `
+                        <div class="guest-wishes-quote">
+                            "${escapeHtml(r.message)}"
+                        </div>
+                    ` : ''}
+
+                    <div class="guest-card-footer">
+                        <span>🕒 ${dateStr}</span>
+                        ${r.message ? `
+                            <button type="button" class="guest-copy-btn" onclick="copyText('${escapeJs(r.message)}')">📋 Copy Wish</button>
+                        ` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+
+            // 2. Render Table Rows (for table mode)
+            tableBody.innerHTML = filtered.map((r, i) => {
                 const isYes = (r.isAttending || r.attending === 'Yes');
                 const badge = isYes 
-                    ? `<span class="status-badge status-yes">✅ Attending</span>` 
-                    : `<span class="status-badge status-no">❌ Declined</span>`;
-                const dateStr = r.timestamp ? new Date(r.timestamp).toLocaleDateString() + ' ' + new Date(r.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '—';
-                const messageHtml = r.message ? `<div class="dash-wishes-quote">"${escapeHtml(r.message)}"</div>` : '<span style="color:#666;">—</span>';
+                    ? `<span class="guest-card-status yes">✅ Attending</span>` 
+                    : `<span class="guest-card-status no">❌ Declined</span>`;
+                const dateStr = r.timestamp ? new Date(r.timestamp).toLocaleDateString() : '—';
+                const messageHtml = r.message ? `<div class="guest-wishes-quote" style="max-width: 260px; margin: 0;">"${escapeHtml(r.message)}"</div>` : '<span style="color:#666;">—</span>';
 
                 return `<tr>
                     <td>${i + 1}</td>
-                    <td><strong style="color: var(--gold-200); font-size: 1rem;">${escapeHtml(r.guestName || 'Anonymous')}</strong></td>
+                    <td><strong>${escapeHtml(r.guestName || 'Anonymous')}</strong></td>
                     <td>${badge}</td>
                     <td><strong>${isYes ? (r.guestCount || '1') : '0'}</strong></td>
                     <td>${escapeHtml(r.relation || 'Friend')}</td>
                     <td>${messageHtml}</td>
-                    <td style="color: var(--text-muted); font-size: 0.8rem; white-space: nowrap;">${dateStr}</td>
+                    <td style="color: var(--dash-text-muted); font-size: 0.75rem; white-space: nowrap;">${dateStr}</td>
                 </tr>`;
             }).join('');
+
+            // Apply active view mode
+            setViewMode(currentViewMode);
+        }
+
+        function renderMoments() {
+            const grid = document.getElementById('momentsGrid');
+            if (!grid) return;
+
+            if (allMoments.length === 0) {
+                grid.innerHTML = `
+                <div class="empty-view-state" style="grid-column: 1 / -1;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📸</div>
+                    <strong>No guest photos uploaded yet.</strong>
+                    <p style="font-size: 0.78rem; margin-top: 0.3rem;">Photos shared by guests via the Telegram Bot will appear here automatically.</p>
+                </div>`;
+                return;
+            }
+
+            grid.innerHTML = allMoments.map(m => {
+                const author = escapeHtml(m.sender_name || 'Guest');
+                const caption = escapeHtml(m.caption || '');
+                const dateStr = m.timestamp ? new Date(m.timestamp).toLocaleDateString() : '';
+                return `
+                <div class="moment-card">
+                    <div class="moment-img-wrap" onclick="window.open('${m.file_path}', '_blank')">
+                        <img src="${m.file_path}" alt="Shared Moment by ${author}" loading="lazy">
+                    </div>
+                    <div class="moment-info">
+                        <div class="moment-author">${author}</div>
+                        ${caption ? `<div class="moment-caption">"${caption}"</div>` : ''}
+                        <div style="font-size: 0.65rem; color: var(--dash-text-muted);">${dateStr}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('📋 Copied to clipboard');
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.textContent = msg;
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.background = 'rgba(14, 16, 24, 0.95)';
+            toast.style.color = '#fceda9';
+            toast.style.border = '1px solid rgba(212, 175, 55, 0.4)';
+            toast.style.padding = '8px 18px';
+            toast.style.borderRadius = '30px';
+            toast.style.fontSize = '0.82rem';
+            toast.style.zIndex = '999999';
+            toast.style.boxShadow = '0 6px 20px rgba(0,0,0,0.6)';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
         }
 
         function escapeHtml(str) {
             return String(str || '').replace(/[&<>"']/g, m => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
             })[m]);
+        }
+
+        function escapeJs(str) {
+            return String(str || '').replace(/['"\\]/g, '\\$&').replace(/\n/g, ' ');
         }
 
         function exportCsv() {
@@ -563,6 +1297,7 @@
             document.body.removeChild(link);
         }
 
+        // Initialize session on load
         checkSession();
     </script>
 </body>
