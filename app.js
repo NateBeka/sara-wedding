@@ -1171,10 +1171,12 @@ async function syncBotInfo() {
             const username = data.bot_username.replace('@', '');
             const botUrl = `https://t.me/${username}`;
             const tgLink = document.getElementById('telegramLink');
+            const qrLink = document.getElementById('qrLink');
             const qrImg = document.getElementById('qrImage');
             const botHandleLabel = document.getElementById('botHandleLabel');
 
             if (tgLink) tgLink.href = botUrl;
+            if (qrLink) qrLink.href = botUrl;
             if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(botUrl)}`;
             if (botHandleLabel) botHandleLabel.textContent = `@${username}`;
         }
