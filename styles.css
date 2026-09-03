@@ -2218,6 +2218,14 @@ body.theme-light #timelineSection .step-content {
   margin-top: 1rem;
 }
 
+/* Lock scroll when fullscreen lightbox or modal is active */
+html.modal-scroll-locked,
+body.modal-scroll-locked {
+  overflow: hidden !important;
+  height: 100% !important;
+  overscroll-behavior: none !important;
+}
+
 /* Lightbox Modal */
 .lightbox-modal {
   position: fixed;
@@ -2225,6 +2233,7 @@ body.theme-light #timelineSection .step-content {
   z-index: 9000;
   background: rgba(5, 6, 9, 0.95);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2232,6 +2241,8 @@ body.theme-light #timelineSection .step-content {
   pointer-events: none;
   transition: opacity 0.35s ease;
   padding: 1.5rem;
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .lightbox-modal.open {

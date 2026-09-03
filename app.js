@@ -936,6 +936,31 @@ if (featuredBox) {
 if (prevSlideBtn) prevSlideBtn.addEventListener('click', () => { prevPhoto(); resetAutoSlide(); });
 if (nextSlideBtn) nextSlideBtn.addEventListener('click', () => { nextPhoto(); resetAutoSlide(); });
 
+// Bulletproof Background Scroll Lock for Fullscreen Lightbox & Modals
+let savedScrollY = 0;
+
+function lockBodyScroll() {
+    savedScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+    document.documentElement.classList.add('modal-scroll-locked');
+    document.body.classList.add('modal-scroll-locked');
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${savedScrollY}px`;
+    document.body.style.width = '100%';
+}
+
+function unlockBodyScroll() {
+    document.documentElement.classList.remove('modal-scroll-locked');
+    document.body.classList.remove('modal-scroll-locked');
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, savedScrollY);
+}
+
 // Gallery Lightbox Open & Close
 function openLightbox() {
     if (!lightboxModal || !lightboxImage) return;
@@ -943,14 +968,14 @@ function openLightbox() {
     lightboxImage.src = PHOTO_ARRAY[currentPhotoIndex];
     lightboxModal.classList.add('open');
     lightboxModal.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
+    lockBodyScroll();
 }
 
 function closeLightbox() {
     if (!lightboxModal) return;
     lightboxModal.classList.remove('open');
     lightboxModal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+    unlockBodyScroll();
     startAutoSlide();
 }
 
@@ -966,7 +991,56 @@ if (lightboxModal) {
             closeLightbox();
         }
     });
+
+    // Completely stop mouse wheel and touch scroll from bleeding into background
+    lightboxModal.addEventListener('wheel', (e) => {
+        e.preventDefault();
+    }, { passive: false });
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    lightboxModal.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+    }, { passive: true });
+
+    lightboxModal.addEventListener('touchmove', (e) => {
+        e.preventDefault(); // Stop any background bounce/scroll
+    }, { passive: false });
+
+    lightboxModal.addEventListener('touchend', (e) => {
+        if (e.changedTouches.length === 1) {
+            const diffX = e.changedTouches[0].clientX - touchStartX;
+            const diffY = e.changedTouches[0].clientY - touchStartY;
+            // Horizontal swipe to change photos
+            if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX < 0) {
+                    nextPhoto();
+                } else {
+                    prevPhoto();
+                }
+            }
+        }
+    }, { passive: true });
 }
+
+// Stop keyboard scrolling when lightbox is open
+window.addEventListener('keydown', (e) => {
+    if (!lightboxModal || !lightboxModal.classList.contains('open')) return;
+    if (['Space', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.code)) {
+        e.preventDefault();
+    }
+    if (e.key === 'ArrowLeft') {
+        prevPhoto();
+    } else if (e.key === 'ArrowRight') {
+        nextPhoto();
+    } else if (e.key === 'Escape') {
+        closeLightbox();
+    }
+});
 
 // DEDICATED INVITATION CARD MODAL (Completely decoupled from gallery)
 function openCardModal() {
