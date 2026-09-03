@@ -395,13 +395,13 @@ function getVenuesMessage(userLang = 'en') {
 ✦ ══════════════════════════ ✦
 
 <b>🏠 1. የሙሽሪት መኖሪያ ቤት (Morning & Luncheon)</b>
-• <b>ቦታ:</b> ቡላላ ቅርንጫፍ ት/ቤት አጠገብ፣ ቡላላ
-• <b>ሰዓት:</b> ከጠዋቱ 12:00 PM - 03:00 PM
+• <b>ቦታ:</b> ዲላ ቅርንጫፍ ት/ቤት አጠገብ፣ ዲላ
+• <b>ሰዓት:</b> ከቀኑ 6:00 - 9:00 (12:00 PM - 03:00 PM)
 • <b>አድራሻ:</b> Dila, Ethiopia
 
 <b>🏨 2. ሴንትራል ሆቴል ሀዋሳ (Evening Gala Reception)</b>
 • <b>ቦታ:</b> ሴንትራል ሆቴል አዳራሽ፣ ሀዋሳ
-• <b>ሰዓት:</b> ከምሽቱ 06:00 PM - 09:00 PM
+• <b>ሰዓት:</b> ከምሽቱ 12:00 - 3:00 (06:00 PM - 09:00 PM)
 • <b>አድራሻ:</b> Central Hotel, Hawassa, Ethiopia
 
 <i>ካርታ ለመክፈት ከታች ያሉትን የመገኛ አዝራሮች ይጠቀሙ!</i>`
@@ -414,12 +414,12 @@ function getVenuesMessage(userLang = 'en') {
 
 <b>🏠 1. Bride's Residence (Morning Luncheon)</b>
 • <b>Location:</b> Near Dila Branch School, Dila
-• <b>Time:</b> 12:00 PM - 03:00 PM
+• <b>Time:</b> 6:00 - 9:00 Eth. Time (12:00 PM - 03:00 PM)
 • <b>Details:</b> Family blessings & wedding luncheon
 
 <b>🏨 2. Central Hotel Hawassa (Evening Gala)</b>
 • <b>Location:</b> Central Hotel Banquet Hall, Hawassa
-• <b>Time:</b> 06:00 PM - 09:00 PM
+• <b>Time:</b> 12:00 - 3:00 Eth. Time (06:00 PM - 09:00 PM)
 • <b>Details:</b> Dinner reception, cake ceremony & dance
 
 <i>Use the buttons below to open instant driving directions!</i>`

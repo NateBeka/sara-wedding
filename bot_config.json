@@ -26,8 +26,8 @@
     "city": "Hawassa, Ethiopia",
     "venues": [
       {
-        "name": "Bride's Residence (የሙሽሪት መኖሪያ ቤት)",
-        "time": "12:00 PM - 03:00 PM",
+        "name": "Bride's Residence (የሙሽሪት መኖሪያ ቤት - Dila)",
+        "time": "6:00 - 9:00",
         "description": "Parental blessings & wedding luncheon at Dila",
         "google_maps": "https://maps.app.goo.gl/6jrLC4tTxsNgbRdn9",
         "lat": 7.0504,
@@ -35,7 +35,7 @@
       },
       {
         "name": "Central Hotel Hawassa (ሴንትራል ሆቴል ሀዋሳ)",
-        "time": "06:00 PM - 09:00 PM",
+        "time": "12:00 - 3:00",
         "description": "Gala dinner reception, cake cutting & dancing celebration",
         "google_maps": "https://maps.google.com/maps?q=Central+Hotel+Hawassa",
         "lat": 7.0526,
