@@ -1043,7 +1043,13 @@ if (rsvpForm) {
         formFeedback.innerHTML = `<span style="color:var(--gold-300);">⏳ Delivering...</span>`;
 
         try {
-            // Post RSVP securely to the local backend
+            const stored = JSON.parse(localStorage.getItem('wedding_local_rsvps') || '[]');
+            stored.unshift({ ...data, timestamp: new Date().toISOString() });
+            localStorage.setItem('wedding_local_rsvps', JSON.stringify(stored));
+        } catch (e) { }
+
+        try {
+            // Post RSVP securely to the backend
             const res = await fetch('/api/rsvp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

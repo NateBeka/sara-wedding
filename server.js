@@ -59,6 +59,28 @@ const server = http.createServer((req, res) => {
   }
 
   // --------------------------------------------------------------------------
+  // API ROUTE: GET /api/admin/rsvps (SECURE ADMIN ACCESS)
+  // --------------------------------------------------------------------------
+  if (pathname === '/api/admin/rsvps' && req.method === 'GET') {
+    const config = loadConfig();
+    const providedPasscode = parsedUrl.searchParams.get('passcode') || req.headers['x-admin-passcode'];
+    const expectedPasscode = (config && config.admin_passcode) || 'sara_tewodros_royal_2026';
+
+    if (providedPasscode !== expectedPasscode) {
+      sendJsonResponse(res, 401, { success: false, error: 'Unauthorized: invalid passcode' });
+      return;
+    }
+
+    const dataStore = loadData();
+    sendJsonResponse(res, 200, {
+      success: true,
+      rsvps: dataStore.rsvps || [],
+      moments: dataStore.moments || []
+    });
+    return;
+  }
+
+  // --------------------------------------------------------------------------
   // API ROUTE: POST /api/rsvp (SECURE SERVER-SIDE DISPATCH)
   // --------------------------------------------------------------------------
   if (pathname === '/api/rsvp' && req.method === 'POST') {
@@ -133,6 +155,8 @@ ${partyLine}💑 <b>Relation:</b> ${rsvpEntry.relation}
   let reqPath = decodeURIComponent(pathname);
   if (reqPath === '/' || reqPath === '') {
     reqPath = '/index.html';
+  } else if (reqPath === '/dashboard' || reqPath === '/admin') {
+    reqPath = '/dashboard.html';
   }
 
   // Prevent directory traversal

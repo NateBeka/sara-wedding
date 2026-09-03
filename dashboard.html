@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Sara & Eng. Tewodros — Wedding Admin Dashboard</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .dashboard-body {
+            background-color: #06070a;
+            color: #f7eed7;
+            min-height: 100vh;
+            padding: 2rem 1.2rem 4rem;
+        }
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.8rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+            position: relative;
+        }
+        .dash-crown {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .dash-title {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.4rem;
+        }
+        .dash-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+        .dash-top-actions {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            gap: 10px;
+        }
+        @media (max-width: 768px) {
+            .dash-top-actions {
+                position: static;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+        }
+        .dash-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--gold-border);
+            border-radius: var(--radius-full);
+            color: var(--gold-200);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+        }
+        .dash-back-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            color: #fff;
+        }
+        /* Passcode Modal */
+        .auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 7, 10, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .auth-overlay.hidden { display: none; }
+        .auth-box {
+            background: rgba(14, 16, 24, 0.95);
+            border: 1.5px solid var(--gold-border-bright);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px rgba(212, 175, 55, 0.25);
+        }
+        .auth-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(8, 10, 15, 0.9);
+            border: 1.5px solid var(--gold-border);
+            border-radius: var(--radius-md);
+            color: #f7eed7;
+            font-size: 1.1rem;
+            text-align: center;
+            letter-spacing: 2px;
+            margin: 1.5rem 0 1rem;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+        .auth-input:focus {
+            border-color: var(--gold-400);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.35);
+        }
+        .auth-error {
+            color: #ff7575;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            min-height: 20px;
+        }
+        /* Stat Cards */
+        .dash-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.4rem;
+            margin-bottom: 2.5rem;
+        }
+        .dash-stat-card {
+            background: rgba(14, 16, 24, 0.85);
+            border: 1px solid var(--gold-border);
+            border-radius: var(--radius-md);
+            padding: 1.6rem 1.4rem;
+            text-align: center;
+            box-shadow: var(--shadow-subtle);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+        }
+        .dash-stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gold-gradient);
+        }
+        .dash-stat-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--gold-400);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+        .dash-stat-number {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0.4rem 0 0.3rem;
+        }
+        .dash-stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        /* Table Controls */
+        .dash-controls-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 1.2rem;
+            background: rgba(14, 16, 24, 0.7);
+            border: 1px solid var(--gold-border);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.2rem;
+        }
+        .dash-search-input {
+            flex: 1;
+            min-width: 240px;
+            background: rgba(8, 10, 15, 0.9);
+            border: 1px solid var(--gold-border);
+            border-radius: var(--radius-full);
+            color: #f7eed7;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .dash-search-input:focus {
+            border-color: var(--gold-400);
+        }
+        .dash-filter-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .filter-pill {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            color: var(--gold-200);
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+        .filter-pill.active,
+        .filter-pill:hover {
+            background: var(--gold-gradient);
+            color: #0b0c10;
+            border-color: #fff;
+        }
+        .dash-export-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.35);
+        }
+        .dash-export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.55);
+        }
+        /* Table */
+        .dash-table-wrapper {
+            background: rgba(14, 16, 24, 0.85);
+            border: 1px solid var(--gold-border);
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            box-shadow: var(--shadow-subtle);
+        }
+        .dash-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        .dash-table th {
+            background: rgba(8, 10, 15, 0.95);
+            color: var(--gold-300);
+            font-weight: 700;
+            padding: 14px 16px;
+            border-bottom: 1.5px solid var(--gold-border);
+            text-transform: uppercase;
+            font-size: 0.78rem;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .dash-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            color: #f7eed7;
+            vertical-align: middle;
+        }
+        .dash-table tr:hover td {
+            background: rgba(212, 175, 55, 0.05);
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-yes {
+            background: rgba(40, 167, 69, 0.2);
+            color: #6be285;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+        }
+        .status-no {
+            background: rgba(220, 53, 69, 0.2);
+            color: #ff7575;
+            border: 1px solid rgba(220, 53, 69, 0.4);
+        }
+        .dash-wishes-quote {
+            font-style: italic;
+            color: var(--gold-100);
+            max-width: 320px;
+            line-height: 1.4;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+
+    <!-- Passcode Authentication Modal -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-box">
+            <div class="dash-crown">👑</div>
+            <h2 style="font-family: var(--font-display); color: var(--gold-300); margin-bottom: 0.4rem;">VIP Admin Portal</h2>
+            <p style="font-size: 0.88rem; color: var(--text-muted);">Private Access for Dr. Sara Ayele & Eng. Tewodros Belay</p>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <input type="password" id="passcodeInput" class="auth-input" placeholder="Enter Royal Passcode" autofocus autocomplete="current-password">
+                <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Unlock Dashboard ✨</button>
+                <div class="auth-error" id="authError"></div>
+            </form>
+            <p style="font-size: 0.75rem; color: #666; margin-top: 1rem;">Hint: default wedding passcode configured in bot_config.json</p>
+        </div>
+    </div>
+
+    <!-- Dashboard Main View -->
+    <div class="dashboard-container" id="dashContainer" style="display: none;">
+        <div class="dashboard-header">
+            <div class="dash-crown">👑</div>
+            <h1 class="dash-title">Dr. Sara & Eng. Tewodros</h1>
+            <p class="dash-subtitle">Wedding Guest List, RSVP Responses & Wishes Dashboard</p>
+            
+            <div class="dash-top-actions">
+                <a href="index.html" class="dash-back-btn">🌐 View Website</a>
+                <button type="button" class="dash-back-btn" onclick="logout()" style="cursor: pointer;">🔒 Lock</button>
+            </div>
+        </div>
+
+        <!-- Real-time Stats Grid -->
+        <div class="dash-stats-grid">
+            <div class="dash-stat-card">
+                <div class="dash-stat-label">👥 Total Expected Guests</div>
+                <div class="dash-stat-number" id="statTotalGuests">0</div>
+                <small style="color: var(--text-muted); font-size: 0.75rem;">Including party sizes</small>
+            </div>
+            <div class="dash-stat-card">
+                <div class="dash-stat-label">✅ Attending (Yes)</div>
+                <div class="dash-stat-number" id="statAttending">0</div>
+                <small style="color: #6be285; font-size: 0.75rem;">Confirmed celebrations</small>
+            </div>
+            <div class="dash-stat-card">
+                <div class="dash-stat-label">❌ Regrets (No)</div>
+                <div class="dash-stat-number" id="statDeclined">0</div>
+                <small style="color: #ff7575; font-size: 0.75rem;">Sent warm blessings</small>
+            </div>
+            <div class="dash-stat-card">
+                <div class="dash-stat-label">💌 Total Responses</div>
+                <div class="dash-stat-number" id="statResponses">0</div>
+                <small style="color: var(--gold-300); font-size: 0.75rem;">Online & Bot RSVPs</small>
+            </div>
+        </div>
+
+        <!-- Controls: Search, Filters & Export -->
+        <div class="dash-controls-bar">
+            <input type="text" id="searchInput" class="dash-search-input" placeholder="🔍 Search by guest name, relation, or message..." oninput="filterRsvps()">
+            <div class="dash-filter-pills">
+                <button type="button" class="filter-pill active" data-filter="all" onclick="setFilter('all', this)">All</button>
+                <button type="button" class="filter-pill" data-filter="yes" onclick="setFilter('yes', this)">Attending (Yes)</button>
+                <button type="button" class="filter-pill" data-filter="no" onclick="setFilter('no', this)">Declined (No)</button>
+            </div>
+            <button type="button" class="dash-export-btn" onclick="exportCsv()">
+                📥 Export to Excel / CSV
+            </button>
+        </div>
+
+        <!-- Guest List Table -->
+        <div class="dash-table-wrapper">
+            <table class="dash-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Guest Name</th>
+                        <th>Status</th>
+                        <th>Party Size</th>
+                        <th>Relation</th>
+                        <th>Personal Wishes & Blessings</th>
+                        <th>Submitted At</th>
+                    </tr>
+                </thead>
+                <tbody id="rsvpTableBody">
+                    <tr>
+                        <td colspan="7" class="empty-state">Loading RSVPs...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_PASSCODE = 'sara_tewodros_royal_2026';
+        let allRsvps = [];
+        let currentFilter = 'all';
+
+        function checkSession() {
+            const saved = sessionStorage.getItem('wedding_admin_auth');
+            if (saved === DEFAULT_PASSCODE) {
+                unlockDashboard();
+            }
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const input = document.getElementById('passcodeInput').value.trim();
+            if (input === DEFAULT_PASSCODE) {
+                sessionStorage.setItem('wedding_admin_auth', input);
+                unlockDashboard();
+            } else {
+                document.getElementById('authError').textContent = '⚠️ Invalid passcode. Please try again.';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('wedding_admin_auth');
+            location.reload();
+        }
+
+        function unlockDashboard() {
+            document.getElementById('authOverlay').classList.add('hidden');
+            document.getElementById('dashContainer').style.display = 'block';
+            loadRsvpData();
+        }
+
+        async function loadRsvpData() {
+            try {
+                // Try fetching from server API first
+                const res = await fetch('/api/admin/rsvps?passcode=' + encodeURIComponent(DEFAULT_PASSCODE));
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && Array.isArray(data.rsvps)) {
+                        allRsvps = data.rsvps;
+                        renderDashboard();
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.log('API not reachable directly, checking local store / fallback');
+            }
+
+            // Fallback: check localStorage for submissions on static deployment
+            const local = localStorage.getItem('wedding_local_rsvps');
+            if (local) {
+                try {
+                    allRsvps = JSON.parse(local);
+                } catch(e) {}
+            }
+            renderDashboard();
+        }
+
+        function renderDashboard() {
+            // Stats
+            let totalGuests = 0;
+            let attending = 0;
+            let declined = 0;
+
+            allRsvps.forEach(r => {
+                if (r.isAttending || r.attending === 'Yes') {
+                    attending++;
+                    totalGuests += parseInt(r.guestCount || '1', 10);
+                } else {
+                    declined++;
+                }
+            });
+
+            document.getElementById('statTotalGuests').textContent = totalGuests;
+            document.getElementById('statAttending').textContent = attending;
+            document.getElementById('statDeclined').textContent = declined;
+            document.getElementById('statResponses').textContent = allRsvps.length;
+
+            filterRsvps();
+        }
+
+        function setFilter(filter, btn) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            filterRsvps();
+        }
+
+        function filterRsvps() {
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const tbody = document.getElementById('rsvpTableBody');
+
+            const filtered = allRsvps.filter(r => {
+                const isAttending = (r.isAttending || r.attending === 'Yes');
+                if (currentFilter === 'yes' && !isAttending) return false;
+                if (currentFilter === 'no' && isAttending) return false;
+
+                if (search) {
+                    const matchName = (r.guestName || '').toLowerCase().includes(search);
+                    const matchRel = (r.relation || '').toLowerCase().includes(search);
+                    const matchMsg = (r.message || '').toLowerCase().includes(search);
+                    return matchName || matchRel || matchMsg;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-state">No matching RSVPs found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((r, i) => {
+                const isYes = (r.isAttending || r.attending === 'Yes');
+                const badge = isYes 
+                    ? `<span class="status-badge status-yes">✅ Attending</span>` 
+                    : `<span class="status-badge status-no">❌ Declined</span>`;
+                const dateStr = r.timestamp ? new Date(r.timestamp).toLocaleDateString() + ' ' + new Date(r.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '—';
+                const messageHtml = r.message ? `<div class="dash-wishes-quote">"${escapeHtml(r.message)}"</div>` : '<span style="color:#666;">—</span>';
+
+                return `<tr>
+                    <td>${i + 1}</td>
+                    <td><strong style="color: var(--gold-200); font-size: 1rem;">${escapeHtml(r.guestName || 'Anonymous')}</strong></td>
+                    <td>${badge}</td>
+                    <td><strong>${isYes ? (r.guestCount || '1') : '0'}</strong></td>
+                    <td>${escapeHtml(r.relation || 'Friend')}</td>
+                    <td>${messageHtml}</td>
+                    <td style="color: var(--text-muted); font-size: 0.8rem; white-space: nowrap;">${dateStr}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[m]);
+        }
+
+        function exportCsv() {
+            if (allRsvps.length === 0) {
+                alert('No RSVPs to export yet.');
+                return;
+            }
+
+            const headers = ['#', 'Guest Name', 'Attending', 'Party Size', 'Relation', 'Wishes', 'Source', 'Timestamp'];
+            const rows = allRsvps.map((r, i) => [
+                i + 1,
+                `"${(r.guestName || '').replace(/"/g, '""')}"`,
+                r.isAttending || r.attending === 'Yes' ? 'Yes' : 'No',
+                r.isAttending || r.attending === 'Yes' ? (r.guestCount || '1') : '0',
+                `"${(r.relation || '').replace(/"/g, '""')}"`,
+                `"${(r.message || '').replace(/"/g, '""')}"`,
+                r.source || 'Website',
+                r.timestamp || ''
+            ]);
+
+            const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', `Dr_Sara_and_Eng_Tewodros_Guest_List_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        checkSession();
+    </script>
+</body>
+</html>
