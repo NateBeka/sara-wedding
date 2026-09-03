@@ -62,8 +62,7 @@ const translations = {
         unit_hrs: "Hours",
         unit_min: "Mins",
         unit_sec: "Secs",
-        btn_add_ics: "📅 Add to Calendar (.ics)",
-        btn_google_cal: "Google Calendar",
+        btn_add_calendar: "📅 Add to Google Calendar",
         calendar_header: "September 2026",
         cal_badge_day: "Sept 20",
         day_sun: "Sun", day_mon: "Mon", day_tue: "Tue", day_wed: "Wed", day_thu: "Thu", day_fri: "Fri", day_sat: "Sat",
@@ -155,8 +154,7 @@ const translations = {
         unit_hrs: "ሰዓታት",
         unit_min: "ደቂቃዎች",
         unit_sec: "ሰከንዶች",
-        btn_add_ics: "📅 ወደ ካላንደር አስገባ",
-        btn_google_cal: "ጎግል ካላንደር",
+        btn_add_calendar: "📅 ወደ Google Calendar ያክሉ",
         calendar_header: "መስከረም 2018 ዓ.ም",
         cal_badge_day: "መስከረም 10",
         day_sun: "እሑድ", day_mon: "ሰኞ", day_tue: "ማክሰ", day_wed: "ረቡዕ", day_thu: "ሐሙስ", day_fri: "ዓርብ", day_sat: "ቅዳሜ",
@@ -248,8 +246,7 @@ const translations = {
         unit_hrs: "Sa'aatii",
         unit_min: "Daqiiqaa",
         unit_sec: "Sekondii",
-        btn_add_ics: "📅 Kaalaandariitti Dabali",
-        btn_google_cal: "Google Kaalaandarii",
+        btn_add_calendar: "📅 Google Calendar irratti Dabali",
         calendar_header: "Fulbaana 2018",
         cal_badge_day: "Fulbaana 10",
         day_sun: "Dil", day_mon: "Wix", day_tue: "Kib", day_wed: "Rob", day_thu: "Kam", day_fri: "Jim", day_sat: "San",
@@ -757,36 +754,6 @@ function renderCalendarForCurrentLanguage() {
 
 // Initial calendar render immediately
 renderCalendarForCurrentLanguage();
-
-// Add to Calendar .ics file generator
-const downloadIcsBtn = document.getElementById('downloadIcsBtn');
-if (downloadIcsBtn) {
-    downloadIcsBtn.addEventListener('click', () => {
-        const icsContent = 
-`BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Dr Sara and Eng Tewodros//Wedding Invitation//EN
-CALSCALE:GREGORIAN
-METHOD:PUBLISH
-BEGIN:VEVENT
-SUMMARY:Wedding of Dr. Sara Ayele & Eng. Tewodros Belay
-DESCRIPTION:Joyous celebration of the wedding of Dr. Sara Ayele and Eng. Tewodros Belay. Ceremony and dinner reception in Hawassa, Ethiopia.
-LOCATION:Central Hotel, Hawassa, Ethiopia
-DTSTART:20260920T070000Z
-DTEND:20260920T180000Z
-STATUS:CONFIRMED
-END:VEVENT
-END:VCALENDAR`;
-
-        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.setAttribute('download', 'Dr_Sara_and_Eng_Tewodros_Wedding.ics');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    });
-}
 
 // --------------------------------------------------------------------------
 // 6. PHOTO GALLERY & LIGHTBOX MODAL (29 PHOTOS)

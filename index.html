@@ -1,488 +1,530 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Dr. Sara & Eng. Tewodros - Royal Wedding Celebration</title>
-    <meta name="description" content="Wedding celebration of Dr. Sara Ayele & Eng. Tewodros Belay on September 20, 2026 (መስከረም 10, 2018 ዓ.ም) in Hawassa, Ethiopia.">
+    <meta name="description"
+        content="Wedding celebration of Dr. Sara Ayele & Eng. Tewodros Belay on September 20, 2026 (መስከረም 10, 2018 ዓ.ም) in Hawassa, Ethiopia.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Pinyon+Script&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Pinyon+Script&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body class="lang-en">
 
-<!-- Audio Element (with both MP3 and WAV fallbacks) -->
-<audio id="weddingSong" loop preload="auto">
-    <source src="song.mp3" type="audio/mpeg">
-    <source src="song.wav" type="audio/wav">
-</audio>
+    <!-- Audio Element (with both MP3 and WAV fallbacks) -->
+    <audio id="weddingSong" loop preload="auto">
+        <source src="song.mp3" type="audio/mpeg">
+        <source src="song.wav" type="audio/wav">
+    </audio>
 
-<!-- Background Canvas for Floating Gold Sparkles -->
-<canvas id="sparkleCanvas"></canvas>
+    <!-- Background Canvas for Floating Gold Sparkles -->
+    <canvas id="sparkleCanvas"></canvas>
 
-<!-- Canvas for Confetti Celebration -->
-<canvas id="confettiCanvas"></canvas>
+    <!-- Canvas for Confetti Celebration -->
+    <canvas id="confettiCanvas"></canvas>
 
-<!-- FLOATING TOP BAR (Language Switcher & Music Controller) -->
-<header class="floating-controls" aria-label="Page Controls">
-    <nav class="lang-pill" aria-label="Language Selector">
-        <button type="button" class="lang-btn active" data-lang="en" aria-label="Switch to English">EN</button>
-        <button type="button" class="lang-btn" data-lang="am" aria-label="Switch to Amharic">አማ</button>
-        <button type="button" class="lang-btn" data-lang="ao" aria-label="Switch to Afaan Oromoo">AO</button>
-    </nav>
-    <button type="button" class="music-pill" id="musicToggleBtn" title="Play/Pause Wedding Music" aria-label="Toggle Wedding Music">
-        <div class="equalizer-icon">
-            <span class="eq-bar"></span>
-            <span class="eq-bar"></span>
-            <span class="eq-bar"></span>
-        </div>
-        <span class="music-pill-label" id="musicStatusLabel" data-i18n="music_label">Play Song</span>
-    </button>
-</header>
-
-<!-- ROYAL WAX SEAL INVITATION SPLASH -->
-<section class="royal-splash" id="royalSplash" aria-label="Wedding Invitation Envelope">
-    <div class="royal-envelope">
-        <div class="royal-crest-badge">👑</div>
-        <div class="splash-pretitle" data-i18n="splash_subtitle">Royal Wedding Invitation</div>
-        <h1 class="splash-couples" data-i18n="splash_title">Dr. Sara & Eng. Tewodros</h1>
-        <p class="splash-scripture" data-i18n="scripture">"For every house is built by someone, but God is the builder of everything." — Hebrews 3:4</p>
-        
-        <div class="seal-interactive-wrapper" id="openSealBtn" role="button" tabindex="0" title="Tap to open royal invitation">
-            <div class="seal-pulse-ring"></div>
-            <div class="wax-seal">
-                <span class="wax-monogram">S&T</span>
-                <span class="wax-heart">💛</span>
+    <!-- FLOATING TOP BAR (Language Switcher & Music Controller) -->
+    <header class="floating-controls" aria-label="Page Controls">
+        <nav class="lang-pill" aria-label="Language Selector">
+            <button type="button" class="lang-btn active" data-lang="en" aria-label="Switch to English">EN</button>
+            <button type="button" class="lang-btn" data-lang="am" aria-label="Switch to Amharic">አማ</button>
+            <button type="button" class="lang-btn" data-lang="ao" aria-label="Switch to Afaan Oromoo">AO</button>
+        </nav>
+        <button type="button" class="music-pill" id="musicToggleBtn" title="Play/Pause Wedding Music"
+            aria-label="Toggle Wedding Music">
+            <div class="equalizer-icon">
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
             </div>
-        </div>
-        
-        <div>
-            <button type="button" class="splash-action-btn" id="openInvitationBtn" data-i18n="splash_tap">
-                ✨ Open Invitation ✨
-            </button>
-        </div>
-        <div class="splash-date-badge" data-i18n="middle_date_main">Sunday, September 20, 2026</div>
-    </div>
-</section>
+            <span class="music-pill-label" id="musicStatusLabel" data-i18n="music_label">Play Song</span>
+        </button>
+    </header>
 
-<!-- MAIN CELEBRATION CONTAINER -->
-<main class="main-content" id="mainContent">
-    <div class="container">
+    <!-- ROYAL WAX SEAL INVITATION SPLASH -->
+    <section class="royal-splash" id="royalSplash" aria-label="Wedding Invitation Envelope">
+        <div class="royal-envelope">
+            <div class="royal-crest-badge">👑</div>
+            <div class="splash-pretitle" data-i18n="splash_subtitle">Royal Wedding Invitation</div>
+            <h1 class="splash-couples" data-i18n="splash_title">Dr. Sara & Eng. Tewodros</h1>
+            <p class="splash-scripture" data-i18n="scripture">"For every house is built by someone, but God is the
+                builder of everything." — Hebrews 3:4</p>
 
-        <!-- HERO SECTION - EDITORIAL COVER -->
-        <section class="hero-wrapper" id="heroSection" aria-label="Hero Section">
-            <div class="hero-image-box">
-                <img id="heroImage" src="images/photo_8_2026-09-02_22-34-57.jpg" alt="Dr. Sara Ayele & Eng. Tewodros Belay Wedding Portrait">
-                
-                <div class="hero-top-bar">
-                    <div class="hero-crest-pill">👑 S & T</div>
-                </div>
-
-                <div class="hero-bottom-overlay">
-                    <h2 class="hero-title" data-i18n="fancy_title">DR. SARA AYELE & ENG. TEWODROS BELAY</h2>
-                    <p class="hero-tagline" data-i18n="hero_tagline">Eternal Love & Blessings</p>
-                    
-                    <div class="hero-meta-badge" data-i18n="hero_meta">
-                        📅 September 20, 2026 &nbsp;•&nbsp; 📍 Hawassa, Ethiopia
-                    </div>
-
-                    <div class="hero-actions-row">
-                        <a href="#rsvpSection" class="btn-primary hero-btn" data-i18n="btn_rsvp_hero">💌 Send RSVP</a>
-                        <a href="#timelineSection" class="btn-secondary hero-btn" data-i18n="btn_view_program">📅 View Program ↓</a>
-                    </div>
+            <div class="seal-interactive-wrapper" id="openSealBtn" role="button" tabindex="0"
+                title="Tap to open royal invitation">
+                <div class="seal-pulse-ring"></div>
+                <div class="wax-seal">
+                    <span class="wax-monogram">S&T</span>
+                    <span class="wax-heart">💛</span>
                 </div>
             </div>
-        </section>
 
-        <!-- SAVE THE DATE, COUNTDOWN & CALENDAR -->
-        <section class="card" id="saveDateSection" aria-label="Save the Date and Countdown">
-            <div class="section-header">
-                <span class="section-tag" data-i18n="save_date_badge">Save The Date</span>
-                <h3 class="section-title" data-i18n="save_date_title">Join Our Celebration</h3>
-                <p class="section-subtitle" data-i18n="save_date_subtitle">Sunday, September 20, 2026</p>
-                <div class="gold-divider">✦ ✤ ✦</div>
+            <div>
+                <button type="button" class="splash-action-btn" id="openInvitationBtn" data-i18n="splash_tap">
+                    ✨ Open Invitation ✨
+                </button>
             </div>
+            <div class="splash-date-badge" data-i18n="middle_date_main">Sunday, September 20, 2026</div>
+        </div>
+    </section>
 
-            <div class="save-the-date-grid">
-                <!-- Symmetrical Countdown Card (Left) -->
-                <div class="countdown-glass-card">
-                    <div class="cal-header-row">
-                        <div class="cal-month-title" data-i18n="countdown_header">⏳ Countdown</div>
-                        <span class="cal-year-badge" data-i18n="cal_badge_day">Sept 20</span>
+    <!-- MAIN CELEBRATION CONTAINER -->
+    <main class="main-content" id="mainContent">
+        <div class="container">
+
+            <!-- HERO SECTION - EDITORIAL COVER -->
+            <section class="hero-wrapper" id="heroSection" aria-label="Hero Section">
+                <div class="hero-image-box">
+                    <img id="heroImage" src="images/photo_8_2026-09-02_22-34-57.jpg"
+                        alt="Dr. Sara Ayele & Eng. Tewodros Belay Wedding Portrait">
+
+                    <div class="hero-top-bar">
+                        <div class="hero-crest-pill">👑 S & T</div>
                     </div>
 
-                    <div class="countdown-label-dynamic" id="timerLabel" data-i18n="timer_label">Days until our wedding</div>
-                    
-                    <div class="timer-tiles-grid">
-                        <div class="time-tile">
-                            <div class="time-tile-number" id="days">00</div>
-                            <div class="time-tile-unit" data-i18n="unit_days">Days</div>
+                    <div class="hero-bottom-overlay">
+                        <h2 class="hero-title" data-i18n="fancy_title">DR. SARA AYELE & ENG. TEWODROS BELAY</h2>
+                        <p class="hero-tagline" data-i18n="hero_tagline">Eternal Love & Blessings</p>
+
+                        <div class="hero-meta-badge" data-i18n="hero_meta">
+                            📅 September 20, 2026 &nbsp;•&nbsp; 📍 Hawassa, Ethiopia
                         </div>
-                        <div class="time-tile">
-                            <div class="time-tile-number" id="hours">00</div>
-                            <div class="time-tile-unit" data-i18n="unit_hrs">Hours</div>
+
+                        <div class="hero-actions-row">
+                            <a href="#rsvpSection" class="btn-primary hero-btn" data-i18n="btn_rsvp_hero">💌 Send
+                                RSVP</a>
+                            <a href="#timelineSection" class="btn-secondary hero-btn" data-i18n="btn_view_program">📅
+                                View Program ↓</a>
                         </div>
-                        <div class="time-tile">
-                            <div class="time-tile-number" id="minutes">00</div>
-                            <div class="time-tile-unit" data-i18n="unit_min">Mins</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SAVE THE DATE, COUNTDOWN & CALENDAR -->
+            <section class="card" id="saveDateSection" aria-label="Save the Date and Countdown">
+                <div class="section-header">
+                    <span class="section-tag" data-i18n="save_date_badge">Save The Date</span>
+                    <h3 class="section-title" data-i18n="save_date_title">Join Our Celebration</h3>
+                    <p class="section-subtitle" data-i18n="save_date_subtitle">Sunday, September 20, 2026</p>
+                    <div class="gold-divider">✦ ✤ ✦</div>
+                </div>
+
+                <div class="save-the-date-grid">
+                    <!-- Symmetrical Countdown Card (Left) -->
+                    <div class="countdown-glass-card">
+                        <div class="cal-header-row">
+                            <div class="cal-month-title" data-i18n="countdown_header">⏳ Countdown</div>
+                            <span class="cal-year-badge" data-i18n="cal_badge_day">Sept 20</span>
                         </div>
-                        <div class="time-tile">
-                            <div class="time-tile-number" id="seconds">00</div>
-                            <div class="time-tile-unit" data-i18n="unit_sec">Secs</div>
+
+                        <div class="countdown-label-dynamic" id="timerLabel" data-i18n="timer_label">Days until our
+                            wedding</div>
+
+                        <div class="timer-tiles-grid">
+                            <div class="time-tile">
+                                <div class="time-tile-number" id="days">00</div>
+                                <div class="time-tile-unit" data-i18n="unit_days">Days</div>
+                            </div>
+                            <div class="time-tile">
+                                <div class="time-tile-number" id="hours">00</div>
+                                <div class="time-tile-unit" data-i18n="unit_hrs">Hours</div>
+                            </div>
+                            <div class="time-tile">
+                                <div class="time-tile-number" id="minutes">00</div>
+                                <div class="time-tile-unit" data-i18n="unit_min">Mins</div>
+                            </div>
+                            <div class="time-tile">
+                                <div class="time-tile-number" id="seconds">00</div>
+                                <div class="time-tile-unit" data-i18n="unit_sec">Secs</div>
+                            </div>
+                        </div>
+
+                        <div class="countdown-action-wrapper">
+                            <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%92%8D+Wedding+of+Dr.+Sara+Ayele+%26+Eng.+Tewodros+Belay&dates=20260920T070000Z/20260920T180000Z&details=Joyous+wedding+celebration+of+Dr.+Sara+Ayele+and+Eng.+Tewodros+Belay.%0A%22For+every+house+is+built+by+someone%2C+but+God+is+the+builder+of+everything.%22+%E2%80%94+Hebrews+3%3A4&location=Bulala+%26+Central+Hotel%2C+Hawassa%2C+Ethiopia"
+                                target="_blank" rel="noopener noreferrer" class="btn-primary full-action-btn"
+                                id="googleCalBtn" data-i18n="btn_add_calendar">
+                                📅 Add to my Calendar
+                            </a>
                         </div>
                     </div>
 
-                    <div class="countdown-action-wrapper">
-                        <button type="button" class="btn-primary full-action-btn" id="downloadIcsBtn" data-i18n="btn_add_ics">
-                            📅 Add to Calendar (.ics)
+                    <!-- Symmetrical Calendar Card (Right) -->
+                    <div class="calendar-glass-card">
+                        <div class="cal-header-row">
+                            <div class="cal-month-title" id="calMonthTitle" data-i18n="calendar_header">September 2026
+                            </div>
+                            <span class="cal-year-badge" id="calBadgeDay" data-i18n="cal_badge_day">Sept 20</span>
+                        </div>
+                        <div class="cal-grid-weekdays">
+                            <span data-i18n="day_sun">Sun</span>
+                            <span data-i18n="day_mon">Mon</span>
+                            <span data-i18n="day_tue">Tue</span>
+                            <span data-i18n="day_wed">Wed</span>
+                            <span data-i18n="day_thu">Thu</span>
+                            <span data-i18n="day_fri">Fri</span>
+                            <span data-i18n="day_sat">Sat</span>
+                        </div>
+                        <div class="cal-grid-days" id="calendarDaysGrid">
+                            <!-- Dynamically populated per language -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- OFFICIAL INVITATION CARD SHOWCASE -->
+            <section class="card" id="cardSection" aria-label="Official Invitation Card">
+                <div class="section-header">
+                    <span class="section-tag" data-i18n="card_tag">Official Invitation</span>
+                    <h3 class="section-title" data-i18n="card_header">📜 The Official Invitation Card</h3>
+                    <div class="gold-divider">✦ ✤ ✦</div>
+                </div>
+
+                <div class="invitation-frame-container">
+                    <div class="scripture-banner" data-i18n="scripture">
+                        "For every house is built by someone, but God is the builder of everything." — Hebrews 3:4
+                    </div>
+
+                    <div class="invitation-card-wrapper" id="invitationCardPreview" role="button" tabindex="0"
+                        title="Click to view full screen">
+                        <img src="image.png" alt="Dr. Sara & Eng. Tewodros Official Wedding Invitation Card">
+                        <div class="invitation-zoom-hint" id="zoomCardBtn" data-i18n="hint_inspect">🔍 Tap to inspect
+                        </div>
+                    </div>
+
+                    <div class="invitation-actions">
+                        <a href="image.png" download="Dr_Sara_Eng_Tewodros_Invitation.png" class="btn-primary"
+                            data-i18n="btn_download_card">
+                            📥 Download Invitation Card
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EVENT TIMELINE (OPTIMIZED AJUBI PROGRAM) -->
+            <section class="card" id="timelineSection" aria-label="Event Timeline">
+                <div class="section-header">
+                    <span class="section-tag" data-i18n="timeline_tag">Ajubi Program</span>
+                    <h3 class="section-title" data-i18n="timeline_heading">📅 የአጁቢዎች ፕሮግራም</h3>
+                    <p class="section-subtitle" data-i18n="timeline_subtitle">Wedding Day Schedule & Procession</p>
+                    <div class="gold-divider">✦ ✤ ✦</div>
+                </div>
+
+                <div class="timeline-stepper">
+                    <!-- Step 1 -->
+                    <div class="timeline-step">
+                        <div class="step-marker">1</div>
+                        <div class="step-content">
+                            <div class="step-time-pills">
+                                <span class="pill-time-accent">4:00 - 6:00</span>
+                                <span class="pill-time-greg" data-i18n="timeline_1_time">10:00 AM - 12:00 PM</span>
+                            </div>
+                            <h4 class="step-title" data-i18n="timeline_1_title">ጉዞ ወደ ሙሽሪት ቤት</h4>
+                            <p class="step-desc" data-i18n="timeline_1_desc">ወደ ቡላላ መኖሪያ ቤት ጉዞ</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="timeline-step">
+                        <div class="step-marker">2</div>
+                        <div class="step-content">
+                            <div class="step-time-pills">
+                                <span class="pill-time-accent">6:00 - 6:15</span>
+                                <span class="pill-time-greg" data-i18n="timeline_2_time">12:00 PM - 12:15 PM</span>
+                            </div>
+                            <h4 class="step-title" data-i18n="timeline_2_title">ሙሽሪት ቤት መድረስ</h4>
+                            <p class="step-desc" data-i18n="timeline_2_desc">የአቀባበል ስነ-ስርዓት</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="timeline-step">
+                        <div class="step-marker">3</div>
+                        <div class="step-content">
+                            <div class="step-time-pills">
+                                <span class="pill-time-accent">6:15 - 9:00</span>
+                                <span class="pill-time-greg" data-i18n="timeline_3_time">12:15 PM - 3:00 PM</span>
+                            </div>
+                            <h4 class="step-title" data-i18n="timeline_3_title">ቆይታ በሙሽሪት ቤት</h4>
+                            <p class="step-desc" data-i18n="timeline_3_desc">የምሳ ግብዣና ፎቶ ፕሮግራም</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="timeline-step">
+                        <div class="step-marker">4</div>
+                        <div class="step-content">
+                            <div class="step-time-pills">
+                                <span class="pill-time-accent">9:00 - 11:00</span>
+                                <span class="pill-time-greg" data-i18n="timeline_4_time">3:00 PM - 5:00 PM</span>
+                            </div>
+                            <h4 class="step-title" data-i18n="timeline_4_title">ጉዞ ወደ ሀዋሳ</h4>
+                            <p class="step-desc" data-i18n="timeline_4_desc">የአጁቢዎች ደማቅ የክብር ሰልፍ</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="timeline-step">
+                        <div class="step-marker">5</div>
+                        <div class="step-content">
+                            <div class="step-time-pills">
+                                <span class="pill-time-accent">11:00 - 12:00</span>
+                                <span class="pill-time-greg" data-i18n="timeline_5_time">5:00 PM - 6:00 PM</span>
+                            </div>
+                            <h4 class="step-title" data-i18n="timeline_5_title">ዕረፍት</h4>
+                            <p class="step-desc" data-i18n="timeline_5_desc">የዕረፍትና የዝግጅት ጊዜ</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 6 -->
+                    <div class="timeline-step">
+                        <div class="step-marker">6</div>
+                        <div class="step-content">
+                            <div class="step-time-pills">
+                                <span class="pill-time-accent">12:00 - 3:00</span>
+                                <span class="pill-time-greg" data-i18n="timeline_6_time">6:00 PM - 9:00 PM</span>
+                            </div>
+                            <h4 class="step-title" data-i18n="timeline_6_title">ቆይታ በ ሴንትራል ሆቴል</h4>
+                            <p class="step-desc" data-i18n="timeline_6_desc">ታላቅ የምሽት ድግስና ደስታ</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LOCATIONS & INTERACTIVE MAPS (CLEAN SINGLE ACTION) -->
+            <section class="card" id="locationsSection" aria-label="Event Locations">
+                <div class="section-header">
+                    <span class="section-tag" data-i18n="locations_tag">Directions</span>
+                    <h3 class="section-title" data-i18n="locations_heading">📍 Event Locations</h3>
+                    <p class="section-subtitle" data-i18n="locations_subtitle">Easily find your way with interactive
+                        maps and navigation</p>
+                    <div class="gold-divider">✦ ✤ ✦</div>
+                </div>
+
+                <div class="locations-grid">
+                    <!-- Location 1: Bride's House -->
+                    <div class="location-card">
+                        <div class="location-header">
+                            <span class="location-badge" data-i18n="loc_badge_day">Morning & Luncheon</span>
+                            <h4 class="location-title" data-i18n="loc_bulala_title">🏠 Bride's Residence</h4>
+                            <p class="location-address" data-i18n="loc_bulala_desc">Near Bulala Branch School, Bulala,
+                                Ethiopia</p>
+                        </div>
+                        <div class="location-map-frame">
+                            <iframe src="https://maps.google.com/maps?q=Bulala&z=15&output=embed"
+                                title="Bulala Location Map" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div class="location-footer">
+                            <a href="https://maps.google.com/maps?q=Bulala" target="_blank" rel="noopener"
+                                class="location-link-btn" data-i18n="btn_maps">
+                                📍 Open in Google Maps
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Location 2: Central Hotel Hawassa -->
+                    <div class="location-card">
+                        <div class="location-header">
+                            <span class="location-badge" data-i18n="loc_badge_night">Evening Reception & Banquet</span>
+                            <h4 class="location-title" data-i18n="loc_central_title">🏨 Central Hotel</h4>
+                            <p class="location-address" data-i18n="loc_central_desc">Central Hotel, Hawassa, Ethiopia
+                            </p>
+                        </div>
+                        <div class="location-map-frame">
+                            <iframe src="https://maps.google.com/maps?q=Central+Hotel+Hawassa&z=15&output=embed"
+                                title="Central Hotel Hawassa Location Map" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div class="location-footer">
+                            <a href="https://maps.google.com/maps?q=Central+Hotel+Hawassa" target="_blank"
+                                rel="noopener" class="location-link-btn" data-i18n="btn_maps">
+                                📍 Open in Google Maps
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 29 COUPLE PHOTOS SHOWCASE -->
+            <section class="card" id="gallerySection" aria-label="Photo Gallery">
+                <div class="section-header">
+                    <span class="section-tag" data-i18n="gallery_tag">Memories</span>
+                    <h3 class="section-title" data-i18n="photos_heading">✨ Our Wedding Moments in Photos ✨</h3>
+                    <p class="section-subtitle" data-i18n="photos_subtitle">A cherished collection of 29 portraits and
+                        love-filled memories</p>
+                    <div class="gold-divider">✦ ✤ ✦</div>
+                </div>
+
+                <div class="gallery-wrapper">
+                    <div class="featured-photo-box" id="featuredPhotoBox">
+                        <img id="featuredPhotoImg" src="images/photo_8_2026-09-02_22-34-57.jpg"
+                            alt="Featured Wedding Portrait" title="Click to view full screen">
+                        <button type="button" class="gallery-nav-btn prev" id="prevSlideBtn"
+                            aria-label="Previous Photo">‹</button>
+                        <button type="button" class="gallery-nav-btn next" id="nextSlideBtn"
+                            aria-label="Next Photo">›</button>
+                        <div class="gallery-counter-badge" id="photoCounterBadge">Photo 1 of 29</div>
+                    </div>
+
+                    <!-- Filmstrip of All 29 Photos -->
+                    <div class="gallery-filmstrip-container">
+                        <div class="gallery-filmstrip" id="galleryFilmstrip">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+
+                    <div class="view-all-photos-prompt">
+                        <button type="button" class="btn-secondary" id="openLightboxBtn"
+                            data-i18n="btn_view_fullscreen">
+                            🔍 View in Fullscreen Lightbox
                         </button>
                     </div>
                 </div>
+            </section>
 
-                <!-- Symmetrical Calendar Card (Right) -->
-                <div class="calendar-glass-card">
-                    <div class="cal-header-row">
-                        <div class="cal-month-title" id="calMonthTitle" data-i18n="calendar_header">September 2026</div>
-                        <span class="cal-year-badge" id="calBadgeDay" data-i18n="cal_badge_day">Sept 20</span>
-                    </div>
-                    <div class="cal-grid-weekdays">
-                        <span data-i18n="day_sun">Sun</span>
-                        <span data-i18n="day_mon">Mon</span>
-                        <span data-i18n="day_tue">Tue</span>
-                        <span data-i18n="day_wed">Wed</span>
-                        <span data-i18n="day_thu">Thu</span>
-                        <span data-i18n="day_fri">Fri</span>
-                        <span data-i18n="day_sat">Sat</span>
-                    </div>
-                    <div class="cal-grid-days" id="calendarDaysGrid">
-                        <!-- Dynamically populated per language -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- OFFICIAL INVITATION CARD SHOWCASE -->
-        <section class="card" id="cardSection" aria-label="Official Invitation Card">
-            <div class="section-header">
-                <span class="section-tag" data-i18n="card_tag">Official Invitation</span>
-                <h3 class="section-title" data-i18n="card_header">📜 The Official Invitation Card</h3>
-                <div class="gold-divider">✦ ✤ ✦</div>
-            </div>
-
-            <div class="invitation-frame-container">
-                <div class="scripture-banner" data-i18n="scripture">
-                    "For every house is built by someone, but God is the builder of everything." — Hebrews 3:4
+            <!-- DELUXE RSVP FORM -->
+            <section class="card" id="rsvpSection" aria-label="RSVP Form">
+                <div class="section-header">
+                    <span class="section-tag" data-i18n="rsvp_tag">RSVP</span>
+                    <h3 class="section-title" data-i18n="rsvp_heading">💌 Will You Attend?</h3>
+                    <p class="section-subtitle" data-i18n="rsvp_subtitle">Kindly let us know so we can reserve your seat
+                    </p>
+                    <div class="gold-divider">✦ ✤ ✦</div>
                 </div>
 
-                <div class="invitation-card-wrapper" id="invitationCardPreview" role="button" tabindex="0" title="Click to view full screen">
-                    <img src="image.png" alt="Dr. Sara & Eng. Tewodros Official Wedding Invitation Card">
-                    <div class="invitation-zoom-hint" id="zoomCardBtn" data-i18n="hint_inspect">🔍 Tap to inspect</div>
+                <div class="rsvp-wrapper">
+                    <form id="rsvpForm">
+                        <div class="rsvp-form-group">
+                            <label class="rsvp-label" for="guestName" data-i18n="lbl_name">Full Name *</label>
+                            <input type="text" class="rsvp-input" id="guestName" placeholder="Your Full Name" required>
+                        </div>
+
+                        <div class="rsvp-form-group">
+                            <label class="rsvp-label" data-i18n="lbl_attendance">Attendance *</label>
+                            <div class="rsvp-attendance-toggle">
+                                <label class="attendance-pill-radio active" id="pillAttendYes">
+                                    <input type="radio" name="attendanceRadio" value="Yes" checked>
+                                    <span data-i18n="opt_attend_yes">💐 Yes, Delighted!</span>
+                                </label>
+                                <label class="attendance-pill-radio" id="pillAttendNo">
+                                    <input type="radio" name="attendanceRadio" value="No">
+                                    <span data-i18n="opt_attend_no">💌 Unfortunately No</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Only shown when attendance is "Yes" -->
+                        <div class="rsvp-form-group" id="guestCountGroup">
+                            <label class="rsvp-label" for="guestCount" data-i18n="lbl_guests">Number of Guests</label>
+                            <div class="custom-select-wrapper">
+                                <select class="rsvp-select" id="guestCount">
+                                    <option value="1" data-i18n="guest_1">1 Person (Self)</option>
+                                    <option value="2" data-i18n="guest_2">2 Persons (+ Companion)</option>
+                                    <option value="3" data-i18n="guest_3">3 Persons (Family)</option>
+                                    <option value="4+" data-i18n="guest_4">4+ Persons</option>
+                                </select>
+                                <span class="custom-select-arrow">▾</span>
+                            </div>
+                        </div>
+
+                        <div class="rsvp-form-group">
+                            <label class="rsvp-label" for="relation" data-i18n="opt_rel_hint">Relation to Bride &
+                                Groom</label>
+                            <div class="custom-select-wrapper">
+                                <select class="rsvp-select" id="relation">
+                                    <option value="Bride's Family" data-i18n="opt_rel_bride">Bride's Family</option>
+                                    <option value="Groom's Family" data-i18n="opt_rel_groom">Groom's Family</option>
+                                    <option value="Both" data-i18n="opt_rel_both">Friend of Both</option>
+                                    <option value="Family" data-i18n="opt_rel_fam">Extended Family</option>
+                                    <option value="Colleague" data-i18n="opt_rel_col">Colleague</option>
+                                </select>
+                                <span class="custom-select-arrow">▾</span>
+                            </div>
+                        </div>
+
+                        <div class="rsvp-form-group">
+                            <label class="rsvp-label" for="message" data-i18n="lbl_wishes">Warm Wishes &
+                                Blessings</label>
+                            <textarea class="rsvp-textarea" id="message" rows="3"
+                                placeholder="Share your love, blessings, and joyful advice for the couple..."></textarea>
+                        </div>
+
+                        <div class="rsvp-actions-single">
+                            <button type="submit" class="rsvp-submit-btn" id="rsvpSubmitBtn"
+                                data-i18n="btn_rsvp_submit">
+                                Send RSVP 💐
+                            </button>
+                        </div>
+                        <div class="rsvp-status-message" id="formFeedback"></div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TELEGRAM MOMENTS HUB (CENTERED CLICKABLE QR) -->
+            <section class="card" id="shareSection" aria-label="Share Photos and Videos">
+                <div class="section-header">
+                    <span class="section-tag" data-i18n="share_tag">Live Upload</span>
+                    <h3 class="section-title" data-i18n="qr_title">📸 Share Your Moments</h3>
+                    <p class="section-subtitle" data-i18n="qr_subtitle">Tap or scan the QR code to send your celebration
+                        photos and warm wishes directly to the couple!</p>
+                    <div class="gold-divider">✦ ✤ ✦</div>
                 </div>
 
-                <div class="invitation-actions">
-                    <a href="image.png" download="Dr_Sara_Eng_Tewodros_Invitation.png" class="btn-primary" data-i18n="btn_download_card">
-                        📥 Download Invitation Card
+                <div class="telegram-hub-centered">
+                    <!-- Clickable QR Code Card -->
+                    <a href="https://t.me/sara_tewodros_wedding_bot" target="_blank" rel="noopener"
+                        class="qr-clickable-card" id="qrLink" title="Tap to Open Telegram Bot">
+                        <div class="qr-glass-card">
+                            <img id="qrImage" alt="Telegram Bot QR Code"
+                                src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https%3A%2F%2Ft.me%2Fsara_tewodros_wedding_bot">
+                            <div class="qr-label-pill" id="botHandleLabel">@sara_tewodros_wedding_bot</div>
+                            <div class="qr-tap-instruction">👆 Tap QR to Open Bot</div>
+                        </div>
                     </a>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- EVENT TIMELINE (OPTIMIZED AJUBI PROGRAM) -->
-        <section class="card" id="timelineSection" aria-label="Event Timeline">
-            <div class="section-header">
-                <span class="section-tag" data-i18n="timeline_tag">Ajubi Program</span>
-                <h3 class="section-title" data-i18n="timeline_heading">📅 የአጁቢዎች ፕሮግራም</h3>
-                <p class="section-subtitle" data-i18n="timeline_subtitle">Wedding Day Schedule & Procession</p>
-                <div class="gold-divider">✦ ✤ ✦</div>
-            </div>
+            <!-- FOOTER -->
+            <footer>
+                <div class="footer-monogram">S & T</div>
+                <p data-i18n="footer_text">Dr. Sara Ayele & Eng. Tewodros Belay — Eternal Love | September 20, 2026 |
+                    Hawassa, Ethiopia</p>
+                <p class="footer-credits" data-i18n="footer_credits">Celebrated with heartfelt joy, faith, and blessings
+                    💛</p>
+            </footer>
 
-            <div class="timeline-stepper">
-                <!-- Step 1 -->
-                <div class="timeline-step">
-                    <div class="step-marker">1</div>
-                    <div class="step-content">
-                        <div class="step-time-pills">
-                            <span class="pill-time-accent">4:00 - 6:00</span>
-                            <span class="pill-time-greg" data-i18n="timeline_1_time">10:00 AM - 12:00 PM</span>
-                        </div>
-                        <h4 class="step-title" data-i18n="timeline_1_title">ጉዞ ወደ ሙሽሪት ቤት</h4>
-                        <p class="step-desc" data-i18n="timeline_1_desc">ወደ ቡላላ መኖሪያ ቤት ጉዞ</p>
-                    </div>
-                </div>
+        </div>
+    </main>
 
-                <!-- Step 2 -->
-                <div class="timeline-step">
-                    <div class="step-marker">2</div>
-                    <div class="step-content">
-                        <div class="step-time-pills">
-                            <span class="pill-time-accent">6:00 - 6:15</span>
-                            <span class="pill-time-greg" data-i18n="timeline_2_time">12:00 PM - 12:15 PM</span>
-                        </div>
-                        <h4 class="step-title" data-i18n="timeline_2_title">ሙሽሪት ቤት መድረስ</h4>
-                        <p class="step-desc" data-i18n="timeline_2_desc">የአቀባበል ስነ-ስርዓት</p>
-                    </div>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="timeline-step">
-                    <div class="step-marker">3</div>
-                    <div class="step-content">
-                        <div class="step-time-pills">
-                            <span class="pill-time-accent">6:15 - 9:00</span>
-                            <span class="pill-time-greg" data-i18n="timeline_3_time">12:15 PM - 3:00 PM</span>
-                        </div>
-                        <h4 class="step-title" data-i18n="timeline_3_title">ቆይታ በሙሽሪት ቤት</h4>
-                        <p class="step-desc" data-i18n="timeline_3_desc">የምሳ ግብዣና ፎቶ ፕሮግራም</p>
-                    </div>
-                </div>
-
-                <!-- Step 4 -->
-                <div class="timeline-step">
-                    <div class="step-marker">4</div>
-                    <div class="step-content">
-                        <div class="step-time-pills">
-                            <span class="pill-time-accent">9:00 - 11:00</span>
-                            <span class="pill-time-greg" data-i18n="timeline_4_time">3:00 PM - 5:00 PM</span>
-                        </div>
-                        <h4 class="step-title" data-i18n="timeline_4_title">ጉዞ ወደ ሀዋሳ</h4>
-                        <p class="step-desc" data-i18n="timeline_4_desc">የአጁቢዎች ደማቅ የክብር ሰልፍ</p>
-                    </div>
-                </div>
-
-                <!-- Step 5 -->
-                <div class="timeline-step">
-                    <div class="step-marker">5</div>
-                    <div class="step-content">
-                        <div class="step-time-pills">
-                            <span class="pill-time-accent">11:00 - 12:00</span>
-                            <span class="pill-time-greg" data-i18n="timeline_5_time">5:00 PM - 6:00 PM</span>
-                        </div>
-                        <h4 class="step-title" data-i18n="timeline_5_title">ዕረፍት</h4>
-                        <p class="step-desc" data-i18n="timeline_5_desc">የዕረፍትና የዝግጅት ጊዜ</p>
-                    </div>
-                </div>
-
-                <!-- Step 6 -->
-                <div class="timeline-step">
-                    <div class="step-marker">6</div>
-                    <div class="step-content">
-                        <div class="step-time-pills">
-                            <span class="pill-time-accent">12:00 - 3:00</span>
-                            <span class="pill-time-greg" data-i18n="timeline_6_time">6:00 PM - 9:00 PM</span>
-                        </div>
-                        <h4 class="step-title" data-i18n="timeline_6_title">ቆይታ በ ሴንትራል ሆቴል</h4>
-                        <p class="step-desc" data-i18n="timeline_6_desc">ታላቅ የምሽት ድግስና ደስታ</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- LOCATIONS & INTERACTIVE MAPS (CLEAN SINGLE ACTION) -->
-        <section class="card" id="locationsSection" aria-label="Event Locations">
-            <div class="section-header">
-                <span class="section-tag" data-i18n="locations_tag">Directions</span>
-                <h3 class="section-title" data-i18n="locations_heading">📍 Event Locations</h3>
-                <p class="section-subtitle" data-i18n="locations_subtitle">Easily find your way with interactive maps and navigation</p>
-                <div class="gold-divider">✦ ✤ ✦</div>
-            </div>
-
-            <div class="locations-grid">
-                <!-- Location 1: Bride's House -->
-                <div class="location-card">
-                    <div class="location-header">
-                        <span class="location-badge" data-i18n="loc_badge_day">Morning & Luncheon</span>
-                        <h4 class="location-title" data-i18n="loc_bulala_title">🏠 Bride's Residence</h4>
-                        <p class="location-address" data-i18n="loc_bulala_desc">Near Bulala Branch School, Bulala, Ethiopia</p>
-                    </div>
-                    <div class="location-map-frame">
-                        <iframe src="https://maps.google.com/maps?q=Bulala&z=15&output=embed" title="Bulala Location Map" allowfullscreen loading="lazy"></iframe>
-                    </div>
-                    <div class="location-footer">
-                        <a href="https://maps.google.com/maps?q=Bulala" target="_blank" rel="noopener" class="location-link-btn" data-i18n="btn_maps">
-                            📍 Open in Google Maps
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Location 2: Central Hotel Hawassa -->
-                <div class="location-card">
-                    <div class="location-header">
-                        <span class="location-badge" data-i18n="loc_badge_night">Evening Reception & Banquet</span>
-                        <h4 class="location-title" data-i18n="loc_central_title">🏨 Central Hotel</h4>
-                        <p class="location-address" data-i18n="loc_central_desc">Central Hotel, Hawassa, Ethiopia</p>
-                    </div>
-                    <div class="location-map-frame">
-                        <iframe src="https://maps.google.com/maps?q=Central+Hotel+Hawassa&z=15&output=embed" title="Central Hotel Hawassa Location Map" allowfullscreen loading="lazy"></iframe>
-                    </div>
-                    <div class="location-footer">
-                        <a href="https://maps.google.com/maps?q=Central+Hotel+Hawassa" target="_blank" rel="noopener" class="location-link-btn" data-i18n="btn_maps">
-                            📍 Open in Google Maps
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 29 COUPLE PHOTOS SHOWCASE -->
-        <section class="card" id="gallerySection" aria-label="Photo Gallery">
-            <div class="section-header">
-                <span class="section-tag" data-i18n="gallery_tag">Memories</span>
-                <h3 class="section-title" data-i18n="photos_heading">✨ Our Wedding Moments in Photos ✨</h3>
-                <p class="section-subtitle" data-i18n="photos_subtitle">A cherished collection of 29 portraits and love-filled memories</p>
-                <div class="gold-divider">✦ ✤ ✦</div>
-            </div>
-
-            <div class="gallery-wrapper">
-                <div class="featured-photo-box" id="featuredPhotoBox">
-                    <img id="featuredPhotoImg" src="images/photo_8_2026-09-02_22-34-57.jpg" alt="Featured Wedding Portrait" title="Click to view full screen">
-                    <button type="button" class="gallery-nav-btn prev" id="prevSlideBtn" aria-label="Previous Photo">‹</button>
-                    <button type="button" class="gallery-nav-btn next" id="nextSlideBtn" aria-label="Next Photo">›</button>
-                    <div class="gallery-counter-badge" id="photoCounterBadge">Photo 1 of 29</div>
-                </div>
-
-                <!-- Filmstrip of All 29 Photos -->
-                <div class="gallery-filmstrip-container">
-                    <div class="gallery-filmstrip" id="galleryFilmstrip">
-                        <!-- Dynamically populated -->
-                    </div>
-                </div>
-
-                <div class="view-all-photos-prompt">
-                    <button type="button" class="btn-secondary" id="openLightboxBtn" data-i18n="btn_view_fullscreen">
-                        🔍 View in Fullscreen Lightbox
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- DELUXE RSVP FORM -->
-        <section class="card" id="rsvpSection" aria-label="RSVP Form">
-            <div class="section-header">
-                <span class="section-tag" data-i18n="rsvp_tag">RSVP</span>
-                <h3 class="section-title" data-i18n="rsvp_heading">💌 Will You Attend?</h3>
-                <p class="section-subtitle" data-i18n="rsvp_subtitle">Kindly let us know so we can reserve your seat</p>
-                <div class="gold-divider">✦ ✤ ✦</div>
-            </div>
-
-            <div class="rsvp-wrapper">
-                <form id="rsvpForm">
-                    <div class="rsvp-form-group">
-                        <label class="rsvp-label" for="guestName" data-i18n="lbl_name">Full Name *</label>
-                        <input type="text" class="rsvp-input" id="guestName" placeholder="Your Full Name" required>
-                    </div>
-
-                    <div class="rsvp-form-group">
-                        <label class="rsvp-label" data-i18n="lbl_attendance">Attendance *</label>
-                        <div class="rsvp-attendance-toggle">
-                            <label class="attendance-pill-radio active" id="pillAttendYes">
-                                <input type="radio" name="attendanceRadio" value="Yes" checked>
-                                <span data-i18n="opt_attend_yes">💐 Yes, Delighted!</span>
-                            </label>
-                            <label class="attendance-pill-radio" id="pillAttendNo">
-                                <input type="radio" name="attendanceRadio" value="No">
-                                <span data-i18n="opt_attend_no">💌 Unfortunately No</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Only shown when attendance is "Yes" -->
-                    <div class="rsvp-form-group" id="guestCountGroup">
-                        <label class="rsvp-label" for="guestCount" data-i18n="lbl_guests">Number of Guests</label>
-                        <div class="custom-select-wrapper">
-                            <select class="rsvp-select" id="guestCount">
-                                <option value="1" data-i18n="guest_1">1 Person (Self)</option>
-                                <option value="2" data-i18n="guest_2">2 Persons (+ Companion)</option>
-                                <option value="3" data-i18n="guest_3">3 Persons (Family)</option>
-                                <option value="4+" data-i18n="guest_4">4+ Persons</option>
-                            </select>
-                            <span class="custom-select-arrow">▾</span>
-                        </div>
-                    </div>
-
-                    <div class="rsvp-form-group">
-                        <label class="rsvp-label" for="relation" data-i18n="opt_rel_hint">Relation to Bride & Groom</label>
-                        <div class="custom-select-wrapper">
-                            <select class="rsvp-select" id="relation">
-                                <option value="Bride's Family" data-i18n="opt_rel_bride">Bride's Family</option>
-                                <option value="Groom's Family" data-i18n="opt_rel_groom">Groom's Family</option>
-                                <option value="Both" data-i18n="opt_rel_both">Friend of Both</option>
-                                <option value="Family" data-i18n="opt_rel_fam">Extended Family</option>
-                                <option value="Colleague" data-i18n="opt_rel_col">Colleague</option>
-                            </select>
-                            <span class="custom-select-arrow">▾</span>
-                        </div>
-                    </div>
-
-                    <div class="rsvp-form-group">
-                        <label class="rsvp-label" for="message" data-i18n="lbl_wishes">Warm Wishes & Blessings</label>
-                        <textarea class="rsvp-textarea" id="message" rows="3" placeholder="Share your love, blessings, and joyful advice for the couple..."></textarea>
-                    </div>
-
-                    <div class="rsvp-actions-single">
-                        <button type="submit" class="rsvp-submit-btn" id="rsvpSubmitBtn" data-i18n="btn_rsvp_submit">
-                            Send RSVP 💐
-                        </button>
-                    </div>
-                    <div class="rsvp-status-message" id="formFeedback"></div>
-                </form>
-            </div>
-        </section>
-
-        <!-- TELEGRAM MOMENTS HUB (CENTERED CLICKABLE QR) -->
-        <section class="card" id="shareSection" aria-label="Share Photos and Videos">
-            <div class="section-header">
-                <span class="section-tag" data-i18n="share_tag">Live Upload</span>
-                <h3 class="section-title" data-i18n="qr_title">📸 Share Your Moments</h3>
-                <p class="section-subtitle" data-i18n="qr_subtitle">Tap or scan the QR code to send your celebration photos and warm wishes directly to the couple!</p>
-                <div class="gold-divider">✦ ✤ ✦</div>
-            </div>
-
-            <div class="telegram-hub-centered">
-                <!-- Clickable QR Code Card -->
-                <a href="https://t.me/sara_tewodros_wedding_bot" target="_blank" rel="noopener" class="qr-clickable-card" id="qrLink" title="Tap to Open Telegram Bot">
-                    <div class="qr-glass-card">
-                        <img id="qrImage" alt="Telegram Bot QR Code" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https%3A%2F%2Ft.me%2Fsara_tewodros_wedding_bot">
-                        <div class="qr-label-pill" id="botHandleLabel">@sara_tewodros_wedding_bot</div>
-                        <div class="qr-tap-instruction">👆 Tap QR to Open Bot</div>
-                    </div>
-                </a>
-            </div>
-        </section>
-
-        <!-- FOOTER -->
-        <footer>
-            <div class="footer-monogram">S & T</div>
-            <p data-i18n="footer_text">Dr. Sara Ayele & Eng. Tewodros Belay — Eternal Love | September 20, 2026 | Hawassa, Ethiopia</p>
-            <p class="footer-credits" data-i18n="footer_credits">Celebrated with heartfelt joy, faith, and blessings 💛</p>
-        </footer>
-
-    </div>
-</main>
-
-<!-- GALLERY FULLSCREEN LIGHTBOX MODAL -->
-<div class="lightbox-modal" id="lightboxModal" aria-hidden="true" role="dialog">
-    <button type="button" class="lightbox-close-btn" id="closeLightboxBtn" aria-label="Close Lightbox">✕</button>
-    <button type="button" class="gallery-nav-btn prev" id="lightboxPrevBtn" aria-label="Previous Image">‹</button>
-    <button type="button" class="gallery-nav-btn next" id="lightboxNextBtn" aria-label="Next Image">›</button>
-    <div class="lightbox-img-container">
-        <img id="lightboxImage" src="" alt="Full Resolution Wedding Memory">
-    </div>
-</div>
-
-<!-- DEDICATED INVITATION CARD MODAL (Isolated from gallery) -->
-<div class="card-modal" id="cardModal" aria-hidden="true" role="dialog">
-    <button type="button" class="lightbox-close-btn" id="closeCardModalBtn" aria-label="Close Card Modal">✕</button>
-    <div class="card-modal-content">
-        <img src="image.png" alt="Dr. Sara & Eng. Tewodros Official Invitation Card">
-        <div style="margin-top: 1.2rem; text-align: center;">
-            <a href="image.png" download="Dr_Sara_Eng_Tewodros_Invitation.png" class="btn-primary" data-i18n="btn_download_card">
-                📥 Download Card
-            </a>
+    <!-- GALLERY FULLSCREEN LIGHTBOX MODAL -->
+    <div class="lightbox-modal" id="lightboxModal" aria-hidden="true" role="dialog">
+        <button type="button" class="lightbox-close-btn" id="closeLightboxBtn" aria-label="Close Lightbox">✕</button>
+        <button type="button" class="gallery-nav-btn prev" id="lightboxPrevBtn" aria-label="Previous Image">‹</button>
+        <button type="button" class="gallery-nav-btn next" id="lightboxNextBtn" aria-label="Next Image">›</button>
+        <div class="lightbox-img-container">
+            <img id="lightboxImage" src="" alt="Full Resolution Wedding Memory">
         </div>
     </div>
-</div>
 
-<script src="app.js"></script>
+    <!-- DEDICATED INVITATION CARD MODAL (Isolated from gallery) -->
+    <div class="card-modal" id="cardModal" aria-hidden="true" role="dialog">
+        <button type="button" class="lightbox-close-btn" id="closeCardModalBtn" aria-label="Close Card Modal">✕</button>
+        <div class="card-modal-content">
+            <img src="image.png" alt="Dr. Sara & Eng. Tewodros Official Invitation Card">
+            <div style="margin-top: 1.2rem; text-align: center;">
+                <a href="image.png" download="Dr_Sara_Eng_Tewodros_Invitation.png" class="btn-primary"
+                    data-i18n="btn_download_card">
+                    📥 Download Card
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
+
 </html>
