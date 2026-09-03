@@ -101,64 +101,60 @@
                     <div class="gold-divider">✦ ✤ ✦</div>
                 </div>
 
-                <div class="save-the-date-grid">
-                    <!-- Symmetrical Countdown Card (Left) -->
-                    <div class="countdown-glass-card">
-                        <div class="cal-header-row">
-                            <div class="cal-month-title" data-i18n="countdown_header">Countdown</div>
-                            <span class="cal-year-badge" data-i18n="cal_badge_day">Sept 20</span>
+                <div class="save-date-unified-card">
+                    <div class="cal-header-row">
+                        <div class="cal-month-title" id="calMonthTitle" data-i18n="calendar_header">September 2026</div>
+                        <span class="cal-year-badge" id="calBadgeDay" data-i18n="cal_badge_day">Sept 20</span>
+                    </div>
+
+                    <div class="save-date-unified-body">
+                        <!-- Countdown Section -->
+                        <div class="unified-countdown-col">
+                            <div class="countdown-label-dynamic" id="timerLabel" data-i18n="timer_label">Days until our wedding</div>
+
+                            <div class="timer-tiles-grid">
+                                <div class="time-tile">
+                                    <div class="time-tile-number" id="days">00</div>
+                                    <div class="time-tile-unit" data-i18n="unit_days">Days</div>
+                                </div>
+                                <div class="time-tile">
+                                    <div class="time-tile-number" id="hours">00</div>
+                                    <div class="time-tile-unit" data-i18n="unit_hrs">Hours</div>
+                                </div>
+                                <div class="time-tile">
+                                    <div class="time-tile-number" id="minutes">00</div>
+                                    <div class="time-tile-unit" data-i18n="unit_min">Mins</div>
+                                </div>
+                                <div class="time-tile">
+                                    <div class="time-tile-number" id="seconds">00</div>
+                                    <div class="time-tile-unit" data-i18n="unit_sec">Secs</div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="countdown-label-dynamic" id="timerLabel" data-i18n="timer_label">Days until our
-                            wedding</div>
-
-                        <div class="timer-tiles-grid">
-                            <div class="time-tile">
-                                <div class="time-tile-number" id="days">00</div>
-                                <div class="time-tile-unit" data-i18n="unit_days">Days</div>
+                        <!-- Calendar Grid Section -->
+                        <div class="unified-calendar-col">
+                            <div class="cal-grid-weekdays">
+                                <span data-i18n="day_sun">Sun</span>
+                                <span data-i18n="day_mon">Mon</span>
+                                <span data-i18n="day_tue">Tue</span>
+                                <span data-i18n="day_wed">Wed</span>
+                                <span data-i18n="day_thu">Thu</span>
+                                <span data-i18n="day_fri">Fri</span>
+                                <span data-i18n="day_sat">Sat</span>
                             </div>
-                            <div class="time-tile">
-                                <div class="time-tile-number" id="hours">00</div>
-                                <div class="time-tile-unit" data-i18n="unit_hrs">Hours</div>
+                            <div class="cal-grid-days" id="calendarDaysGrid">
+                                <!-- Dynamically populated per language -->
                             </div>
-                            <div class="time-tile">
-                                <div class="time-tile-number" id="minutes">00</div>
-                                <div class="time-tile-unit" data-i18n="unit_min">Mins</div>
-                            </div>
-                            <div class="time-tile">
-                                <div class="time-tile-number" id="seconds">00</div>
-                                <div class="time-tile-unit" data-i18n="unit_sec">Secs</div>
-                            </div>
-                        </div>
-
-                        <div class="countdown-action-wrapper">
-                            <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%92%8D+Wedding+of+Dr.+Sara+Ayele+%26+Eng.+Tewodros+Belay&dates=20260920T070000Z/20260920T180000Z&details=Joyous+wedding+celebration+of+Dr.+Sara+Ayele+and+Eng.+Tewodros+Belay.%0A%22For+every+house+is+built+by+someone%2C+but+God+is+the+builder+of+everything.%22+%E2%80%94+Hebrews+3%3A4&location=Dila+%26+Central+Hotel%2C+Hawassa%2C+Ethiopia"
-                                target="_blank" rel="noopener noreferrer" class="btn-primary full-action-btn"
-                                id="googleCalBtn" data-i18n="btn_add_calendar">
-                                Add to My Calendar
-                            </a>
                         </div>
                     </div>
 
-                    <!-- Symmetrical Calendar Card (Right) -->
-                    <div class="calendar-glass-card">
-                        <div class="cal-header-row">
-                            <div class="cal-month-title" id="calMonthTitle" data-i18n="calendar_header">September 2026
-                            </div>
-                            <span class="cal-year-badge" id="calBadgeDay" data-i18n="cal_badge_day">Sept 20</span>
-                        </div>
-                        <div class="cal-grid-weekdays">
-                            <span data-i18n="day_sun">Sun</span>
-                            <span data-i18n="day_mon">Mon</span>
-                            <span data-i18n="day_tue">Tue</span>
-                            <span data-i18n="day_wed">Wed</span>
-                            <span data-i18n="day_thu">Thu</span>
-                            <span data-i18n="day_fri">Fri</span>
-                            <span data-i18n="day_sat">Sat</span>
-                        </div>
-                        <div class="cal-grid-days" id="calendarDaysGrid">
-                            <!-- Dynamically populated per language -->
-                        </div>
+                    <div class="countdown-action-wrapper">
+                        <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%92%8D+Wedding+of+Dr.+Sara+Ayele+%26+Eng.+Tewodros+Belay&dates=20260920T070000Z/20260920T180000Z&details=Joyous+wedding+celebration+of+Dr.+Sara+Ayele+and+Eng.+Tewodros+Belay.%0A%22For+every+house+is+built+by+someone%2C+but+God+is+the+builder+of+everything.%22+%E2%80%94+Hebrews+3%3A4&location=Dila+%26+Central+Hotel%2C+Hawassa%2C+Ethiopia"
+                            target="_blank" rel="noopener noreferrer" class="btn-primary full-action-btn"
+                            id="googleCalBtn" data-i18n="btn_add_calendar">
+                            Add to My Calendar
+                        </a>
                     </div>
                 </div>
             </section>

@@ -166,8 +166,7 @@ body.theme-light .hero-card .hero-meta-badge {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
-body.theme-light .countdown-glass-card,
-body.theme-light .calendar-glass-card {
+body.theme-light .save-date-unified-card {
   background: #ffffff;
   border-color: rgba(180, 140, 45, 0.25);
   box-shadow: 0 8px 24px rgba(60, 45, 30, 0.08);
@@ -973,42 +972,49 @@ body.lang-am, body.lang-ao {
 /* ==========================================================================
    SAVE THE DATE & LUXURY COUNTDOWN & CALENDAR
    ========================================================================== */
-.save-the-date-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.8rem;
-  align-items: start;
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-}
-
-@media (max-width: 840px) {
-  .save-the-date-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    max-width: 480px;
-  }
-}
-
-/* Symmetrical Countdown & Calendar Cards */
-.countdown-glass-card,
-.calendar-glass-card {
+/* Unified Save the Date Card (Single card, zero duplication) */
+.save-date-unified-card {
   background: rgba(12, 14, 20, 0.85);
   border: 1px solid var(--gold-border);
   border-radius: var(--radius-lg);
   padding: 1.6rem 1.4rem;
   box-shadow: var(--shadow-subtle);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
   width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
-#saveDateSection {
-  overflow: visible;
+.save-date-unified-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.8rem;
+  align-items: center;
+  margin-top: 0.6rem;
+}
+
+.unified-countdown-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.unified-calendar-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .save-date-unified-card {
+    padding: 1.2rem 1rem;
+    border-radius: var(--radius-md);
+  }
+
+  .save-date-unified-body {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
 }
 
 .cal-header-row {
@@ -1095,7 +1101,7 @@ body.lang-am, body.lang-ao {
 }
 
 .countdown-action-wrapper {
-  margin-top: auto;
+  margin-top: 1.4rem;
   width: 100%;
 }
 
@@ -2150,9 +2156,8 @@ footer {
     font-size: 0.58rem;
     letter-spacing: 0.8px;
   }
-  .countdown-glass-card,
-  .calendar-glass-card {
-    padding: 1.1rem 0.85rem;
+  .save-date-unified-card {
+    padding: 1rem 0.8rem;
   }
   .cal-month-title {
     font-size: 1rem;
