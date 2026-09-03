@@ -17,8 +17,8 @@
            ========================================================================== */
         :root {
             --dash-bg: #07080b;
-            --dash-card-bg: rgba(16, 18, 26, 0.88);
-            --dash-card-border: rgba(212, 175, 55, 0.32);
+            --dash-card-bg: #141724;
+            --dash-card-border: transparent;
             --dash-gold: #d4af37;
             --dash-gold-bright: #fceda9;
             --dash-text: #fbf8f2;
@@ -26,9 +26,9 @@
         }
 
         body.theme-light {
-            --dash-bg: #f6f1ea;
+            --dash-bg: #eee7dd;
             --dash-card-bg: #ffffff;
-            --dash-card-border: rgba(180, 140, 45, 0.3);
+            --dash-card-border: transparent;
             --dash-gold: #a8811d;
             --dash-gold-bright: #6b5114;
             --dash-text: #251e18;
@@ -57,7 +57,7 @@
             text-align: center;
             padding: 1.2rem 0.5rem 1.4rem;
             margin-bottom: 1.2rem;
-            border-bottom: 1px solid var(--dash-card-border);
+            border-bottom: none;
             position: relative;
         }
 
@@ -145,7 +145,7 @@
 
         .dash-stat-tile {
             background: var(--dash-card-bg);
-            border: 1px solid var(--dash-card-border);
+            border: none;
             border-radius: var(--radius-sm);
             padding: 1rem 0.8rem;
             text-align: center;
@@ -155,13 +155,7 @@
         }
 
         .dash-stat-tile::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--gold-gradient);
+            display: none;
         }
 
         .dash-stat-icon {
@@ -253,13 +247,14 @@
            -------------------------------------------------------------------------- */
         .dash-controls-card {
             background: var(--dash-card-bg);
-            border: 1px solid var(--dash-card-border);
+            border: none;
             border-radius: var(--radius-md);
             padding: 1rem 0.9rem;
             margin-bottom: 1.2rem;
             display: flex;
             flex-direction: column;
             gap: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
 
         .dash-search-wrapper {
@@ -271,7 +266,7 @@
             width: 100%;
             padding: 11px 38px 11px 38px;
             background: rgba(8, 10, 15, 0.85);
-            border: 1px solid var(--dash-card-border);
+            border: none;
             border-radius: var(--radius-full);
             color: var(--dash-text);
             font-size: 0.88rem;
@@ -281,6 +276,7 @@
 
         body.theme-light .dash-search-input {
             background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .dash-search-input:focus {
@@ -412,7 +408,7 @@
 
         .dash-guest-card {
             background: var(--dash-card-bg);
-            border: 1px solid var(--dash-card-border);
+            border: none;
             border-radius: var(--radius-sm);
             padding: 1rem 0.95rem;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.18);
@@ -420,7 +416,7 @@
         }
 
         .dash-guest-card:hover {
-            border-color: var(--dash-gold);
+            transform: translateY(-2px);
         }
 
         .guest-card-top {
