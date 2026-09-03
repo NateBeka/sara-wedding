@@ -277,7 +277,7 @@ function getWelcomeMessage(userLang = 'en', user = {}) {
     const name = user.first_name || 'Honored Guest';
     if (userLang === 'am') {
         return (
-`👑 <b>የዶ/ር ሳራ አየለ እና ኢ/ር ቴዎድሮስ በላይ የሰርግ በዓል</b> 👑
+            `👑 <b>የዶ/ር ሳራ አየለ እና ኢ/ር ቴዎድሮስ በላይ የሰርግ በዓል</b> 👑
 ✦ ══════════════════════════ ✦
 
 እንኳን ወደ ክብርት <b>ዶ/ር ሳራ አየለ</b> እና ክቡር <b>ኢ/ር ቴዎድሮስ በላይ</b> ይፋዊ የሰርግ ቦት በደህና መጡ!
@@ -292,7 +292,7 @@ function getWelcomeMessage(userLang = 'en', user = {}) {
         );
     } else if (userLang === 'ao') {
         return (
-`👑 <b>Ayyaana Cidha Dr. Sara Ayele & Eng. Tewodros Belay</b> 👑
+            `👑 <b>Ayyaana Cidha Dr. Sara Ayele & Eng. Tewodros Belay</b> 👑
 ✦ ══════════════════════════ ✦
 
 Baga nagaan gara Boottii Cidha <b>Dr. Sara Ayele</b> fi <b>Eng. Tewodros Belay</b> dhuftan!
@@ -308,7 +308,7 @@ Sagantaa cidhaa, deebii RSVP kennuu fi kaartaa argachuuf qabduulee armaan gadii 
     }
 
     return (
-`👑 <b>ROYAL WEDDING CELEBRATION</b> 👑
+        `👑 <b>ROYAL WEDDING CELEBRATION</b> 👑
 <b>Dr. Sara Ayele & Eng. Tewodros Belay</b>
 ✦ ══════════════════════════ ✦
 
@@ -327,7 +327,7 @@ Kindly use the menu below to RSVP, explore the event schedule, find venue direct
 function getScheduleMessage(userLang = 'en') {
     if (userLang === 'am') {
         return (
-`📅 <b>የሰርግ ቀን ሙሉ መርሃ ግብር</b>
+            `📅 <b>የሰርግ ቀን ሙሉ መርሃ ግብር</b>
 <b>እሁድ መስከረም 10 ቀን 2018 ዓ.ም (Sept 20, 2026)</b>
 ✦ ══════════════════════════ ✦
 
@@ -358,13 +358,13 @@ function getScheduleMessage(userLang = 'en') {
     }
 
     return (
-`📅 <b>WEDDING DAY SCHEDULE & PROCESSION</b>
+        `📅 <b>WEDDING DAY SCHEDULE & PROCESSION</b>
 <b>Sunday, September 20, 2026 (መስከረም 10, 2018)</b>
 ✦ ══════════════════════════ ✦
 
 <b>1️⃣ 10:00 AM - 12:00 PM</b>
 🚗 <b>Journey to Bride's Residence</b>
-Departure of the wedding entourage to Bulala
+Departure of the wedding entourage to Dila
 
 <b>2️⃣ 12:00 PM - 12:15 PM</b>
 💐 <b>Arrival & Welcoming</b>
@@ -372,7 +372,7 @@ Warm reception at the Bride's family home
 
 <b>3️⃣ 12:15 PM - 03:00 PM</b>
 🍽️ <b>Luncheon, Blessings & Portraits</b>
-Parental blessings and wedding feast at Bulala
+Parental blessings and wedding feast at Dila
 
 <b>4️⃣ 03:00 PM - 05:00 PM</b>
 🎺 <b>Grand Procession to Hawassa</b>
@@ -391,13 +391,13 @@ Dinner reception, cake ceremony & dancing at Central Hotel Hawassa! 🎉`
 function getVenuesMessage(userLang = 'en') {
     if (userLang === 'am') {
         return (
-`📍 <b>የክብረ በዓሉ መገኛ ቦታዎችና ካርታ</b>
+            `📍 <b>የክብረ በዓሉ መገኛ ቦታዎችና ካርታ</b>
 ✦ ══════════════════════════ ✦
 
 <b>🏠 1. የሙሽሪት መኖሪያ ቤት (Morning & Luncheon)</b>
 • <b>ቦታ:</b> ቡላላ ቅርንጫፍ ት/ቤት አጠገብ፣ ቡላላ
 • <b>ሰዓት:</b> ከጠዋቱ 12:00 PM - 03:00 PM
-• <b>አድራሻ:</b> Bulala, Ethiopia
+• <b>አድራሻ:</b> Dila, Ethiopia
 
 <b>🏨 2. ሴንትራል ሆቴል ሀዋሳ (Evening Gala Reception)</b>
 • <b>ቦታ:</b> ሴንትራል ሆቴል አዳራሽ፣ ሀዋሳ
@@ -409,11 +409,11 @@ function getVenuesMessage(userLang = 'en') {
     }
 
     return (
-`📍 <b>EVENT VENUES & NAVIGATION</b>
+        `📍 <b>EVENT VENUES & NAVIGATION</b>
 ✦ ══════════════════════════ ✦
 
 <b>🏠 1. Bride's Residence (Morning Luncheon)</b>
-• <b>Location:</b> Near Bulala Branch School, Bulala
+• <b>Location:</b> Near Dila Branch School, Dila
 • <b>Time:</b> 12:00 PM - 03:00 PM
 • <b>Details:</b> Family blessings & wedding luncheon
 
@@ -559,7 +559,7 @@ async function handleRsvpStep(botToken, chatId, session, action, callbackQuery =
 
     if (session.step === 'AWAIT_WISHES') {
         session.data.message = textInput || (isAm ? 'ከልብ የመነጨ መልካም ምኞት!' : 'Warmest congratulations and blessings!');
-        
+
         // Finalize RSVP
         await finalizeRsvp(botToken, chatId, session);
         userSessions.delete(chatId);
@@ -590,23 +590,23 @@ async function finalizeRsvp(botToken, chatId, session) {
     // Confirmation message to the guest
     const confirmMsg = isAm
         ? `🎉 <b>እናመሰግናለን ${rsvp.guestName}!</b>\n✦ ══════════════════════════ ✦\n\nምላሽዎ በደስታ ተመዝግቧል!\n\n` +
-          `• <b>ተሳትፎ:</b> ${rsvp.isAttending ? 'አዎ፣ በደስታ እገኛለሁ 💐' : 'አልችልም 💌'}\n` +
-          (rsvp.isAttending ? `• <b>የእንግዶች ብዛት:</b> ${rsvp.guestCount}\n` : '') +
-          `• <b>ዝምድና:</b> ${rsvp.relation}\n` +
-          `• <b>ምርቃት:</b> <i>"${rsvp.message}"</i>\n\n` +
-          `መስከረም 10 ቀን 2018 ዓ.ም በሀዋሳ በደስታ እንገናኝ! 💛`
+        `• <b>ተሳትፎ:</b> ${rsvp.isAttending ? 'አዎ፣ በደስታ እገኛለሁ 💐' : 'አልችልም 💌'}\n` +
+        (rsvp.isAttending ? `• <b>የእንግዶች ብዛት:</b> ${rsvp.guestCount}\n` : '') +
+        `• <b>ዝምድና:</b> ${rsvp.relation}\n` +
+        `• <b>ምርቃት:</b> <i>"${rsvp.message}"</i>\n\n` +
+        `መስከረም 10 ቀን 2018 ዓ.ም በሀዋሳ በደስታ እንገናኝ! 💛`
         : `🎉 <b>THANK YOU, ${rsvp.guestName}!</b>\n✦ ══════════════════════════ ✦\n\nYour RSVP has been joyfully recorded!\n\n` +
-          `• <b>Attendance:</b> ${rsvp.isAttending ? 'Yes, Delighted! 💐' : 'Regretfully No 💌'}\n` +
-          (rsvp.isAttending ? `• <b>Party Size:</b> ${rsvp.guestCount} guests\n` : '') +
-          `• <b>Relation:</b> ${rsvp.relation}\n` +
-          `• <b>Blessings:</b> <i>"${rsvp.message}"</i>\n\n` +
-          `We eagerly anticipate celebrating together on September 20, 2026 in Hawassa! 💛`;
+        `• <b>Attendance:</b> ${rsvp.isAttending ? 'Yes, Delighted! 💐' : 'Regretfully No 💌'}\n` +
+        (rsvp.isAttending ? `• <b>Party Size:</b> ${rsvp.guestCount} guests\n` : '') +
+        `• <b>Relation:</b> ${rsvp.relation}\n` +
+        `• <b>Blessings:</b> <i>"${rsvp.message}"</i>\n\n` +
+        `We eagerly anticipate celebrating together on September 20, 2026 in Hawassa! 💛`;
 
     await sendMessage(botToken, chatId, confirmMsg, getMainKeyboard(session.lang, false));
 
     // Send instant priority push alert to Sara & Tewodros
-    const adminAlert = 
-`👑 <b>NEW ROYAL WEDDING RSVP!</b> 👑
+    const adminAlert =
+        `👑 <b>NEW ROYAL WEDDING RSVP!</b> 👑
 ✦ ══════════════════════════ ✦
 👤 <b>Guest:</b> ${rsvp.guestName} ${rsvp.username ? `(@${rsvp.username})` : ''}
 ✅ <b>Attending:</b> ${rsvp.attending}
@@ -627,8 +627,8 @@ async function handleAdminPanel(botToken, chatId, user, userLang = 'en') {
 
     if (!isAdmin) {
         // Invite Sara or Tewodros to claim admin rights securely
-        const claimPrompt = 
-`👑 <b>ROYAL WEDDING ADMIN ACCESS</b>
+        const claimPrompt =
+            `👑 <b>ROYAL WEDDING ADMIN ACCESS</b>
 ✦ ══════════════════════════ ✦
 
 Welcome! This section is reserved for the Bride & Groom:
@@ -653,8 +653,8 @@ If you are <b>Sara</b> or <b>Tewodros</b>, please type your private Admin Passco
     const declines = rsvps.filter(r => !r.isAttending).length;
     const momentsCount = (dataStore.moments || []).length;
 
-    const adminMsg = 
-`👑 <b>ADMIN CONTROL CENTER</b>
+    const adminMsg =
+        `👑 <b>ADMIN CONTROL CENTER</b>
 <b>Dr. Sara Ayele & Eng. Tewodros Belay</b>
 ✦ ══════════════════════════ ✦
 
@@ -697,8 +697,8 @@ async function handleAdminClaim(botToken, chatId, user, passcodeProvided, userLa
         saveConfig(config);
         userSessions.delete(chatId);
 
-        const successMsg = 
-`🎉 <b>ADMIN PRIVILEGES GRANTED!</b>
+        const successMsg =
+            `🎉 <b>ADMIN PRIVILEGES GRANTED!</b>
 ✦ ══════════════════════════ ✦
 
 Welcome, <b>${matchedAdmin.name}</b>!
@@ -888,7 +888,7 @@ async function processUpdate(botToken, update) {
                     try {
                         await sendMessage(botToken, gid, `👑 <b>ROYAL WEDDING ANNOUNCEMENT</b>\n<b>From Dr. Sara & Eng. Tewodros:</b>\n\n${text}`);
                         sent++;
-                    } catch (e) {}
+                    } catch (e) { }
                 }
                 await sendMessage(botToken, chatId, `✅ Announcement delivered to ${sent} guests!`);
                 return;

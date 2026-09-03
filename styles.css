@@ -542,6 +542,7 @@ body.lang-am, body.lang-ao {
   background-position: center 20%;
   background-size: cover;
   background-repeat: no-repeat;
+  cursor: pointer;
   transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease;
   overflow: hidden;
   padding: 1.5rem 1.2rem 3rem;

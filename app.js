@@ -74,13 +74,13 @@ const translations = {
         timeline_subtitle: "Wedding Day Schedule & Procession",
         timeline_1_time: "10:00 AM - 12:00 PM",
         timeline_1_title: "Journey to Bride's Residence",
-        timeline_1_desc: "Departure of the wedding entourage to the Bride's residence in Bulala",
+        timeline_1_desc: "Departure of the wedding entourage to the Bride's residence in Dila",
         timeline_2_time: "12:00 PM - 12:15 PM",
         timeline_2_title: "Arrival at Bride's Residence",
         timeline_2_desc: "Arrival and warm welcoming reception at the Bride's family residence",
         timeline_3_time: "12:15 PM - 03:00 PM",
         timeline_3_title: "Blessings & Luncheon at Bride's House",
-        timeline_3_desc: "Parental blessings, wedding feast, luncheon, and portraits at Bulala",
+        timeline_3_desc: "Parental blessings, wedding feast, luncheon, and portraits at Dila",
         timeline_4_time: "03:00 PM - 05:00 PM",
         timeline_4_title: "Grand Procession to Hawassa",
         timeline_4_desc: "Joyous convoy and motorcade procession traveling to Hawassa",
@@ -94,8 +94,8 @@ const translations = {
         locations_heading: '<span class="title-icon">📍</span> <span class="title-text">Event Locations</span>',
         locations_subtitle: "Easily find your way with interactive maps and navigation",
         loc_badge_day: "12:00 PM - 3:00 PM • Morning & Luncheon",
-        loc_bulala_title: "Bride's Residence",
-        loc_bulala_desc: "Near Bulala Branch School, Bulala, Ethiopia",
+        loc_Dila_title: "Bride's Residence",
+        loc_Dila_desc: "Near Dila Branch School, Dila, Ethiopia",
         loc_badge_night: "6:00 PM - 9:00 PM • Evening Banquet & Gala",
         loc_central_title: "Central Hotel",
         loc_central_desc: "Central Hotel, Hawassa, Ethiopia",
@@ -184,8 +184,8 @@ const translations = {
         locations_heading: '<span class="title-icon">📍</span> <span class="title-text">የክብረ በዓሉ ቦታዎች</span>',
         locations_subtitle: "በቀላሉ ወደ ቦታዎቹ ለመድረስ የካርታ መመሪያዎችን ይጠቀሙ",
         loc_badge_day: "12:00 - 3:00 • የጠዋትና የምሳ ዝግጅት",
-        loc_bulala_title: "የሙሽሪት መኖሪያ ቤት (ቡላላ)",
-        loc_bulala_desc: "ቡላላ ቅርንጫፍ ት/ቤት አጠገብ ፣ ቡላላ ፣ ኢትዮጵያ",
+        loc_Dila_title: "የሙሽሪት መኖሪያ ቤት (ቡላላ)",
+        loc_Dila_desc: "ዲላ ቅርንጫፍ ት/ቤት አጠገብ ፣ ቡላላ ፣ ኢትዮጵያ",
         loc_badge_night: "6:00 - 9:00 • የምሽት የእራት ግብዣ",
         loc_central_title: "ሴንትራል ሆቴል",
         loc_central_desc: "ሴንትራል ሆቴል ፣ ሀዋሳ ፣ ኢትዮጵያ",
@@ -544,9 +544,10 @@ function unveilInvitation() {
     }
 }
 
-if (openSealBtn) {
-    openSealBtn.addEventListener('click', unveilInvitation);
-    openSealBtn.addEventListener('keydown', (e) => {
+// Click or tap anywhere on the first page (or on the button) to open invitation
+if (royalSplash) {
+    royalSplash.addEventListener('click', unveilInvitation);
+    royalSplash.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') unveilInvitation();
     });
 }
