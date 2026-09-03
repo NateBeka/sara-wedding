@@ -46,6 +46,7 @@ const translations = {
         splash_subtitle: "Royal Wedding Invitation",
         splash_title: "Dr. Sara & Eng. Tewodros",
         splash_tap: "✨ Open Invitation ✨",
+        splash_hint: "✦ Tap anywhere to enter ✦",
         middle_date_main: "Sunday, September 20, 2026",
         fancy_title: "DR. SARA AYELE & ENG. TEWODROS BELAY",
         hero_tagline: "Eternal Love & Blessings",
@@ -136,6 +137,7 @@ const translations = {
         splash_subtitle: "የክብር የጋብቻ ጥሪ",
         splash_title: "ዶ/ር ሳራ እና ኢ/ር ቴዎድሮስ",
         splash_tap: "✨ ጥሪውን ይክፈቱ ✨",
+        splash_hint: "✦ ለመግባት የትም ይንኩ ✦",
         middle_date_main: "እሑድ መስከረም 10 ቀን 2018 ዓ.ም",
         fancy_title: "ዶ/ር ሳራ አየለ እና ኢ/ር ቴዎድሮስ በላይ",
         hero_tagline: "ዘላለማዊ ፍቅርና በረከት",
@@ -259,11 +261,41 @@ function toggleLanguage() {
 }
 
 // --------------------------------------------------------------------------
-// 1. FLOATING PARTICLES & GOLDEN BOKEH CANVAS
+// 1. CELESTIAL MOVING STARS & FLOATING STARDUST (OVER CARDS)
 // --------------------------------------------------------------------------
 const sparkleCanvas = document.getElementById('sparkleCanvas');
 let sparkleCtx = null;
-let sparkles = [];
+let celestialStars = [];
+let shootingStars = [];
+let cursorStars = [];
+let lastShootingStarTime = 0;
+
+function drawStar4Point(ctx, cx, cy, spikes, outerRadius, innerRadius, rot, alpha, color) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.translate(cx, cy);
+    ctx.rotate(rot);
+    let step = Math.PI / spikes;
+    for (let i = 0; i < 2 * spikes; i++) {
+        let r = (i % 2 === 0) ? outerRadius : innerRadius;
+        let x = Math.cos(i * step) * r;
+        let y = Math.sin(i * step) * r;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = `rgba(${color}, ${alpha})`;
+    ctx.shadowBlur = outerRadius * 2.5;
+    ctx.shadowColor = `rgba(${color}, ${alpha * 0.9})`;
+    ctx.fill();
+
+    // Central bright flare point
+    ctx.beginPath();
+    ctx.arc(0, 0, Math.max(0.5, innerRadius * 0.8), 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, alpha * 1.4)})`;
+    ctx.fill();
+    ctx.restore();
+}
 
 function initSparkles() {
     if (!sparkleCanvas) return;
@@ -271,22 +303,50 @@ function initSparkles() {
     resizeSparkleCanvas();
     window.addEventListener('resize', resizeSparkleCanvas);
 
-    const count = window.innerWidth < 768 ? 30 : 60;
-    sparkles = [];
-    for (let i = 0; i < count; i++) {
-        sparkles.push({
+    // Track mouse / touch for interactive stardust over cards
+    window.addEventListener('pointermove', onPointerMoveSparkle, { passive: true });
+
+    const isMobile = window.innerWidth < 768;
+    const starCount = isMobile ? 45 : 85;
+    celestialStars = [];
+
+    for (let i = 0; i < starCount; i++) {
+        const isStarShape = Math.random() > 0.45;
+        celestialStars.push({
             x: Math.random() * sparkleCanvas.width,
             y: Math.random() * sparkleCanvas.height,
-            size: Math.random() * 2.2 + 0.8,
-            speedY: Math.random() * 0.35 + 0.12,
-            speedX: (Math.random() - 0.5) * 0.25,
-            alpha: Math.random() * 0.7 + 0.2,
-            alphaChange: (Math.random() * 0.02 + 0.005) * (Math.random() > 0.5 ? 1 : -1),
-            color: Math.random() > 0.3 ? '245, 215, 127' : '255, 244, 208'
+            isStar: isStarShape,
+            size: isStarShape ? Math.random() * 4 + 2.5 : Math.random() * 2 + 0.8,
+            vx: (Math.random() - 0.5) * 0.35,
+            vy: -(Math.random() * 0.4 + 0.15),
+            rot: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.015,
+            baseAlpha: Math.random() * 0.6 + 0.35,
+            twinkleSpeed: Math.random() * 0.04 + 0.015,
+            twinklePhase: Math.random() * Math.PI * 2,
+            color: Math.random() > 0.25 ? '212, 175, 55' : '255, 245, 215'
         });
     }
 
-    requestAnimationFrame(renderSparkles);
+    lastShootingStarTime = Date.now();
+    requestAnimationFrame(renderCelestialField);
+}
+
+function onPointerMoveSparkle(e) {
+    if (cursorStars.length > 25) return;
+    if (Math.random() > 0.65) {
+        cursorStars.push({
+            x: e.clientX + (Math.random() - 0.5) * 12,
+            y: e.clientY + (Math.random() - 0.5) * 12,
+            size: Math.random() * 3.5 + 1.5,
+            vx: (Math.random() - 0.5) * 0.8,
+            vy: (Math.random() - 0.5) * 0.8 - 0.3,
+            rot: Math.random() * Math.PI,
+            alpha: 0.85,
+            decay: Math.random() * 0.03 + 0.02,
+            color: '212, 175, 55'
+        });
+    }
 }
 
 function resizeSparkleCanvas() {
@@ -295,35 +355,122 @@ function resizeSparkleCanvas() {
     sparkleCanvas.height = window.innerHeight;
 }
 
-function renderSparkles() {
+function spawnShootingStar() {
+    const startX = Math.random() * (sparkleCanvas.width * 0.8);
+    const startY = Math.random() * (sparkleCanvas.height * 0.45);
+    const length = Math.random() * 140 + 100;
+    const speed = Math.random() * 8 + 7;
+    const angle = (Math.PI / 4) + (Math.random() - 0.5) * 0.25;
+
+    shootingStars.push({
+        x: startX,
+        y: startY,
+        dx: Math.cos(angle) * speed,
+        dy: Math.sin(angle) * speed,
+        len: length,
+        life: 1.0,
+        decay: Math.random() * 0.015 + 0.012
+    });
+}
+
+function renderCelestialField() {
     if (!sparkleCtx) return;
     sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
 
-    for (let s of sparkles) {
-        s.y -= s.speedY;
-        s.x += s.speedX;
-        s.alpha += s.alphaChange;
+    // 1. Render Floating Ambient & Diamond Stars
+    for (let s of celestialStars) {
+        s.x += s.vx;
+        s.y += s.vy;
+        s.rot += s.rotSpeed;
+        s.twinklePhase += s.twinkleSpeed;
 
-        if (s.alpha > 0.85 || s.alpha < 0.15) {
-            s.alphaChange = -s.alphaChange;
-        }
-
-        if (s.y < -10) {
+        if (s.y < -15) {
             s.y = sparkleCanvas.height + 10;
             s.x = Math.random() * sparkleCanvas.width;
+        } else if (s.y > sparkleCanvas.height + 15) {
+            s.y = -10;
         }
-        if (s.x < -10) s.x = sparkleCanvas.width + 10;
-        if (s.x > sparkleCanvas.width + 10) s.x = -10;
+        if (s.x < -15) s.x = sparkleCanvas.width + 10;
+        else if (s.x > sparkleCanvas.width + 15) s.x = -10;
 
-        sparkleCtx.beginPath();
-        sparkleCtx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-        sparkleCtx.fillStyle = `rgba(${s.color}, ${Math.max(0, s.alpha)})`;
-        sparkleCtx.shadowBlur = 6;
-        sparkleCtx.shadowColor = `rgba(${s.color}, 0.7)`;
-        sparkleCtx.fill();
+        const currentAlpha = Math.max(0.1, s.baseAlpha * (0.65 + 0.35 * Math.sin(s.twinklePhase)));
+
+        if (s.isStar) {
+            drawStar4Point(sparkleCtx, s.x, s.y, 4, s.size, s.size * 0.25, s.rot, currentAlpha, s.color);
+        } else {
+            sparkleCtx.save();
+            sparkleCtx.beginPath();
+            sparkleCtx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+            sparkleCtx.fillStyle = `rgba(${s.color}, ${currentAlpha})`;
+            sparkleCtx.shadowBlur = s.size * 3;
+            sparkleCtx.shadowColor = `rgba(${s.color}, ${currentAlpha * 0.8})`;
+            sparkleCtx.fill();
+            sparkleCtx.restore();
+        }
     }
 
-    requestAnimationFrame(renderSparkles);
+    // 2. Render Interactive Cursor Stardust
+    for (let i = cursorStars.length - 1; i >= 0; i--) {
+        const c = cursorStars[i];
+        c.x += c.vx;
+        c.y += c.vy;
+        c.alpha -= c.decay;
+
+        if (c.alpha <= 0) {
+            cursorStars.splice(i, 1);
+            continue;
+        }
+
+        drawStar4Point(sparkleCtx, c.x, c.y, 4, c.size, c.size * 0.25, c.rot, c.alpha, c.color);
+    }
+
+    // 3. Periodic Shooting Star
+    const now = Date.now();
+    if (now - lastShootingStarTime > 4500 + Math.random() * 3000) {
+        spawnShootingStar();
+        lastShootingStarTime = now;
+    }
+
+    // 4. Render Shooting Stars
+    for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const meteor = shootingStars[i];
+        meteor.x += meteor.dx;
+        meteor.y += meteor.dy;
+        meteor.life -= meteor.decay;
+
+        if (meteor.life <= 0 || meteor.x > sparkleCanvas.width + 100 || meteor.y > sparkleCanvas.height + 100) {
+            shootingStars.splice(i, 1);
+            continue;
+        }
+
+        const tailX = meteor.x - (meteor.dx / Math.hypot(meteor.dx, meteor.dy)) * meteor.len;
+        const tailY = meteor.y - (meteor.dy / Math.hypot(meteor.dx, meteor.dy)) * meteor.len;
+
+        const grad = sparkleCtx.createLinearGradient(tailX, tailY, meteor.x, meteor.y);
+        grad.addColorStop(0, 'rgba(212, 175, 55, 0)');
+        grad.addColorStop(0.7, `rgba(212, 175, 55, ${meteor.life * 0.4})`);
+        grad.addColorStop(1, `rgba(255, 255, 255, ${meteor.life * 0.9})`);
+
+        sparkleCtx.save();
+        sparkleCtx.beginPath();
+        sparkleCtx.moveTo(tailX, tailY);
+        sparkleCtx.lineTo(meteor.x, meteor.y);
+        sparkleCtx.strokeStyle = grad;
+        sparkleCtx.lineWidth = 2.2;
+        sparkleCtx.shadowBlur = 10;
+        sparkleCtx.shadowColor = 'rgba(212, 175, 55, 0.8)';
+        sparkleCtx.stroke();
+
+        sparkleCtx.beginPath();
+        sparkleCtx.arc(meteor.x, meteor.y, 2.5, 0, Math.PI * 2);
+        sparkleCtx.fillStyle = `rgba(255, 255, 255, ${meteor.life})`;
+        sparkleCtx.shadowBlur = 14;
+        sparkleCtx.shadowColor = '#d4af37';
+        sparkleCtx.fill();
+        sparkleCtx.restore();
+    }
+
+    requestAnimationFrame(renderCelestialField);
 }
 
 // --------------------------------------------------------------------------
@@ -538,9 +685,11 @@ function unveilInvitation() {
             royalSplash.style.display = 'none';
             if (mainContent) mainContent.classList.add('show');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            triggerScrollRevealCheck();
         }, 600);
     } else {
         if (mainContent) mainContent.classList.add('show');
+        triggerScrollRevealCheck();
     }
 }
 
@@ -1054,6 +1203,42 @@ async function syncBotInfo() {
 }
 
 // --------------------------------------------------------------------------
+// 9.1. ULTRA-MODERN SCROLL REVEAL ANIMATIONS
+// --------------------------------------------------------------------------
+function initScrollAnimations() {
+    const revealElements = document.querySelectorAll('.reveal-on-scroll');
+    if (!revealElements.length) return;
+
+    if ('IntersectionObserver' in window) {
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-revealed');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+    } else {
+        revealElements.forEach(el => el.classList.add('is-revealed'));
+    }
+}
+
+function triggerScrollRevealCheck() {
+    const revealElements = document.querySelectorAll('.reveal-on-scroll');
+    revealElements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.92) {
+            el.classList.add('is-revealed');
+        }
+    });
+}
+
+// --------------------------------------------------------------------------
 // 10. INITIALIZATION
 // --------------------------------------------------------------------------
 function initApp() {
@@ -1063,6 +1248,7 @@ function initApp() {
     applyTheme(currentTheme);
     updateGuestVisibility();
     syncBotInfo();
+    initScrollAnimations();
 }
 
 if (document.readyState === 'loading') {

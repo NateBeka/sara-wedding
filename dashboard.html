@@ -1213,14 +1213,19 @@
             }
 
             grid.innerHTML = allMoments.map(m => {
-                const author = escapeHtml(m.sender_name || 'Guest');
+                const author = escapeHtml(m.sender_name || m.from_user || 'Guest');
                 const caption = escapeHtml(m.caption || '');
                 const dateStr = m.timestamp ? new Date(m.timestamp).toLocaleDateString() : '';
+                const imgWrap = m.file_path
+                    ? `<div class="moment-img-wrap" onclick="window.open('${m.file_path}', '_blank')">
+                         <img src="${m.file_path}" alt="Shared Moment by ${author}" loading="lazy">
+                       </div>`
+                    : `<div class="moment-img-wrap" style="display:flex;align-items:center;justify-content:center;background:rgba(212,175,55,0.08);color:var(--dash-gold-bright);font-size:2.5rem;">
+                         📸
+                       </div>`;
                 return `
                 <div class="moment-card">
-                    <div class="moment-img-wrap" onclick="window.open('${m.file_path}', '_blank')">
-                        <img src="${m.file_path}" alt="Shared Moment by ${author}" loading="lazy">
-                    </div>
+                    ${imgWrap}
                     <div class="moment-info">
                         <div class="moment-author">${author}</div>
                         ${caption ? `<div class="moment-caption">"${caption}"</div>` : ''}

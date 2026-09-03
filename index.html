@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Pinyon+Script&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Pinyon+Script&family=Noto+Sans+Ethiopic:wght@400;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -27,6 +27,14 @@
 
     <!-- Canvas for Confetti Celebration -->
     <canvas id="confettiCanvas"></canvas>
+
+    <!-- Ambient Floating Aurora / Glow Mesh for Glassmorphism Depth -->
+    <div class="ambient-glow-mesh" aria-hidden="true">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+        <div class="glow-orb orb-4"></div>
+    </div>
 
     <!-- FLOATING TOP BAR (Language Switcher, Theme Toggle & Music Controller) -->
     <header class="floating-controls" aria-label="Page Controls">
@@ -51,17 +59,19 @@
         </button>
     </header>
 
-    <!-- ROYAL INVITATION SPLASH (HERO PORTRAIT BACKGROUND - NO CARD) -->
+    <!-- ROYAL INVITATION SPLASH (CINEMATIC FULL PORTRAIT - ZERO CARD/NO BOX) -->
     <section class="royal-splash" id="royalSplash" role="button" tabindex="0" title="Click anywhere to open invitation"
         aria-label="Wedding Invitation Welcome - Click anywhere to open">
-        <div class="royal-envelope">
+        <div class="splash-cinematic-wrap">
+            <div class="splash-subtitle-badge" data-i18n="splash_subtitle">Royal Wedding Invitation</div>
             <h1 class="splash-couples" data-i18n="splash_title">Dr. Sara & Eng. Tewodros</h1>
+            <div class="splash-date-badge" data-i18n="middle_date_main">Sunday, September 20, 2026</div>
             <div class="splash-btn-wrap">
                 <button type="button" class="splash-action-btn" id="openInvitationBtn" data-i18n="splash_tap">
                     ✨ Open Invitation ✨
                 </button>
             </div>
-            <div class="splash-date-badge" data-i18n="middle_date_main">Sunday, September 20, 2026</div>
+            <div class="splash-tap-hint" data-i18n="splash_hint">✦ Tap anywhere to enter ✦</div>
         </div>
     </section>
 
@@ -70,7 +80,7 @@
         <div class="container">
 
             <!-- HERO CARD (USER PREFERRED DESIGN WITHOUT BUTTONS) -->
-            <section class="hero-card" id="heroSection" aria-label="Hero Section">
+            <section class="hero-card glass-card reveal-on-scroll" id="heroSection" aria-label="Hero Section">
                 <div class="hero-image-wrap">
                     <img id="heroImage" src="images/photo_8_2026-09-02_22-34-57.jpg"
                         alt="Dr. Sara Ayele & Eng. Tewodros Belay Wedding Portrait">
@@ -92,7 +102,7 @@
             </section>
 
             <!-- SAVE THE DATE, COUNTDOWN & CALENDAR -->
-            <section class="card" id="saveDateSection" aria-label="Save the Date and Countdown">
+            <section class="card glass-card reveal-on-scroll" id="saveDateSection" aria-label="Save the Date and Countdown">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="save_date_badge">Save The Date</span>
                     <h3 class="section-title" data-i18n="save_date_title"><span class="title-icon">💍</span> <span
@@ -161,7 +171,7 @@
             </section>
 
             <!-- OFFICIAL INVITATION CARD SHOWCASE -->
-            <section class="card" id="cardSection" aria-label="Official Invitation Card">
+            <section class="card glass-card reveal-on-scroll" id="cardSection" aria-label="Official Invitation Card">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="card_tag">Official Invitation</span>
                     <h3 class="section-title" data-i18n="card_header"><span class="title-icon">📜</span> <span
@@ -182,7 +192,7 @@
             </section>
 
             <!-- EVENT TIMELINE (OPTIMIZED AJUBI PROGRAM) -->
-            <section class="card" id="timelineSection" aria-label="Event Timeline">
+            <section class="card glass-card reveal-on-scroll" id="timelineSection" aria-label="Event Timeline">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="timeline_tag">Ajubi Program</span>
                     <h3 class="section-title" data-i18n="timeline_heading"><span class="title-icon">📅</span> <span
@@ -193,7 +203,7 @@
 
                 <div class="timeline-stepper">
                     <!-- Step 1 -->
-                    <div class="timeline-step">
+                    <div class="timeline-step reveal-on-scroll">
                         <div class="step-marker">1</div>
                         <div class="step-content">
                             <div class="step-time-pills">
@@ -206,7 +216,7 @@
                     </div>
 
                     <!-- Step 2 -->
-                    <div class="timeline-step">
+                    <div class="timeline-step reveal-on-scroll">
                         <div class="step-marker">2</div>
                         <div class="step-content">
                             <div class="step-time-pills">
@@ -219,7 +229,7 @@
                     </div>
 
                     <!-- Step 3 -->
-                    <div class="timeline-step">
+                    <div class="timeline-step reveal-on-scroll">
                         <div class="step-marker">3</div>
                         <div class="step-content">
                             <div class="step-time-pills">
@@ -232,7 +242,7 @@
                     </div>
 
                     <!-- Step 4 -->
-                    <div class="timeline-step">
+                    <div class="timeline-step reveal-on-scroll">
                         <div class="step-marker">4</div>
                         <div class="step-content">
                             <div class="step-time-pills">
@@ -245,7 +255,7 @@
                     </div>
 
                     <!-- Step 5 -->
-                    <div class="timeline-step">
+                    <div class="timeline-step reveal-on-scroll">
                         <div class="step-marker">5</div>
                         <div class="step-content">
                             <div class="step-time-pills">
@@ -258,7 +268,7 @@
                     </div>
 
                     <!-- Step 6 -->
-                    <div class="timeline-step">
+                    <div class="timeline-step reveal-on-scroll">
                         <div class="step-marker">6</div>
                         <div class="step-content">
                             <div class="step-time-pills">
@@ -273,7 +283,7 @@
             </section>
 
             <!-- LOCATIONS & INTERACTIVE MAPS (CLEAN SINGLE ACTION) -->
-            <section class="card" id="locationsSection" aria-label="Event Locations">
+            <section class="card glass-card reveal-on-scroll" id="locationsSection" aria-label="Event Locations">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="locations_tag">Directions</span>
                     <h3 class="section-title" data-i18n="locations_heading"><span class="title-icon">📍</span> <span
@@ -285,7 +295,7 @@
 
                 <div class="locations-grid">
                     <!-- Location 1: Bride's House -->
-                    <div class="location-card">
+                    <div class="location-card glass-subcard reveal-on-scroll">
                         <div class="location-header">
                             <span class="location-badge" data-i18n="loc_badge_day">6:00 – 9:00• Morning &
                                 Luncheon</span>
@@ -307,7 +317,7 @@
                     </div>
 
                     <!-- Location 2: Central Hotel Hawassa -->
-                    <div class="location-card">
+                    <div class="location-card glass-subcard reveal-on-scroll">
                         <div class="location-header">
                             <span class="location-badge" data-i18n="loc_badge_night">ምሽት 12:00 – 3:00 (6:00 PM – 9:00
                                 PM) • Evening Banquet & Gala</span>
@@ -331,7 +341,7 @@
             </section>
 
             <!-- 29 COUPLE PHOTOS SHOWCASE -->
-            <section class="card" id="gallerySection" aria-label="Photo Gallery">
+            <section class="card glass-card reveal-on-scroll" id="gallerySection" aria-label="Photo Gallery">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="gallery_tag">Memories</span>
                     <h3 class="section-title" data-i18n="photos_heading"><span class="title-icon">✨</span> <span
@@ -370,7 +380,7 @@
             </section>
 
             <!-- DELUXE RSVP FORM -->
-            <section class="card" id="rsvpSection" aria-label="RSVP Form">
+            <section class="card glass-card reveal-on-scroll" id="rsvpSection" aria-label="RSVP Form">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="rsvp_tag">RSVP</span>
                     <h3 class="section-title" data-i18n="rsvp_heading"><span class="title-icon">💌</span> <span
@@ -449,7 +459,7 @@
             </section>
 
             <!-- TELEGRAM MOMENTS HUB (CENTERED CLICKABLE QR) -->
-            <section class="card" id="shareSection" aria-label="Share Photos and Videos">
+            <section class="card glass-card reveal-on-scroll" id="shareSection" aria-label="Share Photos and Videos">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="share_tag">Live Upload</span>
                     <h3 class="section-title" data-i18n="qr_title"><span class="title-icon">📸</span> <span
@@ -474,7 +484,7 @@
             </section>
 
             <!-- FOOTER -->
-            <footer>
+            <footer class="reveal-on-scroll">
                 <div class="footer-monogram">S & T</div>
                 <p data-i18n="footer_text">Dr. Sara Ayele & Eng. Tewodros Belay — Eternal Love | September 20, 2026 |
                     Hawassa, Ethiopia</p>

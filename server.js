@@ -1,7 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { startPolling, notifyAdmins, loadConfig, loadData, saveData } = require('./bot');
+const { startPolling, notifyAdmins, loadConfig, loadData, saveData, escapeHtml } = require('./bot');
 
 const PORT = process.env.PORT || 8080;
 const MIME_TYPES = {
@@ -121,14 +121,14 @@ const server = http.createServer((req, res) => {
         // Notify Sara & Tewodros via Telegram Bot if active
         const config = loadConfig();
         if (config && config.bot_token) {
-          const partyLine = rsvpEntry.isAttending ? `👥 <b>Party Size:</b> ${rsvpEntry.guestCount} Guests\n` : `👥 <b>Attending:</b> No\n`;
+          const partyLine = rsvpEntry.isAttending ? `👥 <b>Party Size:</b> ${escapeHtml(rsvpEntry.guestCount)} Guests\n` : `👥 <b>Attending:</b> No\n`;
           const adminAlert = 
 `👑 <b>NEW WEBSITE RSVP RECEIVED!</b> 👑
 ✦ ══════════════════════════ ✦
-👤 <b>Guest:</b> ${rsvpEntry.guestName}
-✅ <b>Attending:</b> ${rsvpEntry.attending}
-${partyLine}💑 <b>Relation:</b> ${rsvpEntry.relation}
-💌 <b>Wishes:</b> <i>"${rsvpEntry.message || 'Heartfelt congratulations!'}"</i>
+👤 <b>Guest:</b> ${escapeHtml(rsvpEntry.guestName)}
+✅ <b>Attending:</b> ${escapeHtml(rsvpEntry.attending)}
+${partyLine}💑 <b>Relation:</b> ${escapeHtml(rsvpEntry.relation)}
+💌 <b>Wishes:</b> <i>"${escapeHtml(rsvpEntry.message || 'Heartfelt congratulations!')}"</i>
 🌐 <b>Channel:</b> Wedding Website (Online)
 ⏰ <b>Time:</b> ${new Date().toLocaleTimeString('en-US')}`;
 

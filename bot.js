@@ -4,14 +4,14 @@
  * ============================================================================
  * Features:
  *  - Luxury Royal Design (Ethiopian & Western wedding aesthetics)
- *  - Admin Dashboard exclusively for Dr. Sara and Eng. Tewodros
- *  - Real-time instant push alerts to Sara & Tewodros upon new RSVPs / photos
  *  - Interactive Step-by-Step Telegram RSVP Flow
- *  - Wedding Program & Timetable
- *  - Venue Directions with Google Maps & Telegram GPS Location Pins
- *  - Guest Wishes & Live Wedding Photo Collection Hub
- *  - Broadcast announcements from Sara & Tewodros to guests
  *  - Trilingual Support: English, Amharic (አማርኛ), Afaan Oromoo
+ *  - Wedding Program & Timetable (Dila & Hawassa)
+ *  - Venue Directions with Google Maps & Native Telegram GPS Location Pins
+ *  - Guest Wishes & Live Wedding Photo Collection Hub (Synced with Dashboard)
+ *  - Real-time instant push alerts to Sara & Tewodros upon new RSVPs / photos
+ *  - Broadcast announcements from Sara & Tewodros to guests (Rate-limited)
+ *  - Role-based Admin Authentication for Dr. Sara and Eng. Tewodros
  * ============================================================================
  */
 
@@ -20,6 +20,15 @@ const path = require('path');
 
 const CONFIG_PATH = path.join(__dirname, 'bot_config.json');
 const DATA_PATH = path.join(__dirname, 'data', 'rsvps.json');
+
+// HTML Entity Sanitizer for Telegram HTML parse mode
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
 
 // Ensure data file exists
 function loadData() {
@@ -47,15 +56,40 @@ function saveData(data) {
 }
 
 function loadConfig() {
+    let cfg = null;
     try {
-        if (!fs.existsSync(CONFIG_PATH)) {
-            return null;
+        if (fs.existsSync(CONFIG_PATH)) {
+            cfg = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
         }
-        return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
     } catch (err) {
         console.error('[Bot Config Load Error]:', err);
-        return null;
     }
+    if (!cfg) {
+        cfg = {
+            bot_token: '',
+            bot_username: 'sara_tewodros_wedding_bot',
+            admin_passcode: 'sara_tewodros_royal_2026',
+            admins: [
+                { id: 'sara', name: 'Dr. Sara Ayele', role: 'Bride', chat_id: null },
+                { id: 'tewodros', name: 'Eng. Tewodros Belay', role: 'Groom', chat_id: null }
+            ]
+        };
+    }
+
+    // Support environment variables overrides
+    if (process.env.TELEGRAM_BOT_TOKEN) cfg.bot_token = process.env.TELEGRAM_BOT_TOKEN;
+    if (process.env.TELEGRAM_BOT_USERNAME) cfg.bot_username = process.env.TELEGRAM_BOT_USERNAME;
+    if (process.env.ADMIN_PASSCODE) cfg.admin_passcode = process.env.ADMIN_PASSCODE;
+    if (process.env.SARA_CHAT_ID && cfg.admins) {
+        const sara = cfg.admins.find(a => a.id === 'sara');
+        if (sara) sara.chat_id = isNaN(process.env.SARA_CHAT_ID) ? process.env.SARA_CHAT_ID : Number(process.env.SARA_CHAT_ID);
+    }
+    if (process.env.TEWODROS_CHAT_ID && cfg.admins) {
+        const tewodros = cfg.admins.find(a => a.id === 'tewodros');
+        if (tewodros) tewodros.chat_id = isNaN(process.env.TEWODROS_CHAT_ID) ? process.env.TEWODROS_CHAT_ID : Number(process.env.TEWODROS_CHAT_ID);
+    }
+
+    return cfg;
 }
 
 function saveConfig(cfg) {
@@ -101,11 +135,19 @@ async function sendMessage(botToken, chatId, text, replyMarkup = null) {
     if (replyMarkup) {
         payload.reply_markup = replyMarkup;
     }
-    return await callTelegram(botToken, 'sendMessage', payload);
+    let res = await callTelegram(botToken, 'sendMessage', payload);
+
+    // Fallback: If Telegram complains about unescaped HTML entities, send as clean plain text
+    if (!res.ok && res.description && res.description.toLowerCase().includes("can't parse entities")) {
+        console.warn('[Telegram HTML Warning]: Falling back to plain text for message:', res.description);
+        delete payload.parse_mode;
+        payload.text = text.replace(/<[^>]*>/g, '');
+        res = await callTelegram(botToken, 'sendMessage', payload);
+    }
+    return res;
 }
 
 async function sendPhoto(botToken, chatId, photoPathOrUrl, caption = '', replyMarkup = null) {
-    // If it's a URL or file_id
     if (typeof photoPathOrUrl === 'string' && (photoPathOrUrl.startsWith('http') || !photoPathOrUrl.includes(path.sep))) {
         const payload = {
             chat_id: chatId,
@@ -116,7 +158,6 @@ async function sendPhoto(botToken, chatId, photoPathOrUrl, caption = '', replyMa
         if (replyMarkup) payload.reply_markup = replyMarkup;
         return await callTelegram(botToken, 'sendPhoto', payload);
     }
-    // Fallback: send text with image preview
     return await sendMessage(botToken, chatId, caption, replyMarkup);
 }
 
@@ -130,24 +171,30 @@ async function sendVenueLocation(botToken, chatId, lat, lng, title, address) {
     });
 }
 
+// Resolve Telegram File ID to a public HTTPS URL (for Dashboard photo rendering)
+async function getTelegramFileUrl(botToken, fileId) {
+    if (!botToken || !fileId) return null;
+    try {
+        const res = await callTelegram(botToken, 'getFile', { file_id: fileId });
+        if (res.ok && res.result && res.result.file_path) {
+            return `https://api.telegram.org/file/bot${botToken}/${res.result.file_path}`;
+        }
+    } catch (err) {
+        console.error('[Get Telegram File URL Error]:', err);
+    }
+    return null;
+}
+
 // ============================================================================
 // ADMIN SECURITY & PERMISSIONS
 // ============================================================================
 function isUserAdmin(config, user) {
-    if (!config || !config.admins) return false;
+    if (!config || !config.admins || !user) return false;
     const userIdStr = String(user.id);
-    const username = (user.username || '').toLowerCase();
 
+    // Verify against registered numeric chat_id
     for (const admin of config.admins) {
         if (admin.chat_id && String(admin.chat_id) === userIdStr) return true;
-        if (admin.telegram_username && admin.telegram_username.toLowerCase().replace('@', '') === username) {
-            // Auto-lock chat ID if username matches
-            if (!admin.chat_id) {
-                admin.chat_id = user.id;
-                saveConfig(config);
-            }
-            return true;
-        }
     }
     return false;
 }
@@ -182,7 +229,7 @@ async function notifyAdmins(botToken, text, extra = null) {
 }
 
 // ============================================================================
-// NAVIGATION MENUS & KEYBOARDS (FINE DESIGN)
+// NAVIGATION MENUS & KEYBOARDS
 // ============================================================================
 function getMainKeyboard(userLang = 'en', isAdmin = false) {
     const labels = {
@@ -223,11 +270,7 @@ function getMainKeyboard(userLang = 'en', isAdmin = false) {
         [{ text: l.wishes }]
     ];
 
-    if (isAdmin) {
-        keyboard.push([{ text: l.admin }, { text: l.lang }]);
-    } else {
-        keyboard.push([{ text: l.admin }, { text: l.lang }]);
-    }
+    keyboard.push([{ text: l.admin }, { text: l.lang }]);
 
     return {
         keyboard: keyboard,
@@ -274,155 +317,163 @@ function getAdminInlineKeyboard() {
 // LUXURY TEXT TEMPLATES
 // ============================================================================
 function getWelcomeMessage(userLang = 'en', user = {}) {
-    const name = user.first_name || 'Honored Guest';
+    const safeName = escapeHtml(user.first_name || 'Honored Guest');
     if (userLang === 'am') {
         return (
-            `👑 <b>የዶ/ር ሳራ አየለ እና ኢ/ር ቴዎድሮስ በላይ የሰርግ በዓል</b> 👑
-✦ ══════════════════════════ ✦
-
-እንኳን ወደ ክብርት <b>ዶ/ር ሳራ አየለ</b> እና ክቡር <b>ኢ/ር ቴዎድሮስ በላይ</b> ይፋዊ የሰርግ ቦት በደህና መጡ!
-
-🕊️ <i>"ቤት ሁሉ በአንድ ሰው ይዘጋጃል፥ ሁሉን ያዘጋጀ ግን እግዚአብሔር ነው።"</i>
-— <b>ዕብራውያን 3:4</b>
-
-📅 <b>የሰርግ ቀን:</b> እሁድ መስከረም 10 ቀን 2018 ዓ.ም (September 20, 2026)
-📍 <b>ቦታ:</b> ዲላ እና ሴንትራል ሆቴል ሀዋሳ፣ ኢትዮጵያ
-
-ይህ የተከበረ ቀን በጋራ ለማክበር እና በደስታ ለመካፈል ከታች ያሉትን አማራጮች ይጠቀሙ:`
+            `👑 <b>የዶ/ር ሳራ አየለ እና ኢ/ር ቴዎድሮስ በላይ የሰርግ በዓል</b> 👑\n` +
+            `✦ ══════════════════════════ ✦\n\n` +
+            `እንኳን ወደ ክብርት <b>ዶ/ር ሳራ አየለ</b> እና ክቡር <b>ኢ/ር ቴዎድሮስ በላይ</b> ይፋዊ የሰርግ ቦት በደህና መጡ!\n\n` +
+            `🕊️ <i>"ቤት ሁሉ በአንድ ሰው ይዘጋጃል፥ ሁሉን ያዘጋጀ ግን እግዚአብሔር ነው።"</i>\n` +
+            `— <b>ዕብራውያን 3:4</b>\n\n` +
+            `📅 <b>የሰርግ ቀን:</b> እሁድ መስከረም 10 ቀን 2018 ዓ.ም (September 20, 2026)\n` +
+            `📍 <b>ቦታ:</b> ዲላ እና ሴንትራል ሆቴል ሀዋሳ፣ ኢትዮጵያ\n\n` +
+            `ይህ የተከበረ ቀን በጋራ ለማክበር እና በደስታ ለመካፈል ከታች ያሉትን አማራጮች ይጠቀሙ:`
         );
     } else if (userLang === 'ao') {
         return (
-            `👑 <b>Ayyaana Cidha Dr. Sara Ayele & Eng. Tewodros Belay</b> 👑
-✦ ══════════════════════════ ✦
-
-Baga nagaan gara Boottii Cidha <b>Dr. Sara Ayele</b> fi <b>Eng. Tewodros Belay</b> dhuftan!
-
-🕊️ <i>"Manni hundinuu nama tokkoon ijaarama, wanta hundumaa kan ijaare garuu Waaqayyoodha."</i>
-— <b>Ibroota 3:4</b>
-
-📅 <b>Guyyaa Cidhaa:</b> Dilbata, Fulbaana 10, 2018 (Sept 20, 2026)
-📍 <b>Iddoo:</b> Bulaalaa fi Hoteelagiddugaleessaa Hawaasaa
-
-Sagantaa cidhaa, deebii RSVP kennuu fi kaartaa argachuuf qabduulee armaan gadii fayyadamaa:`
+            `👑 <b>Ayyaana Cidha Dr. Sara Ayele & Eng. Tewodros Belay</b> 👑\n` +
+            `✦ ══════════════════════════ ✦\n\n` +
+            `Baga nagaan gara Boottii Cidha <b>Dr. Sara Ayele</b> fi <b>Eng. Tewodros Belay</b> dhuftan, <b>${safeName}</b>!\n\n` +
+            `🕊️ <i>"Manni hundinuu nama tokkoon ijaarama, wanta hundumaa kan ijaare garuu Waaqayyoodha."</i>\n` +
+            `— <b>Ibroota 3:4</b>\n\n` +
+            `📅 <b>Guyyaa Cidhaa:</b> Dilbata, Fulbaana 10, 2018 (Sept 20, 2026)\n` +
+            `📍 <b>Iddoo:</b> Dila fi Hoteela Sentiraal Hawaasaa\n\n` +
+            `Sagantaa cidhaa, deebii RSVP kennuu fi kaartaa argachuuf qabduulee armaan gadii fayyadamaa:`
         );
     }
 
     return (
-        `👑 <b>ROYAL WEDDING CELEBRATION</b> 👑
-<b>Dr. Sara Ayele & Eng. Tewodros Belay</b>
-✦ ══════════════════════════ ✦
-
-Welcome, <b>${name}</b>! It is our greatest honor to celebrate the holy matrimony of <b>Dr. Sara & Eng. Tewodros</b>.
-
-🕊️ <i>"For every house is built by someone, but God is the builder of everything."</i>
-— <b>Hebrews 3:4</b>
-
-📅 <b>Date:</b> Sunday, September 20, 2026 (መስከረም 10, 2018 ዓ.ም)
-📍 <b>City:</b> Hawassa, Ethiopia
-
-Kindly use the menu below to RSVP, explore the event schedule, find venue directions, or share your loving wishes!`
+        `👑 <b>ROYAL WEDDING CELEBRATION</b> 👑\n` +
+        `<b>Dr. Sara Ayele & Eng. Tewodros Belay</b>\n` +
+        `✦ ══════════════════════════ ✦\n\n` +
+        `Welcome, <b>${safeName}</b>! It is our greatest honor to celebrate the holy matrimony of <b>Dr. Sara & Eng. Tewodros</b>.\n\n` +
+        `🕊️ <i>"For every house is built by someone, but God is the builder of everything."</i>\n` +
+        `— <b>Hebrews 3:4</b>\n\n` +
+        `📅 <b>Date:</b> Sunday, September 20, 2026 (መስከረም 10, 2018 ዓ.ም)\n` +
+        `📍 <b>City:</b> Hawassa, Ethiopia\n\n` +
+        `Kindly use the menu below to RSVP, explore the event schedule, find venue directions, or share your loving wishes!`
     );
 }
 
 function getScheduleMessage(userLang = 'en') {
     if (userLang === 'am') {
         return (
-            `📅 <b>የሰርግ ቀን ሙሉ መርሃ ግብር</b>
-<b>እሁድ መስከረም 10 ቀን 2018 ዓ.ም (Sept 20, 2026)</b>
-✦ ══════════════════════════ ✦
-
-<b>1️⃣ 10:00 AM - 12:00 PM</b>
-🚗 <b>ጉዞ ወደ ሙሽሪት መኖሪያ ቤት</b>
-የሚዜዎችና የታዳሚዎች ጉዞ ወደ ዲላ
-
-<b>2️⃣ 12:00 PM - 12:15 PM</b>
-💐 <b>የሙሽራው አቀባበል</b>
-በሙሽሪት ቤተሰብ ደማቅ የደስታ አቀባበል
-
-<b>3️⃣ 12:15 PM - 3:00 PM</b>
-🍽️ <b>የምሳ ግብዣ፣ ምርቃትና ፎቶ</b>
-የወላጆች ምርቃት፣ የሰርግ ምሳ ግብዣ በዲላ መኖሪያ ቤት
-
-<b>4️⃣ 3:00 PM - 5:00 PM</b>
-🎺 <b>ደማቅ የክብር ኮንቮይ ጉዞ ወደ ሀዋሳ</b>
-የሰርግ አጀብና የደስታ ጉዞ ወደ ሀዋሳ ከተማ
-
-<b>5️⃣ 5:00 PM - 6:00 PM</b>
-🏨 <b>የሆቴል እረፍትና ዝግጅት</b>
-ለማታው ደማቅ ዝግጅት እረፍትና ሽኝት
-
-<b>6️⃣ 6:00 PM - 9:00 PM</b>
-🥂 <b>ደማቅ የምሽት ግብዣና ጭፈራ</b>
-በሴንትራል ሆቴል ሀዋሳ ታላቅ የምሽት እራት ግብዣ፣ ኬክ ቆረሳና ደማቅ ጭፈራ! 🎉`
+            `📅 <b>የሰርግ ቀን ሙሉ መርሃ ግብር</b>\n` +
+            `<b>እሁድ መስከረም 10 ቀን 2018 ዓ.ም (Sept 20, 2026)</b>\n` +
+            `✦ ══════════════════════════ ✦\n\n` +
+            `<b>1️⃣ 10:00 AM - 12:00 PM</b>\n` +
+            `🚗 <b>ጉዞ ወደ ሙሽሪት መኖሪያ ቤት</b>\n` +
+            `የሚዜዎችና የታዳሚዎች ጉዞ ወደ ዲላ\n\n` +
+            `<b>2️⃣ 12:00 PM - 12:15 PM</b>\n` +
+            `💐 <b>የሙሽራው አቀባበል</b>\n` +
+            `በሙሽሪት ቤተሰብ ደማቅ የደስታ አቀባበል\n\n` +
+            `<b>3️⃣ 12:15 PM - 3:00 PM</b>\n` +
+            `🍽️ <b>የምሳ ግብዣ፣ ምርቃትና ፎቶ</b>\n` +
+            `የወላጆች ምርቃት፣ የሰርግ ምሳ ግብዣ በዲላ መኖሪያ ቤት\n\n` +
+            `<b>4️⃣ 3:00 PM - 5:00 PM</b>\n` +
+            `🎺 <b>ደማቅ የክብር ኮንቮይ ጉዞ ወደ ሀዋሳ</b>\n` +
+            `የሰርግ አጀብና የደስታ ጉዞ ወደ ሀዋሳ ከተማ\n\n` +
+            `<b>5️⃣ 5:00 PM - 6:00 PM</b>\n` +
+            `🏨 <b>የሆቴል እረፍትና ዝግጅት</b>\n` +
+            `ለማታው ደማቅ ዝግጅት እረፍትና ሽኝት\n\n` +
+            `<b>6️⃣ 6:00 PM - 9:00 PM</b>\n` +
+            `🥂 <b>ደማቅ የምሽት ግብዣና ጭፈራ</b>\n` +
+            `በሴንትራል ሆቴል ሀዋሳ ታላቅ የምሽት እራት ግብዣ፣ ኬክ ቆረሳና ደማቅ ጭፈራ! 🎉`
+        );
+    } else if (userLang === 'ao') {
+        return (
+            `📅 <b>Sagantaa Guutuu Guyyaa Cidhaa</b>\n` +
+            `<b>Dilbata, Fulbaana 10, 2018 (Sept 20, 2026)</b>\n` +
+            `✦ ══════════════════════════ ✦\n\n` +
+            `<b>1️⃣ 10:00 AM - 12:00 PM</b>\n` +
+            `🚗 <b>Imala gara Mana Misirroo (Dila)</b>\n` +
+            `Imala hamamotaa fi maatii gara Dilaatti\n\n` +
+            `<b>2️⃣ 12:00 PM - 12:15 PM</b>\n` +
+            `💐 <b>Simannaa Misirrichaa</b>\n` +
+            `Simannaa ho’aa maatii misirrootiin taasifamu\n\n` +
+            `<b>3️⃣ 12:15 PM - 3:00 PM</b>\n` +
+            `🍽️ <b>Affiraa Laaqanaa, Eebba & Suuraa</b>\n` +
+            `Eebba warraa fi affiraa qophii laaqanaa mana Dilaatti\n\n` +
+            `<b>4️⃣ 3:00 PM - 5:00 PM</b>\n` +
+            `🎺 <b>Konooyii Giddugaleessa Hawaasaatti</b>\n` +
+            `Imala kabajaa fi gammachuu gara magaalaa Hawaasaatti\n\n` +
+            `<b>5️⃣ 5:00 PM - 6:00 PM</b>\n` +
+            `🏨 <b>Boqonnaa Hoteelaa</b>\n` +
+            `Boqonnaa fi qophii sirna galgalaa hoteela keessatti\n\n` +
+            `<b>6️⃣ 6:00 PM - 9:00 PM</b>\n` +
+            `🥂 <b>Qophii Irbaataa & Sirba Galgalaa</b>\n` +
+            `Sirna affiraa irbaata galgalaa, keekii qirixuu fi sirba gammachuu Hoteela Sentiraal Hawaasaatti! 🎉`
         );
     }
 
     return (
-        `📅 <b>WEDDING DAY SCHEDULE & PROCESSION</b>
-<b>Sunday, September 20, 2026 (መስከረም 10, 2018)</b>
-✦ ══════════════════════════ ✦
-
-<b>1️⃣ 10:00 AM - 12:00 PM</b>
-🚗 <b>Journey to Bride's Residence</b>
-Departure of the wedding entourage to Dila
-
-<b>2️⃣ 12:00 PM - 12:15 PM</b>
-💐 <b>Arrival & Welcoming</b>
-Warm reception at the Bride's family home
-
-<b>3️⃣ 12:15 PM - 3:00 PM</b>
-🍽️ <b>Luncheon, Blessings & Portraits</b>
-Parental blessings and wedding feast at Dila
-
-<b>4️⃣ 3:00 PM - 5:00 PM</b>
-🎺 <b>Grand Procession to Hawassa</b>
-Motorcade procession traveling to Hawassa
-
-<b>5️⃣ 5:00 PM - 6:00 PM</b>
-🏨 <b>Rest & Hotel Refreshment</b>
-Hotel check-in and preparation for gala night
-
-<b>6️⃣ 6:00 PM - 9:00 PM</b>
-🥂 <b>Gala Dinner & Celebration</b>
-Dinner reception, cake ceremony & dancing at Central Hotel Hawassa! 🎉`
+        `📅 <b>WEDDING DAY SCHEDULE & PROCESSION</b>\n` +
+        `<b>Sunday, September 20, 2026 (መስከረም 10, 2018)</b>\n` +
+        `✦ ══════════════════════════ ✦\n\n` +
+        `<b>1️⃣ 10:00 AM - 12:00 PM</b>\n` +
+        `🚗 <b>Journey to Bride's Residence</b>\n` +
+        `Departure of the wedding entourage to Dila\n\n` +
+        `<b>2️⃣ 12:00 PM - 12:15 PM</b>\n` +
+        `💐 <b>Arrival & Welcoming</b>\n` +
+        `Warm reception at the Bride's family home\n\n` +
+        `<b>3️⃣ 12:15 PM - 3:00 PM</b>\n` +
+        `🍽️ <b>Luncheon, Blessings & Portraits</b>\n` +
+        `Parental blessings and wedding feast at Dila\n\n` +
+        `<b>4️⃣ 3:00 PM - 5:00 PM</b>\n` +
+        `🎺 <b>Grand Procession to Hawassa</b>\n` +
+        `Motorcade procession traveling to Hawassa\n\n` +
+        `<b>5️⃣ 5:00 PM - 6:00 PM</b>\n` +
+        `🏨 <b>Rest & Hotel Refreshment</b>\n` +
+        `Hotel check-in and preparation for gala night\n\n` +
+        `<b>6️⃣ 6:00 PM - 9:00 PM</b>\n` +
+        `🥂 <b>Gala Dinner & Celebration</b>\n` +
+        `Dinner reception, cake ceremony & dancing at Central Hotel Hawassa! 🎉`
     );
 }
 
 function getVenuesMessage(userLang = 'en') {
     if (userLang === 'am') {
         return (
-            `📍 <b>የክብረ በዓሉ መገኛ ቦታዎችና ካርታ</b>
-✦ ══════════════════════════ ✦
-
-<b>🏠 1. የሙሽሪት መኖሪያ ቤት (Morning & Luncheon)</b>
-• <b>ቦታ:</b> ዲላ ቅርንጫፍ ት/ቤት አጠገብ፣ ዲላ
-• <b>ሰዓት:</b> ከቀኑ 6:00 - 9:00 (12:00 PM - 03:00 PM)
-• <b>አድራሻ:</b> Dila, Ethiopia
-
-<b>🏨 2. ሴንትራል ሆቴል ሀዋሳ (Evening Gala Reception)</b>
-• <b>ቦታ:</b> ሴንትራል ሆቴል አዳራሽ፣ ሀዋሳ
-• <b>ሰዓት:</b> ከምሽቱ 12:00 - 3:00 (06:00 PM - 09:00 PM)
-• <b>አድራሻ:</b> Central Hotel, Hawassa, Ethiopia
-
-<i>ካርታ ለመክፈት ከታች ያሉትን የመገኛ አዝራሮች ይጠቀሙ!</i>`
+            `📍 <b>የክብረ በዓሉ መገኛ ቦታዎችና ካርታ</b>\n` +
+            `✦ ══════════════════════════ ✦\n\n` +
+            `<b>🏠 1. የሙሽሪት መኖሪያ ቤት (Morning & Luncheon)</b>\n` +
+            `• <b>ቦታ:</b> ዲላ ቅርንጫፍ ት/ቤት አጠገብ፣ ዲላ\n` +
+            `• <b>ሰዓት:</b> ከቀኑ 6:00 - 9:00 (12:00 PM - 03:00 PM)\n` +
+            `• <b>አድራሻ:</b> Dila, Ethiopia\n\n` +
+            `<b>🏨 2. ሴንትራል ሆቴል ሀዋሳ (Evening Gala Reception)</b>\n` +
+            `• <b>ቦታ:</b> ሴንትራል ሆቴል አዳራሽ፣ ሀዋሳ\n` +
+            `• <b>ሰዓት:</b> ከምሽቱ 12:00 - 3:00 (06:00 PM - 09:00 PM)\n` +
+            `• <b>አድራሻ:</b> Central Hotel, Hawassa, Ethiopia\n\n` +
+            `<i>ካርታ ለመክፈት ከታች ያሉትን የመገኛ አዝራሮች ይጠቀሙ!</i>`
+        );
+    } else if (userLang === 'ao') {
+        return (
+            `📍 <b>Bakkeewwan Cidhaa fi Kaartaa</b>\n` +
+            `✦ ══════════════════════════ ✦\n\n` +
+            `<b>🏠 1. Mana Misirroo (Qophii Ganamaa & Laaqanaa)</b>\n` +
+            `• <b>Iddoo:</b> Mana Barumsaa Damee Dilaatti dhiyoo, Dila\n` +
+            `• <b>Sa'aatii:</b> Waaree booda 6:00 - 9:00 (12:00 PM - 03:00 PM)\n` +
+            `• <b>Teessoo:</b> Dila, Itoophiyaa\n\n` +
+            `<b>🏨 2. Hoteela Sentiraal Hawaasaa (Qophii Irbaataa & Sirna Galgalaa)</b>\n` +
+            `• <b>Iddoo:</b> Galma Guddaa Hoteela Sentiraal, Hawaasaa\n` +
+            `• <b>Sa'aatii:</b> Galgala 12:00 - 3:00 (06:00 PM - 09:00 PM)\n` +
+            `• <b>Teessoo:</b> Central Hotel, Hawaasaa, Itoophiyaa\n\n` +
+            `<i>Kaartaa Google fi kallattii argachuuf qabduulee armaan gadii fayyadamaa!</i>`
         );
     }
 
     return (
-        `📍 <b>EVENT VENUES & NAVIGATION</b>
-✦ ══════════════════════════ ✦
-
-<b>🏠 1. Bride's Residence (Morning Luncheon)</b>
-• <b>Location:</b> Near Dila Branch School, Dila
-• <b>Time:</b> 6:00 - 9:00 Eth. Time (12:00 PM - 03:00 PM)
-• <b>Details:</b> Family blessings & wedding luncheon
-
-<b>🏨 2. Central Hotel Hawassa (Evening Gala)</b>
-• <b>Location:</b> Central Hotel Banquet Hall, Hawassa
-• <b>Time:</b> 12:00 - 3:00 Eth. Time (06:00 PM - 09:00 PM)
-• <b>Details:</b> Dinner reception, cake ceremony & dance
-
-<i>Use the buttons below to open instant driving directions!</i>`
+        `📍 <b>EVENT VENUES & NAVIGATION</b>\n` +
+        `✦ ══════════════════════════ ✦\n\n` +
+        `<b>🏠 1. Bride's Residence (Morning Luncheon)</b>\n` +
+        `• <b>Location:</b> Near Dila Branch School, Dila\n` +
+        `• <b>Time:</b> 6:00 - 9:00 Eth. Time (12:00 PM - 03:00 PM)\n` +
+        `• <b>Details:</b> Family blessings & wedding luncheon\n\n` +
+        `<b>🏨 2. Central Hotel Hawassa (Evening Gala)</b>\n` +
+        `• <b>Location:</b> Central Hotel Banquet Hall, Hawassa\n` +
+        `• <b>Time:</b> 12:00 - 3:00 Eth. Time (06:00 PM - 09:00 PM)\n` +
+        `• <b>Details:</b> Dinner reception, cake ceremony & dance\n\n` +
+        `<i>Use the buttons below to open instant driving directions!</i>`
     );
 }
 
@@ -430,6 +481,7 @@ function getVenuesMessage(userLang = 'en') {
 // STEP-BY-STEP RSVP CONVERSATION HANDLER
 // ============================================================================
 async function startRsvpFlow(botToken, chatId, user, userLang = 'en') {
+    const safeGuestName = escapeHtml([user.first_name, user.last_name].filter(Boolean).join(' ') || 'Honored Guest');
     userSessions.set(chatId, {
         step: 'AWAIT_ATTENDANCE',
         data: {
@@ -446,20 +498,24 @@ async function startRsvpFlow(botToken, chatId, user, userLang = 'en') {
     });
 
     const isAm = userLang === 'am';
+    const isAo = userLang === 'ao';
+
     const text = isAm
-        ? `💌 <b>የሰርግ ምላሽ መስጫ (RSVP)</b>\n✦ ══════════════════════════ ✦\n\nክቡር <b>${user.first_name || 'እንግዳችን'}</b>፣ በክብረ በዓሉ ላይ ለመገኘት እቅድ አለዎት?`
-        : `💌 <b>WEDDING RSVP</b>\n✦ ══════════════════════════ ✦\n\nDear <b>${user.first_name || 'Guest'}</b>, will you be joining us to celebrate the royal wedding of Dr. Sara & Eng. Tewodros?`;
+        ? `💌 <b>የሰርግ ምላሽ መስጫ (RSVP)</b>\n✦ ══════════════════════════ ✦\n\nክቡር <b>${safeGuestName}</b>፣ በክብረ በዓሉ ላይ ለመገኘት እቅድ አለዎት?`
+        : (isAo
+            ? `💌 <b>Deebii Cidhaa (RSVP)</b>\n✦ ══════════════════════════ ✦\n\nKabajamoo <b>${safeGuestName}</b>, sirna cidha kabajamaa Dr. Sara fi Eng. Tewodros irratti ni argamtuu?`
+            : `💌 <b>WEDDING RSVP</b>\n✦ ══════════════════════════ ✦\n\nDear <b>${safeGuestName}</b>, will you be joining us to celebrate the royal wedding of Dr. Sara & Eng. Tewodros?`);
 
     const inlineMarkup = {
         inline_keyboard: [
             [
-                { text: isAm ? '💐 አዎ፣ በደስታ እገኛለሁ!' : '💐 Yes, Delighted to Attend!', callback_data: 'rsvp_attending_yes' }
+                { text: isAm ? '💐 አዎ፣ በደስታ እገኛለሁ!' : (isAo ? '💐 Eeyyee, Gammachuudhaan!' : '💐 Yes, Delighted to Attend!'), callback_data: 'rsvp_attending_yes' }
             ],
             [
-                { text: isAm ? '💌 በሚያሳዝን ሁኔታ አልችልም' : '💌 Regretfully Cannot Attend', callback_data: 'rsvp_attending_no' }
+                { text: isAm ? '💌 በሚያሳዝን ሁኔታ አልችልም' : (isAo ? '💌 Hin Danda\'u, Na Dhiifamaa' : '💌 Regretfully Cannot Attend'), callback_data: 'rsvp_attending_no' }
             ],
             [
-                { text: isAm ? '❌ ሰርዝ' : '❌ Cancel', callback_data: 'rsvp_cancel' }
+                { text: isAm ? '❌ ሰርዝ' : (isAo ? '❌ Haqii' : '❌ Cancel'), callback_data: 'rsvp_cancel' }
             ]
         ]
     };
@@ -469,6 +525,7 @@ async function startRsvpFlow(botToken, chatId, user, userLang = 'en') {
 
 async function handleRsvpStep(botToken, chatId, session, action, callbackQuery = null, textInput = null) {
     const isAm = session.lang === 'am';
+    const isAo = session.lang === 'ao';
 
     if (session.step === 'AWAIT_ATTENDANCE') {
         if (action === 'yes') {
@@ -478,17 +535,19 @@ async function handleRsvpStep(botToken, chatId, session, action, callbackQuery =
 
             const msg = isAm
                 ? `👥 <b>ስንት ሆነው ይመጣሉ? (የእርስዎ እና የአጃቢዎ ብዛት)</b>`
-                : `👥 <b>How many guests will be in your party? (including yourself)</b>`;
+                : (isAo
+                    ? `👥 <b>Namoota meeqa taatanii dhuftu? (Ofii keessaniifi hiriyyaa keessan dabalatee)</b>`
+                    : `👥 <b>How many guests will be in your party? (including yourself)</b>`);
 
             const markup = {
                 inline_keyboard: [
                     [
-                        { text: isAm ? '1 ሰው (ብቻዬን)' : '1 Person (Self)', callback_data: 'rsvp_guests_1' },
-                        { text: isAm ? '2 ሰዎች (+1 አጃቢ)' : '2 Persons (+Companion)', callback_data: 'rsvp_guests_2' }
+                        { text: isAm ? '1 ሰው (ብቻዬን)' : (isAo ? 'Nama 1 (Qofaa)' : '1 Person (Self)'), callback_data: 'rsvp_guests_1' },
+                        { text: isAm ? '2 ሰዎች (+1 አጃቢ)' : (isAo ? 'Nama 2 (+1 Hiriyyaa)' : '2 Persons (+Companion)'), callback_data: 'rsvp_guests_2' }
                     ],
                     [
-                        { text: isAm ? '3 ሰዎች (ቤተሰብ)' : '3 Persons (Family)', callback_data: 'rsvp_guests_3' },
-                        { text: isAm ? '4+ ሰዎች' : '4+ Persons', callback_data: 'rsvp_guests_4+' }
+                        { text: isAm ? '3 ሰዎች (ቤተሰብ)' : (isAo ? 'Nama 3 (Maatii)' : '3 Persons (Family)'), callback_data: 'rsvp_guests_3' },
+                        { text: isAm ? '4+ ሰዎች' : (isAo ? 'Nama 4+ (Baay\'ee)' : '4+ Persons'), callback_data: 'rsvp_guests_4+' }
                     ]
                 ]
             };
@@ -502,11 +561,13 @@ async function handleRsvpStep(botToken, chatId, session, action, callbackQuery =
 
             const msg = isAm
                 ? `💌 መልእክትዎን ተቀብለናል! ለሙሽሮቹ የመልካም ምኞት እና የበረከት ቃል መጻፍ ይፈልጋሉ?\n\n<i>መልእክትዎን ጽፈው ይላኩ ወይም 'ዝለል' የሚለውን ይጫኑ:</i>`
-                : `💌 We will miss you! Would you like to leave a warm blessing or congratulations for Dr. Sara & Eng. Tewodros?\n\n<i>Type your message below, or tap 'Skip':</i>`;
+                : (isAo
+                    ? `💌 Deebiin keessan nu ga'eera! Dr. Sara fi Eng. Tewodrosiif eebba ykn dhaamsa gabaabaa barreessuu barbaadduu?\n\n<i>Ergaa keessan barreessaa, ykn 'Darbi' jedhaa:</i>`
+                    : `💌 We will miss you! Would you like to leave a warm blessing or congratulations for Dr. Sara & Eng. Tewodros?\n\n<i>Type your message below, or tap 'Skip':</i>`);
 
             const markup = {
                 inline_keyboard: [
-                    [{ text: isAm ? '⏩ ዝለል / አልፈው' : '⏩ Skip Wishes', callback_data: 'rsvp_skip_wishes' }]
+                    [{ text: isAm ? '⏩ ዝለል / አልፈው' : (isAo ? '⏩ Darbi' : '⏩ Skip Wishes'), callback_data: 'rsvp_skip_wishes' }]
                 ]
             };
             await sendMessage(botToken, chatId, msg, markup);
@@ -520,17 +581,19 @@ async function handleRsvpStep(botToken, chatId, session, action, callbackQuery =
 
         const msg = isAm
             ? `💑 <b>ከሙሽሮቹ ጋር ያለዎት ዝምድና:</b>`
-            : `💑 <b>Your relation to the Bride & Groom:</b>`;
+            : (isAo
+                ? `💑 <b>Hariiroo misirroota waliin qabdan filadhaa:</b>`
+                : `💑 <b>Your relation to the Bride & Groom:</b>`);
 
         const markup = {
             inline_keyboard: [
                 [
-                    { text: isAm ? "የሙሽሪት ቤተሰብ" : "Bride's Family", callback_data: 'rsvp_rel_bride' },
-                    { text: isAm ? "የሙሽራው ቤተሰብ" : "Groom's Family", callback_data: 'rsvp_rel_groom' }
+                    { text: isAm ? "የሙሽሪት ቤተሰብ" : (isAo ? "Maatii Misirroo" : "Bride's Family"), callback_data: 'rsvp_rel_bride' },
+                    { text: isAm ? "የሙሽራው ቤተሰብ" : (isAo ? "Maatii Misirrichaa" : "Groom's Family"), callback_data: 'rsvp_rel_groom' }
                 ],
                 [
-                    { text: isAm ? "የሁለቱም ወዳጅ" : "Friend of Both", callback_data: 'rsvp_rel_friend' },
-                    { text: isAm ? "የስራ ባልደረባ" : "Colleague", callback_data: 'rsvp_rel_colleague' }
+                    { text: isAm ? "የሁለቱም ወዳጅ" : (isAo ? "Hiriyyaa Lamaan" : "Friend of Both"), callback_data: 'rsvp_rel_friend' },
+                    { text: isAm ? "የስራ ባልደረባ" : (isAo ? "Hiriyaa Hojii" : "Colleague"), callback_data: 'rsvp_rel_colleague' }
                 ]
             ]
         };
@@ -545,11 +608,13 @@ async function handleRsvpStep(botToken, chatId, session, action, callbackQuery =
 
         const msg = isAm
             ? `✍️ <b>ለሙሽሮቹ የመልካም ምኞት እና የበረከት ቃል ይጻፉ:</b>\n\n<i>(ምክር፣ ጸሎት ወይም የበረከት ቃል ጽፈው ይላኩ፣ ወይም 'ዝለል' ይጫኑ)</i>`
-            : `✍️ <b>Share your heartfelt blessings & wishes for Dr. Sara & Eng. Tewodros:</b>\n\n<i>(Type your message below, or tap 'Skip')</i>`;
+            : (isAo
+                ? `✍️ <b>Dr. Sara fi Eng. Tewodrosiif eebbaafi ergaa baga gammaddanii barreessaa:</b>\n\n<i>(Ergaa keessan barreessaa ergaa, ykn 'Darbi' kan jedhu tuqaa)</i>`
+                : `✍️ <b>Share your heartfelt blessings & wishes for Dr. Sara & Eng. Tewodros:</b>\n\n<i>(Type your message below, or tap 'Skip')</i>`);
 
         const markup = {
             inline_keyboard: [
-                [{ text: isAm ? '⏩ ዝለል' : '⏩ Skip Wishes', callback_data: 'rsvp_skip_wishes' }]
+                [{ text: isAm ? '⏩ ዝለል' : (isAo ? '⏩ Darbi' : '⏩ Skip Wishes'), callback_data: 'rsvp_skip_wishes' }]
             ]
         };
 
@@ -558,7 +623,8 @@ async function handleRsvpStep(botToken, chatId, session, action, callbackQuery =
     }
 
     if (session.step === 'AWAIT_WISHES') {
-        session.data.message = textInput || (isAm ? 'ከልብ የመነጨ መልካም ምኞት!' : 'Warmest congratulations and blessings!');
+        const defaultWishes = isAm ? 'ከልብ የመነጨ መልካም ምኞት!' : (isAo ? 'Baga gammaddan, eebbi isiniif haa baay\'atu!' : 'Warmest congratulations and blessings!');
+        session.data.message = (textInput || defaultWishes).trim();
 
         // Finalize RSVP
         await finalizeRsvp(botToken, chatId, session);
@@ -569,6 +635,8 @@ async function handleRsvpStep(botToken, chatId, session, action, callbackQuery =
 async function finalizeRsvp(botToken, chatId, session) {
     const dataStore = loadData();
     const isAm = session.lang === 'am';
+    const isAo = session.lang === 'ao';
+
     const rsvp = {
         id: 'rsvp_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
         chatId: chatId,
@@ -587,33 +655,49 @@ async function finalizeRsvp(botToken, chatId, session) {
     dataStore.rsvps.push(rsvp);
     saveData(dataStore);
 
+    const safeGuestName = escapeHtml(rsvp.guestName);
+    const safeWishes = escapeHtml(rsvp.message);
+    const safeRelation = escapeHtml(rsvp.relation);
+    const safeUsername = escapeHtml(rsvp.username);
+
     // Confirmation message to the guest
-    const confirmMsg = isAm
-        ? `🎉 <b>እናመሰግናለን ${rsvp.guestName}!</b>\n✦ ══════════════════════════ ✦\n\nምላሽዎ በደስታ ተመዝግቧል!\n\n` +
-        `• <b>ተሳትፎ:</b> ${rsvp.isAttending ? 'አዎ፣ በደስታ እገኛለሁ 💐' : 'አልችልም 💌'}\n` +
-        (rsvp.isAttending ? `• <b>የእንግዶች ብዛት:</b> ${rsvp.guestCount}\n` : '') +
-        `• <b>ዝምድና:</b> ${rsvp.relation}\n` +
-        `• <b>ምርቃት:</b> <i>"${rsvp.message}"</i>\n\n` +
-        `መስከረም 10 ቀን 2018 ዓ.ም በሀዋሳ በደስታ እንገናኝ! 💛`
-        : `🎉 <b>THANK YOU, ${rsvp.guestName}!</b>\n✦ ══════════════════════════ ✦\n\nYour RSVP has been joyfully recorded!\n\n` +
-        `• <b>Attendance:</b> ${rsvp.isAttending ? 'Yes, Delighted! 💐' : 'Regretfully No 💌'}\n` +
-        (rsvp.isAttending ? `• <b>Party Size:</b> ${rsvp.guestCount} guests\n` : '') +
-        `• <b>Relation:</b> ${rsvp.relation}\n` +
-        `• <b>Blessings:</b> <i>"${rsvp.message}"</i>\n\n` +
-        `We eagerly anticipate celebrating together on September 20, 2026 in Hawassa! 💛`;
+    let confirmMsg = '';
+    if (isAm) {
+        confirmMsg = `🎉 <b>እናመሰግናለን ${safeGuestName}!</b>\n✦ ══════════════════════════ ✦\n\nምላሽዎ በደስታ ተመዝግቧል!\n\n` +
+            `• <b>ተሳትፎ:</b> ${rsvp.isAttending ? 'አዎ፣ በደስታ እገኛለሁ 💐' : 'አልችልም 💌'}\n` +
+            (rsvp.isAttending ? `• <b>የእንግዶች ብዛት:</b> ${rsvp.guestCount}\n` : '') +
+            `• <b>ዝምድና:</b> ${safeRelation}\n` +
+            `• <b>ምርቃት:</b> <i>"${safeWishes}"</i>\n\n` +
+            `መስከረም 10 ቀን 2018 ዓ.ም በሀዋሳ በደስታ እንገናኝ! 💛`;
+    } else if (isAo) {
+        confirmMsg = `🎉 <b>Galatoomaa ${safeGuestName}!</b>\n✦ ══════════════════════════ ✦\n\nDeebiin keessan gammachuudhaan galmaa'eera!\n\n` +
+            `• <b>Hirmaannaa:</b> ${rsvp.isAttending ? 'Eeyyee, Gammachuudhaan 💐' : 'Hin Danda\'u 💌'}\n` +
+            (rsvp.isAttending ? `• <b>Baay\'ina Keessummaa:</b> ${rsvp.guestCount}\n` : '') +
+            `• <b>Hariiroo:</b> ${safeRelation}\n` +
+            `• <b>Eebba:</b> <i>"${safeWishes}"</i>\n\n` +
+            `Guyyaa kabajamaa Dilbata Fulbaana 10, 2018 (Sept 20, 2026) magaalaa Hawaasaatti gammachuudhaan wal haa arginu! 💛`;
+    } else {
+        confirmMsg = `🎉 <b>THANK YOU, ${safeGuestName}!</b>\n✦ ══════════════════════════ ✦\n\nYour RSVP has been joyfully recorded!\n\n` +
+            `• <b>Attendance:</b> ${rsvp.isAttending ? 'Yes, Delighted! 💐' : 'Regretfully No 💌'}\n` +
+            (rsvp.isAttending ? `• <b>Party Size:</b> ${rsvp.guestCount} guests\n` : '') +
+            `• <b>Relation:</b> ${safeRelation}\n` +
+            `• <b>Blessings:</b> <i>"${safeWishes}"</i>\n\n` +
+            `We eagerly anticipate celebrating together on September 20, 2026 in Hawassa! 💛`;
+    }
 
     await sendMessage(botToken, chatId, confirmMsg, getMainKeyboard(session.lang, false));
 
     // Send instant priority push alert to Sara & Tewodros
     const adminAlert =
-        `👑 <b>NEW ROYAL WEDDING RSVP!</b> 👑
-✦ ══════════════════════════ ✦
-👤 <b>Guest:</b> ${rsvp.guestName} ${rsvp.username ? `(@${rsvp.username})` : ''}
-✅ <b>Attending:</b> ${rsvp.attending}
-${rsvp.isAttending ? `👥 <b>Party Count:</b> ${rsvp.guestCount}\n` : ''}💑 <b>Relation:</b> ${rsvp.relation}
-💌 <b>Wishes:</b> <i>"${rsvp.message}"</i>
-🌐 <b>Channel:</b> Telegram Bot
-⏰ <b>Time:</b> ${new Date().toLocaleTimeString('en-US')}`;
+        `👑 <b>NEW ROYAL WEDDING RSVP!</b> 👑\n` +
+        `✦ ══════════════════════════ ✦\n` +
+        `👤 <b>Guest:</b> ${safeGuestName} ${safeUsername ? `(@${safeUsername})` : ''}\n` +
+        `✅ <b>Attending:</b> ${rsvp.attending}\n` +
+        (rsvp.isAttending ? `👥 <b>Party Count:</b> ${rsvp.guestCount}\n` : '') +
+        `💑 <b>Relation:</b> ${safeRelation}\n` +
+        `💌 <b>Wishes:</b> <i>"${safeWishes}"</i>\n` +
+        `🌐 <b>Channel:</b> Telegram Bot\n` +
+        `⏰ <b>Time:</b> ${new Date().toLocaleTimeString('en-US')}`;
 
     await notifyAdmins(botToken, adminAlert);
 }
@@ -628,16 +712,13 @@ async function handleAdminPanel(botToken, chatId, user, userLang = 'en') {
     if (!isAdmin) {
         // Invite Sara or Tewodros to claim admin rights securely
         const claimPrompt =
-            `👑 <b>ROYAL WEDDING ADMIN ACCESS</b>
-✦ ══════════════════════════ ✦
-
-Welcome! This section is reserved for the Bride & Groom:
-<b>Dr. Sara Ayele & Eng. Tewodros Belay</b>.
-
-If you are <b>Sara</b> or <b>Tewodros</b>, please type your private Admin Passcode below or run:
-<code>/claim_admin &lt;passcode&gt;</code>
-
-<i>(Once claimed, your Telegram account will be permanently registered as Admin and you will receive real-time RSVP notifications.)</i>`;
+            `👑 <b>ROYAL WEDDING ADMIN ACCESS</b>\n` +
+            `✦ ══════════════════════════ ✦\n\n` +
+            `Welcome! This section is reserved for the Bride & Groom:\n` +
+            `<b>Dr. Sara Ayele & Eng. Tewodros Belay</b>.\n\n` +
+            `If you are <b>Sara</b> or <b>Tewodros</b>, please type your private Admin Passcode below or run:\n` +
+            `<code>/claim_admin &lt;passcode&gt;</code>\n\n` +
+            `<i>(Once claimed, your Telegram account will be linked and you will receive real-time RSVP & Photo notifications.)</i>`;
 
         userSessions.set(chatId, { step: 'AWAIT_ADMIN_PASSCODE', lang: userLang });
         await sendMessage(botToken, chatId, claimPrompt);
@@ -654,18 +735,16 @@ If you are <b>Sara</b> or <b>Tewodros</b>, please type your private Admin Passco
     const momentsCount = (dataStore.moments || []).length;
 
     const adminMsg =
-        `👑 <b>ADMIN CONTROL CENTER</b>
-<b>Dr. Sara Ayele & Eng. Tewodros Belay</b>
-✦ ══════════════════════════ ✦
-
-📊 <b>Live RSVP Statistics:</b>
-• 💐 <b>Confirmed Parties:</b> ${attendingCount}
-• 👥 <b>Total Headcount:</b> ${totalHeadcount} guests
-• 💌 <b>Declined:</b> ${declines}
-• 📸 <b>Moments Collected:</b> ${momentsCount}
-• 📝 <b>Total Submissions:</b> ${rsvps.length}
-
-<i>Select an administrative action below:</i>`;
+        `👑 <b>ADMIN CONTROL CENTER</b>\n` +
+        `<b>Dr. Sara Ayele & Eng. Tewodros Belay</b>\n` +
+        `✦ ══════════════════════════ ✦\n\n` +
+        `📊 <b>Live RSVP Statistics:</b>\n` +
+        `• 💐 <b>Confirmed Parties:</b> ${attendingCount}\n` +
+        `• 👥 <b>Total Headcount:</b> ${totalHeadcount} guests\n` +
+        `• 💌 <b>Declined:</b> ${declines}\n` +
+        `• 📸 <b>Moments Collected:</b> ${momentsCount}\n` +
+        `• 📝 <b>Total Submissions:</b> ${rsvps.length}\n\n` +
+        `<i>Select an administrative action below:</i>`;
 
     await sendMessage(botToken, chatId, adminMsg, getAdminInlineKeyboard());
 }
@@ -676,41 +755,25 @@ async function handleAdminClaim(botToken, chatId, user, passcodeProvided, userLa
 
     const trimmed = (passcodeProvided || '').trim();
     if (trimmed === config.admin_passcode) {
-        // Find or create admin entry for this user
-        let matchedAdmin = config.admins.find(a => !a.chat_id);
-        if (!matchedAdmin) {
-            // Already have slot or create one
-            matchedAdmin = {
-                id: 'admin_' + user.id,
-                name: [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Admin',
-                role: 'Administrator',
-                telegram_username: user.username || '',
-                chat_id: user.id
-            };
-            config.admins.push(matchedAdmin);
-        } else {
-            matchedAdmin.chat_id = user.id;
-            matchedAdmin.name = [user.first_name, user.last_name].filter(Boolean).join(' ') || matchedAdmin.name;
-            if (user.username) matchedAdmin.telegram_username = user.username;
-        }
-
-        saveConfig(config);
         userSessions.delete(chatId);
 
-        const successMsg =
-            `🎉 <b>ADMIN PRIVILEGES GRANTED!</b>
-✦ ══════════════════════════ ✦
+        // Offer explicit identity claim buttons to prevent race conditions
+        const promptText =
+            `👑 <b>ROYAL PASSCODE VERIFIED!</b>\n✦ ══════════════════════════ ✦\n\n` +
+            `Welcome! Please confirm your profile to link this Telegram account:`;
 
-Welcome, <b>${matchedAdmin.name}</b>!
-You are now officially linked as an Administrator for <b>Dr. Sara & Eng. Tewodros's</b> wedding bot.
+        const markup = {
+            inline_keyboard: [
+                [
+                    { text: '👰 I am Dr. Sara Ayele (Bride)', callback_data: 'claim_role_sara' }
+                ],
+                [
+                    { text: '🤵 I am Eng. Tewodros Belay (Groom)', callback_data: 'claim_role_tewodros' }
+                ]
+            ]
+        };
 
-You will now receive:
-• 🔔 Real-time instant push notifications whenever a guest RSVPs
-• 📸 Real-time alerts when guests upload photos & memories
-• 📊 Access to the full guest directory & broadcast announcements!`;
-
-        await sendMessage(botToken, chatId, successMsg, getMainKeyboard(userLang, true));
-        await handleAdminPanel(botToken, chatId, user, userLang);
+        await sendMessage(botToken, chatId, promptText, markup);
     } else {
         await sendMessage(botToken, chatId, `❌ <i>Incorrect passcode. Please verify the code and try again.</i>`);
     }
@@ -745,6 +808,43 @@ async function processUpdate(botToken, update) {
             saveData(dataStore);
         }
         const userLang = dataStore.guest_users[chatId]?.lang || 'en';
+
+        // Role Claim Callbacks (Bride / Groom selection)
+        if (data.startsWith('claim_role_')) {
+            const roleKey = data.replace('claim_role_', '');
+            let adminSlot = config.admins.find(a => a.id === roleKey);
+            const displayName = roleKey === 'sara' ? 'Dr. Sara Ayele' : 'Eng. Tewodros Belay';
+            const roleName = roleKey === 'sara' ? 'Bride' : 'Groom';
+
+            if (!adminSlot) {
+                adminSlot = {
+                    id: roleKey,
+                    name: displayName,
+                    role: roleName,
+                    telegram_username: user.username || '',
+                    chat_id: user.id
+                };
+                config.admins.push(adminSlot);
+            } else {
+                adminSlot.chat_id = user.id;
+                if (user.username) adminSlot.telegram_username = user.username;
+            }
+
+            saveConfig(config);
+
+            const successMsg =
+                `🎉 <b>ADMIN PRIVILEGES GRANTED!</b>\n✦ ══════════════════════════ ✦\n\n` +
+                `Welcome, <b>${displayName}</b>!\n` +
+                `Your Telegram account has been permanently linked as <b>${roleName}</b> for the Royal Wedding system.\n\n` +
+                `You will now receive:\n` +
+                `• 🔔 Instant real-time push alerts whenever a guest RSVPs (website & Telegram)\n` +
+                `• 📸 Real-time alerts when guests upload wedding photos & memories\n` +
+                `• 📊 Full access to the guest directory & broadcast announcements!`;
+
+            await sendMessage(botToken, chatId, successMsg, getMainKeyboard(userLang, true));
+            await handleAdminPanel(botToken, chatId, user, userLang);
+            return;
+        }
 
         // Language Callbacks
         if (data.startsWith('lang_')) {
@@ -796,7 +896,12 @@ async function processUpdate(botToken, update) {
         }
         if (data === 'rsvp_cancel') {
             userSessions.delete(chatId);
-            await sendMessage(botToken, chatId, `❌ <i>RSVP cancelled. You can start anytime by pressing '💌 RSVP'.</i>`, getMainKeyboard(userLang, isUserAdmin(config, user)));
+            const cancelMsg = userLang === 'am'
+                ? `❌ <i>የሰርግ ምላሽ ተሰርዟል። በማንኛውም ጊዜ '💌 ምላሽ ይስጡ' የሚለውን በመጫን እንደገና መጀመር ይችላሉ።</i>`
+                : (userLang === 'ao'
+                    ? `❌ <i>Deebiin RSVP haqameera. Yeroo barbaaddan '💌 Deebii Kennaa' cuqaasuun eegaluu dandeessu.</i>`
+                    : `❌ <i>RSVP cancelled. You can restart anytime by pressing '💌 RSVP'.</i>`);
+            await sendMessage(botToken, chatId, cancelMsg, getMainKeyboard(userLang, isUserAdmin(config, user)));
             return;
         }
 
@@ -810,24 +915,24 @@ async function processUpdate(botToken, update) {
             if (data === 'admin_stats' || data === 'admin_refresh') {
                 await handleAdminPanel(botToken, chatId, user, userLang);
             } else if (data === 'admin_guestlist') {
-                const rsvps = dataStore.rsvps.filter(r => r.isAttending);
+                const rsvps = (dataStore.rsvps || []).filter(r => r.isAttending);
                 if (!rsvps.length) {
                     await sendMessage(botToken, chatId, `📋 <b>Guest Directory:</b>\n<i>No confirmed guests yet.</i>`);
                 } else {
                     let listText = `📋 <b>CONFIRMED GUEST DIRECTORY (${rsvps.length} parties)</b>\n✦ ══════════════════════════ ✦\n\n`;
                     rsvps.slice(-25).forEach((r, idx) => {
-                        listText += `${idx + 1}. <b>${r.guestName}</b> (${r.guestCount} guests) - ${r.relation}\n`;
+                        listText += `${idx + 1}. <b>${escapeHtml(r.guestName)}</b> (${r.guestCount} guests) - ${escapeHtml(r.relation)}\n`;
                     });
                     await sendMessage(botToken, chatId, listText);
                 }
             } else if (data === 'admin_wishes') {
-                const wishes = dataStore.rsvps.filter(r => r.message && r.message.length > 2);
+                const wishes = (dataStore.rsvps || []).filter(r => r.message && r.message.length > 2);
                 if (!wishes.length) {
                     await sendMessage(botToken, chatId, `💌 <b>Warm Wishes:</b>\n<i>No written wishes submitted yet.</i>`);
                 } else {
                     let wishesText = `💌 <b>GUEST WISHES & BLESSINGS</b>\n✦ ══════════════════════════ ✦\n\n`;
                     wishes.slice(-10).forEach((w, idx) => {
-                        wishesText += `${idx + 1}. <b>${w.guestName}</b>: <i>"${w.message}"</i>\n\n`;
+                        wishesText += `${idx + 1}. <b>${escapeHtml(w.guestName)}</b>: <i>"${escapeHtml(w.message)}"</i>\n\n`;
                     });
                     await sendMessage(botToken, chatId, wishesText);
                 }
@@ -868,9 +973,24 @@ async function processUpdate(botToken, update) {
         const userLang = dataStore.guest_users[chatId]?.lang || 'en';
         const isAdmin = isUserAdmin(config, user);
 
+        // Intercept navigation commands / menu button presses
+        // PREVENTS INPUT TRAP: Never treat navigation buttons or slash commands as free-form text input!
+        const MENU_TRIGGERS = [
+            '💌', 'RSVP', 'ምላሽ', 'Deebii',
+            '📅', 'Program', 'Schedule', 'መርሃ ግብር', 'Sagantaa',
+            '📍', 'Venues', 'Maps', 'ቦታዎች', 'Kaartaa',
+            '📸', 'Photos', 'ፎቶ', 'Suuraa',
+            '💐', 'Wishes', 'Blessings', 'ምርቃት', 'Eebba',
+            '👑', 'Admin', 'አድሚን', 'Kutaa',
+            '🌍', 'Language', 'ቋንቋ', 'Afaan',
+            '/start', '/rsvp', '/schedule', '/venues', '/photos', '/wishes', '/admin', '/language', '/claim_admin', '/cancel'
+        ];
+
+        const isNavigationCommand = text.startsWith('/') || MENU_TRIGGERS.some(trigger => text.includes(trigger));
+
         // Check if user is in an active multi-step session
         const session = userSessions.get(chatId);
-        if (session) {
+        if (session && !isNavigationCommand) {
             if (session.step === 'AWAIT_ADMIN_PASSCODE') {
                 await handleAdminClaim(botToken, chatId, user, text, userLang);
                 return;
@@ -882,57 +1002,100 @@ async function processUpdate(botToken, update) {
                     return;
                 }
                 userSessions.delete(chatId);
-                const guestIds = Object.keys(dataStore.guest_users).map(Number);
+                const guestIds = Object.keys(dataStore.guest_users || {}).map(Number);
                 let sent = 0;
+                let failed = 0;
+                const safeBroadcastText = escapeHtml(text);
+                const broadcastMsg = `👑 <b>ROYAL WEDDING ANNOUNCEMENT</b>\n<b>From Dr. Sara & Eng. Tewodros:</b>\n\n${safeBroadcastText}`;
+
+                await sendMessage(botToken, chatId, `📢 <i>Sending announcement to ${guestIds.length} registered guests...</i>`);
+
                 for (const gid of guestIds) {
                     try {
-                        await sendMessage(botToken, gid, `👑 <b>ROYAL WEDDING ANNOUNCEMENT</b>\n<b>From Dr. Sara & Eng. Tewodros:</b>\n\n${text}`);
-                        sent++;
-                    } catch (e) { }
+                        const res = await sendMessage(botToken, gid, broadcastMsg);
+                        if (res.ok) sent++;
+                        else failed++;
+                        // Rate-limiting pause: 50ms between sends (Telegram limits to 30 msgs/sec)
+                        await new Promise(r => setTimeout(r, 50));
+                    } catch (e) {
+                        failed++;
+                    }
                 }
-                await sendMessage(botToken, chatId, `✅ Announcement delivered to ${sent} guests!`);
+                await sendMessage(botToken, chatId, `✅ Announcement delivered to ${sent} guests!${failed > 0 ? ` (${failed} unreached)` : ''}`);
                 return;
             }
             if (session.step === 'AWAIT_WISHES') {
                 await handleRsvpStep(botToken, chatId, session, null, null, text);
                 return;
             }
+        } else if (session && isNavigationCommand) {
+            // User pressed a menu button or slash command while in a session -> clear session cleanly
+            userSessions.delete(chatId);
         }
 
         // Handle Photo / Media Uploads from Guests
         if (msg.photo || msg.video || msg.document) {
             const fileId = msg.photo ? msg.photo[msg.photo.length - 1].file_id : (msg.video ? msg.video.file_id : msg.document.file_id);
+            const senderName = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Honored Guest';
+            const userHandle = user.username ? ` (@${user.username})` : '';
+
+            // Resolve direct file URL for Web Dashboard display
+            let directFileUrl = '';
+            if (msg.photo) {
+                directFileUrl = await getTelegramFileUrl(botToken, fileId);
+            }
+
             const momentEntry = {
                 id: 'moment_' + Date.now(),
-                from_user: user.first_name + (user.username ? ` (@${user.username})` : ''),
+                sender_name: senderName + userHandle,
+                from_user: senderName + userHandle,
                 from_id: user.id,
                 file_id: fileId,
+                file_path: directFileUrl || '',
                 caption: msg.caption || '',
                 timestamp: new Date().toISOString()
             };
             dataStore.moments.push(momentEntry);
             saveData(dataStore);
 
-            await sendMessage(botToken, chatId, `📸 <b>Thank you so much, ${user.first_name}!</b>\nYour wedding photo/memory has been safely delivered to Dr. Sara & Eng. Tewodros! 💛`);
+            const thanksMsg = userLang === 'am'
+                ? `📸 <b>እናመሰግናለን ${escapeHtml(user.first_name || 'እንግዳችን')}!</b>\nየሰርግ ፎቶዎ/ቪዲዮዎ በቀጥታ ለዶ/ር ሳራ እና ኢ/ር ቴዎድሮስ ደርሷል! 💛`
+                : (userLang === 'ao'
+                    ? `📸 <b>Baay'ee galatoomaa, ${escapeHtml(user.first_name || 'Kabajamoo')}!</b>\nSuuraan/Viidiyoon keessan Dr. Sara fi Eng. Tewodros bira ga'eera! 💛`
+                    : `📸 <b>Thank you so much, ${escapeHtml(user.first_name || 'Guest')}!</b>\nYour wedding photo/memory has been safely delivered to Dr. Sara & Eng. Tewodros! 💛`);
+
+            await sendMessage(botToken, chatId, thanksMsg);
 
             // Forward to Sara & Tewodros
-            const caption = `📸 <b>NEW WEDDING MEMORY!</b>\nFrom: <b>${momentEntry.from_user}</b>\n${momentEntry.caption ? `Caption: <i>"${momentEntry.caption}"</i>` : ''}`;
+            const adminCaption = `📸 <b>NEW WEDDING MEMORY!</b>\nFrom: <b>${escapeHtml(momentEntry.sender_name)}</b>\n${msg.caption ? `Caption: <i>"${escapeHtml(msg.caption)}"</i>` : ''}`;
             const adminIds = getActiveAdminChatIds(config);
             for (const aId of adminIds) {
-                if (msg.photo) {
-                    await callTelegram(botToken, 'sendPhoto', { chat_id: aId, photo: fileId, caption: caption, parse_mode: 'HTML' });
-                } else if (msg.video) {
-                    await callTelegram(botToken, 'sendVideo', { chat_id: aId, video: fileId, caption: caption, parse_mode: 'HTML' });
+                try {
+                    if (msg.photo) {
+                        await callTelegram(botToken, 'sendPhoto', { chat_id: aId, photo: fileId, caption: adminCaption, parse_mode: 'HTML' });
+                    } else if (msg.video) {
+                        await callTelegram(botToken, 'sendVideo', { chat_id: aId, video: fileId, caption: adminCaption, parse_mode: 'HTML' });
+                    } else if (msg.document) {
+                        await callTelegram(botToken, 'sendDocument', { chat_id: aId, document: fileId, caption: adminCaption, parse_mode: 'HTML' });
+                    }
+                } catch (forwardErr) {
+                    console.error(`Failed to forward media to admin ${aId}:`, forwardErr.message);
                 }
             }
             return;
         }
 
-        // Handle Slash Commands
+        // Handle Slash Commands & Menu Actions
         if (text.startsWith('/claim_admin')) {
             const parts = text.split(' ');
             const code = parts.slice(1).join(' ').trim();
             await handleAdminClaim(botToken, chatId, user, code, userLang);
+            return;
+        }
+
+        if (text === '/cancel') {
+            userSessions.delete(chatId);
+            await sendMessage(botToken, chatId, `✅ <i>Action cancelled.</i>`, getMainKeyboard(userLang, isAdmin));
             return;
         }
 
@@ -941,7 +1104,7 @@ async function processUpdate(botToken, update) {
             return;
         }
 
-        if (text === '/rsvp' || text.includes('RSVP') || text.includes('ምላሽ')) {
+        if (text === '/rsvp' || text.includes('RSVP') || text.includes('ምላሽ') || text.includes('Deebii')) {
             await startRsvpFlow(botToken, chatId, user, userLang);
             return;
         }
@@ -964,19 +1127,21 @@ async function processUpdate(botToken, update) {
             return;
         }
 
-        if (text === '/photos' || text.includes('Photos') || text.includes('ፎቶ')) {
+        if (text === '/photos' || text.includes('Photos') || text.includes('ፎቶ') || text.includes('Suuraa')) {
             const prompt = userLang === 'am'
                 ? `📸 <b>የሰርግ ፎቶዎችና ቪዲዮዎችን ይላኩ</b>\n✦ ══════════════════════════ ✦\n\nበሰርጉ ወቅት ያነሷቸውን ምርጥ ፎቶዎችና ቪዲዮዎች እዚህ በቀጥታ ይላኩ። ፎቶዎችዎ በቀጥታ ለዶ/ር ሳራ እና ኢ/ር ቴዎድሮስ የሰርግ አልበም ይደርሳሉ! 💛`
-                : `📸 <b>SHARE YOUR WEDDING MOMENTS</b>\n✦ ══════════════════════════ ✦\n\nCapture memories during the celebration and send your photos/videos directly to this chat. They will be shared exclusively with Dr. Sara & Eng. Tewodros! 💛`;
+                : (userLang === 'ao'
+                    ? `📸 <b>Suuraa & Viidiyoo Cidhaa Ergaa</b>\n✦ ══════════════════════════ ✦\n\nSuuraawwan fi viidiyoo sirna cidhaa irratti kaastan asitti ergaa. Kallattiin Dr. Sara fi Eng. Tewodrosiif ni ergama! 💛`
+                    : `📸 <b>SHARE YOUR WEDDING MOMENTS</b>\n✦ ══════════════════════════ ✦\n\nCapture memories during the celebration and send your photos/videos directly to this chat. They will be shared exclusively with Dr. Sara & Eng. Tewodros! 💛`);
             await sendMessage(botToken, chatId, prompt, getMainKeyboard(userLang, isAdmin));
             return;
         }
 
-        if (text === '/wishes' || text.includes('Blessings') || text.includes('ምርቃት')) {
+        if (text === '/wishes' || text.includes('Blessings') || text.includes('ምርቃት') || text.includes('Eebba')) {
             userSessions.set(chatId, {
                 step: 'AWAIT_WISHES',
                 data: {
-                    guestName: user.first_name || 'Guest',
+                    guestName: [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Honored Guest',
                     username: user.username,
                     attending: 'Yes',
                     isAttending: true,
@@ -987,17 +1152,19 @@ async function processUpdate(botToken, update) {
             });
             const prompt = userLang === 'am'
                 ? `✍️ <b>ለዶ/ር ሳራ እና ኢ/ር ቴዎድሮስ የበረከት ቃል ይጻፉ:</b>\n\n<i>መልእክትዎን ጽፈው ይላኩ...</i>`
-                : `✍️ <b>Share your heartfelt blessings for Dr. Sara & Eng. Tewodros:</b>\n\n<i>Type your message below and send...</i>`;
+                : (userLang === 'ao'
+                    ? `✍️ <b>Dr. Sara fi Eng. Tewodrosiif eebba barreessaa:</b>\n\n<i>Ergaa keessan asitti barreessaa ergaa...</i>`
+                    : `✍️ <b>Share your heartfelt blessings for Dr. Sara & Eng. Tewodros:</b>\n\n<i>Type your message below and send...</i>`);
             await sendMessage(botToken, chatId, prompt);
             return;
         }
 
-        if (text === '/admin' || text.includes('Admin') || text.includes('አድሚን')) {
+        if (text === '/admin' || text.includes('Admin') || text.includes('አድሚን') || text.includes('Kutaa')) {
             await handleAdminPanel(botToken, chatId, user, userLang);
             return;
         }
 
-        if (text === '/language' || text.includes('Language') || text.includes('ቋንቋ')) {
+        if (text === '/language' || text.includes('Language') || text.includes('ቋንቋ') || text.includes('Afaan')) {
             await sendMessage(botToken, chatId, `🌍 <b>Please select your preferred language:</b>`, getLanguageInlineKeyboard());
             return;
         }
@@ -1013,7 +1180,7 @@ async function processUpdate(botToken, update) {
 async function startPolling() {
     const config = loadConfig();
     if (!config || !config.bot_token) {
-        console.log('[Telegram Bot]: Bot token is empty in bot_config.json. Polling paused.');
+        console.log('[Telegram Bot]: Bot token is empty. Polling paused.');
         console.log('[Telegram Bot]: Set your bot token from @BotFather in bot_config.json or .env to activate.');
         return;
     }
@@ -1077,7 +1244,9 @@ module.exports = {
     loadConfig,
     saveConfig,
     loadData,
-    saveData
+    saveData,
+    escapeHtml,
+    getTelegramFileUrl
 };
 
 // Run standalone if executed directly

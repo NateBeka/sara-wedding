@@ -7,14 +7,14 @@
       "id": "sara",
       "name": "Dr. Sara Ayele",
       "role": "Bride",
-      "telegram_username": "sara",
+      "telegram_username": "@nate_beka",
       "chat_id": null
     },
     {
       "id": "tewodros",
       "name": "Eng. Tewodros Belay",
       "role": "Groom",
-      "telegram_username": "tewodros",
+      "telegram_username": "",
       "chat_id": null
     }
   ],
