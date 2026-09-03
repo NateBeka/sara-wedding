@@ -62,7 +62,7 @@ const translations = {
         unit_hrs: "Hours",
         unit_min: "Mins",
         unit_sec: "Secs",
-        btn_add_calendar: "📅 Add to Google Calendar",
+        btn_add_calendar: "📅 Add to My Calendar",
         calendar_header: "September 2026",
         cal_badge_day: "Sept 20",
         day_sun: "Sun", day_mon: "Mon", day_tue: "Tue", day_wed: "Wed", day_thu: "Thu", day_fri: "Fri", day_sat: "Sat",
@@ -498,7 +498,7 @@ function ensureAudioUnlocked() {
         try {
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
             if (AudioCtx) audioContext = new AudioCtx();
-        } catch (e) {}
+        } catch (e) { }
     }
     if (audioContext && audioContext.state === 'suspended') {
         audioContext.resume();
@@ -518,27 +518,27 @@ let noteIndex = 0;
 function playAcousticNote() {
     if (!audioContext) return;
     if (audioContext.state === 'suspended') audioContext.resume();
-    
+
     const currentChord = chordProgressions[chordIndex % chordProgressions.length];
     const freq = currentChord[noteIndex % currentChord.length];
-    
+
     const osc = audioContext.createOscillator();
     const gain = audioContext.createGain();
-    
+
     osc.type = 'triangle';
     osc.frequency.setValueAtTime(freq, audioContext.currentTime);
-    
+
     const now = audioContext.currentTime;
     gain.gain.setValueAtTime(0.0001, now);
     gain.gain.exponentialRampToValueAtTime(0.045, now + 0.03);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.4);
-    
+
     osc.connect(gain);
     gain.connect(audioContext.destination);
-    
+
     osc.start(now);
     osc.stop(now + 1.4);
-    
+
     noteIndex++;
     if (noteIndex % currentChord.length === 0) {
         chordIndex++;
@@ -789,7 +789,7 @@ function initGallery() {
         const thumb = document.createElement('div');
         thumb.className = `gallery-thumb ${idx === 0 ? 'active' : ''}`;
         thumb.dataset.index = idx;
-        
+
         const img = document.createElement('img');
         img.src = src;
         img.alt = `Wedding Portrait ${idx + 1}`;
@@ -825,7 +825,7 @@ function selectPhoto(index) {
     // Update active thumb without touching window scroll!
     const thumbs = document.querySelectorAll('.gallery-thumb');
     const filmstripContainer = document.querySelector('.gallery-filmstrip-container');
-    
+
     thumbs.forEach((t, i) => {
         const isActive = (i === currentPhotoIndex);
         t.classList.toggle('active', isActive);
@@ -1031,7 +1031,7 @@ function getRsvpData() {
 if (rsvpForm) {
     rsvpForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const data = getRsvpData();
         if (!data.guestName) {
             formFeedback.innerHTML = `<span style="color:#ff8585;">⚠️ Please enter your name.</span>`;
@@ -1053,8 +1053,8 @@ if (rsvpForm) {
 
             if (data.isAttending) fireConfetti();
 
-            const thankYouMsg = currentLang === 'am' 
-                ? `🎉 እናመሰግናለን ${data.guestName}! ምላሽዎ በደስታ ተመዝግቧል! 💐` 
+            const thankYouMsg = currentLang === 'am'
+                ? `🎉 እናመሰግናለን ${data.guestName}! ምላሽዎ በደስታ ተመዝግቧል! 💐`
                 : (currentLang === 'ao' ? `🎉 Galatoomaa ${data.guestName}! Deebiin keessan qaqqabeera! 💐` : `🎉 Thank you, ${data.guestName}! Your RSVP has been received with joy! 💐`);
 
             formFeedback.innerHTML = `<span style="color:#6be285; font-weight:bold;">${thankYouMsg}</span>`;
