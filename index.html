@@ -30,11 +30,12 @@
 
     <!-- FLOATING TOP BAR (Language Switcher, Theme Toggle & Music Controller) -->
     <header class="floating-controls" aria-label="Page Controls">
-        <nav class="lang-pill" aria-label="Language Selector">
-            <button type="button" class="lang-btn active" data-lang="en" aria-label="Switch to English">EN</button>
-            <button type="button" class="lang-btn" data-lang="am" aria-label="Switch to Amharic">አማ</button>
-            <button type="button" class="lang-btn" data-lang="ao" aria-label="Switch to Afaan Oromoo">AO</button>
-        </nav>
+        <button type="button" class="lang-toggle-btn" id="langToggleBtn" title="Switch Language / ቋንቋ ቀይር"
+            aria-label="Switch between English and Amharic">
+            <span class="lang-opt active" id="langOptEn">EN</span>
+            <span class="lang-divider">/</span>
+            <span class="lang-opt" id="langOptAm">አማ</span>
+        </button>
         <button type="button" class="theme-pill" id="themeToggleBtn" title="Toggle Light / Dark Mode"
             aria-label="Toggle Theme">
             <span id="themeIcon">☀️</span>
@@ -336,7 +337,7 @@
                 <div class="section-header">
                     <span class="section-tag" data-i18n="gallery_tag">Memories</span>
                     <h3 class="section-title" data-i18n="photos_heading"><span class="title-icon">✨</span> <span
-                            class="title-text">Our Wedding Moments in Photos</span> <span class="title-icon">✨</span>
+                            class="title-text">Our Wedding Photos</span> <span class="title-icon">✨</span>
                     </h3>
                     <p class="section-subtitle" data-i18n="photos_subtitle">A cherished collection of 29 portraits and
                         love-filled memories</p>

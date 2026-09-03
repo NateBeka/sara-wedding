@@ -75,20 +75,24 @@ body.theme-light .floating-controls {
   box-shadow: 0 6px 20px rgba(50, 35, 20, 0.1);
 }
 
-body.theme-light .lang-pill,
+body.theme-light .lang-toggle-btn,
 body.theme-light .theme-pill,
 body.theme-light .music-pill {
   background: rgba(240, 234, 224, 0.75);
   border-color: rgba(180, 140, 45, 0.3);
 }
 
-body.theme-light .lang-btn {
-  color: #6b5114;
+body.theme-light .lang-opt {
+  color: #7a5416;
 }
 
-body.theme-light .lang-btn.active {
-  color: #ffffff;
-  background: var(--gold-gradient);
+body.theme-light .lang-opt.active {
+  color: #2b1d03;
+  font-weight: 800;
+}
+
+body.theme-light .lang-divider {
+  color: rgba(180, 140, 45, 0.4);
 }
 
 body.theme-light .theme-pill {
@@ -405,13 +409,44 @@ body.lang-am, body.lang-ao {
   box-shadow: 0 8px 25px rgba(212, 175, 55, 0.25);
 }
 
-.lang-pill {
-  display: flex;
+.lang-toggle-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 3px;
-  background: rgba(0, 0, 0, 0.4);
+  gap: 5px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: var(--radius-full);
-  padding: 3px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.lang-toggle-btn:hover {
+  border-color: var(--gold-border-bright);
+  box-shadow: 0 0 14px rgba(212, 175, 55, 0.25);
+  transform: translateY(-1px);
+}
+
+.lang-opt {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--gold-300);
+  transition: var(--transition-smooth);
+  letter-spacing: 0.5px;
+}
+
+.lang-opt.active {
+  color: #ffffff;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.7);
+}
+
+.lang-divider {
+  font-size: 0.75rem;
+  color: rgba(212, 175, 55, 0.4);
+  font-weight: 400;
 }
 
 .theme-pill {
@@ -432,30 +467,6 @@ body.lang-am, body.lang-ao {
 .theme-pill:hover {
   border-color: var(--gold-300);
   transform: translateY(-1px);
-}
-
-.lang-btn {
-  background: transparent;
-  border: none;
-  color: var(--gold-300);
-  font-size: 0.78rem;
-  font-weight: 600;
-  padding: 5px 11px;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  letter-spacing: 0.5px;
-  transition: var(--transition-smooth);
-}
-
-.lang-btn:hover {
-  color: #fff;
-}
-
-.lang-btn.active {
-  background: var(--gold-gradient);
-  color: #0b0c10;
-  font-weight: 700;
-  box-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
 }
 
 .music-pill {
@@ -2085,8 +2096,11 @@ footer {
     padding: 3px 6px;
     gap: 6px;
   }
-  .lang-btn {
-    padding: 3px 7px;
+  .lang-toggle-btn {
+    padding: 3px 8px;
+    gap: 3px;
+  }
+  .lang-opt {
     font-size: 0.72rem;
   }
   .theme-pill {

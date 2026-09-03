@@ -101,7 +101,7 @@ const translations = {
         loc_central_desc: "Central Hotel, Hawassa, Ethiopia",
         btn_maps: "Open in Google Maps",
         gallery_tag: "Memories",
-        photos_heading: '<span class="title-icon">✨</span> <span class="title-text">Our Wedding Moments in Photos</span> <span class="title-icon">✨</span>',
+        photos_heading: '<span class="title-icon">✨</span> <span class="title-text">Our Wedding Photos</span> <span class="title-icon">✨</span>',
         photos_subtitle: "A cherished collection of 29 portraits and love-filled memories",
         btn_view_fullscreen: "View in Fullscreen Lightbox",
         rsvp_tag: "RSVP",
@@ -125,7 +125,7 @@ const translations = {
         lbl_wishes: "Warm Wishes & Blessings",
         btn_rsvp_submit: "Send RSVP",
         share_tag: "Live Upload",
-        qr_title: '<span class="title-icon">📸</span> <span class="title-text">Share Your Moments & Photos</span>',
+        qr_title: '<span class="title-icon">📸</span> <span class="title-text">Share Your Moments</span>',
         qr_subtitle: "Capture high-res memories during the celebration and send them directly to our Telegram Bot!",
         footer_text: "Dr. Sara Ayele & Eng. Tewodros Belay — Eternal Love | September 20, 2026 | Hawassa, Ethiopia",
         footer_credits: "Celebrated with heartfelt joy, faith, and blessings 💛"
@@ -219,116 +219,31 @@ const translations = {
         qr_subtitle: "በሠርጉ ላይ የሚያነሷቸውን ልዩ ፎቶዎችና ቪዲዮዎች ለቴሌግራም ቦቱ በቀጥታ ይላኩ!",
         footer_text: "ዶ/ር ሳራ አየለ እና ኢ/ር ቴዎድሮስ በላይ — ዘላለማዊ ፍቅር | እሑድ መስከረም 10 ቀን 2018 ዓ.ም | ሀዋሳ ፣ ኢትዮጵያ",
         footer_credits: "በታላቅ ደስታና ፍቅር የተዘጋጀ 💛"
-    },
-    ao: {
-        music_label: "Muuziqaa Taphachiisi",
-        music_playing: "Taphachaa jira",
-        splash_subtitle: "Waraqaa Waamicha Cidhaa",
-        splash_title: "Dr. Saaraa & Inj. Tewodros",
-        splash_tap: "✨ Kaardii Banaa ✨",
-        middle_date_main: "Dilbata, Fulbaana 10, 2018 A.L.I",
-        fancy_title: "DR. SAARAA AYYALEE & INJ. TEWODROS BELAAY",
-        hero_tagline: "Jaalala Barabaraa fi Eebba",
-        hero_meta: "🗓️ Fulbaana 10, 2018 • 📍 Hawaasaa, Itoophiyaa",
-        btn_rsvp_hero: "Deebii Ergaa",
-        btn_view_program: "Sagantaa Ilaalaa ↓",
-        save_date_badge: "Guyyaa Qabadhaa",
-        save_date_title: '<span class="title-icon">💍</span> <span class="title-text">Gammachuu Keenya Qooddhadhaa</span>',
-        save_date_subtitle: "Dilbata, Fulbaana 10, 2018 A.L.I",
-        countdown_heading: "Lakkoofsa Guyyaa Gammachuu",
-        countdown_header: "Lakkoofsa Cidhaa",
-        timer_label: "Hanga Guyyaa Cidhaatti",
-        unit_days: "Guyyoota",
-        unit_hrs: "Sa'aatii",
-        unit_min: "Daqiiqaa",
-        unit_sec: "Sekondii",
-        btn_add_calendar: "Google Calendar irratti Dabali",
-        calendar_header: "Fulbaana 2018",
-        cal_badge_day: "Fulbaana 10",
-        day_sun: "Dil", day_mon: "Wix", day_tue: "Kib", day_wed: "Rob", day_thu: "Kam", day_fri: "Jim", day_sat: "San",
-        card_tag: "Kaardii Waamichaa",
-        card_header: '<span class="title-icon">📜</span> <span class="title-text">Kaardii Waamicha Cidhaa</span>',
-        scripture: '"Wanti hundi namaan ijaarama, hundumaa kan ijaare garuu Waaqayyodha." — Ibroota 3:4',
-        timeline_tag: "Sagantaa Guutuu",
-        timeline_heading: '<span class="title-icon">📅</span> <span class="title-text">Sagantaa Ajuubii</span>',
-        timeline_subtitle: "Sagantaa guutuu qophii fi imala cidha misirrootaa",
-        timeline_1_time: "Sa'aatii 4:00 - 6:00",
-        timeline_1_title: "Gara Mana Misirrootti Imaluu",
-        timeline_1_desc: "Ajuubiin gara mana maatii misirroo Bulaalaatti imala eegalu",
-        timeline_2_time: "Sa'aatii 6:00 - 6:15",
-        timeline_2_title: "Mana Misirroo Ga'uu",
-        timeline_2_desc: "Gammachuun mana misirroo ga'uu fi simannaa",
-        timeline_3_time: "Sa'aatii 6:15 - 9:00",
-        timeline_3_title: "Qophii fi Affeerraa Mana Misirroo",
-        timeline_3_desc: "Eebba maatii, affeerraa irbaataa fi suuraa Bulaalaatti",
-        timeline_4_time: "Sa'aatii 9:00 - 11:00",
-        timeline_4_title: "Imala Gara Hawaasaa",
-        timeline_4_desc: "Misirroota hordofanii gara magaalaa Hawaasaatti imaluu",
-        timeline_5_time: "Sa'aatii 11:00 - 12:00",
-        timeline_5_title: "Boqonnaa fi Qophii",
-        timeline_5_desc: "Hoteelatti boqochuu fi qophii galgalaaf taasisamu",
-        timeline_6_time: "Sa'aatii 12:00 - 3:00",
-        timeline_6_title: "Qophii Hoteela Seentiraal",
-        timeline_6_desc: "Affeerraa galgalaa guddaa fi sirba Hoteela Seentiraalitti!",
-        locations_tag: "Qajeelfama Iddoo",
-        locations_heading: '<span class="title-icon">📍</span> <span class="title-text">Iddoowwan Qophii</span>',
-        locations_subtitle: "Kaartaa fayyadamuun iddoowwan qophii salphatti argadhaa",
-        loc_badge_day: "12:00 - 3:00 • Qophii Ganamaa fi Laaqanaa",
-        loc_bulala_title: "Mana Misirroo (Bulaalaa)",
-        loc_bulala_desc: "Mana Barumsaa Damee Bulaalaa Cinaa, Bulaalaa",
-        loc_badge_night: "6:00 - 9:00 • Irbaata Galgalaa fi Sirba",
-        loc_central_title: "Hoteela Seentiraal",
-        loc_central_desc: "Central Hotel, Hawaasaa, Itoophiyaa",
-        btn_maps: "Google Maps irratti Bani",
-        gallery_tag: "Yaadannoo",
-        photos_heading: '<span class="title-icon">✨</span> <span class="title-text">Suuraalee Cidha Keenyaa</span> <span class="title-icon">✨</span>',
-        photos_subtitle: "Kuusaa suuraalee jaalalaa fi gammachuu (Suuraalee 29)",
-        btn_view_fullscreen: "Suuraalee Bal'inaan Ilaalaa",
-        rsvp_tag: "Deebii Waamichaa",
-        rsvp_heading: '<span class="title-icon">💌</span> <span class="title-text">Cidha Keenya irratti Ni Argamtuu?</span>',
-        rsvp_subtitle: "Teessoo kabajaa isiniif qopheessuuf deebii keessan nuuf ergaa",
-        lbl_name: "Maqaa Guutuu *",
-        lbl_attendance: "Argamuu *",
-        opt_attend_yes: "Eeyyee, Gammachuun Dhufa!",
-        opt_attend_no: "Hin Danda'u",
-        lbl_guests: "Baay'ina Keessummootaa",
-        guest_1: "Nama 1 (Kophaa koo)",
-        guest_2: "Nama 2 (+ Hiriyaa)",
-        guest_3: "Nama 3 (Maatii)",
-        guest_4: "Nama 4+",
-        opt_rel_hint: "Firooma Misirrootaaf Qabdan",
-        opt_rel_bride: "Maatii Misirroo",
-        opt_rel_groom: "Maatii Misirrichaa",
-        opt_rel_both: "Michuu Lamaanii",
-        opt_rel_fam: "Maatii",
-        opt_rel_col: "Hiriyaa Hojii",
-        lbl_wishes: "Dhaamsa Eebbaa fi Hawwii Gaarii",
-        btn_rsvp_submit: "Deebii Ergaa",
-        share_tag: "Kallattiin Ergaa",
-        qr_title: '<span class="title-icon">📸</span> <span class="title-text">Suuraa fi Viidiyoo Qoodaa</span>',
-        qr_subtitle: "Suuraalee fi viidiyoowwan qophii irratti kaastan Telegram Bot irratti nuuf ergaa!",
-        footer_text: "Dr. Saaraa Ayyalee & Inj. Tewodros Belaay — Jaalala Barabaraa | Fulbaana 10, 2018 | Hawaasaa",
-        footer_credits: "Gammachuu fi jaalala guddaadhaan qophaa'e 💛"
     }
 };
 
 let currentLang = localStorage.getItem('sara_wedding_lang') || 'en';
+if (currentLang !== 'en' && currentLang !== 'am') {
+    currentLang = 'en';
+}
 
 function setLanguage(lang) {
-    if (!translations[lang]) return;
+    if (lang !== 'en' && lang !== 'am') lang = 'en';
     currentLang = lang;
     localStorage.setItem('sara_wedding_lang', lang);
-    document.body.classList.remove('lang-en', 'lang-am', 'lang-ao');
+    document.body.classList.remove('lang-en', 'lang-am');
     document.body.classList.add(`lang-${lang}`);
     document.documentElement.setAttribute('lang', lang);
 
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === lang);
-    });
+    // Update single toggle button indicators
+    const optEn = document.getElementById('langOptEn');
+    const optAm = document.getElementById('langOptAm');
+    if (optEn) optEn.classList.toggle('active', lang === 'en');
+    if (optAm) optAm.classList.toggle('active', lang === 'am');
 
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (translations[lang][key]) {
+        if (translations[lang] && translations[lang][key]) {
             el.innerHTML = translations[lang][key];
         }
     });
@@ -337,6 +252,10 @@ function setLanguage(lang) {
     updateTimer();
     updateMusicLabel();
     updateGuestVisibility();
+}
+
+function toggleLanguage() {
+    setLanguage(currentLang === 'en' ? 'am' : 'en');
 }
 
 // --------------------------------------------------------------------------
@@ -1050,7 +969,7 @@ if (rsvpForm) {
 
             const thankYouMsg = currentLang === 'am'
                 ? `🎉 እናመሰግናለን ${data.guestName}! ምላሽዎ በደስታ ተመዝግቧል! 💐`
-                : (currentLang === 'ao' ? `🎉 Galatoomaa ${data.guestName}! Deebiin keessan qaqqabeera! 💐` : `🎉 Thank you, ${data.guestName}! Your RSVP has been received with joy! 💐`);
+                : `🎉 Thank you, ${data.guestName}! Your RSVP has been received with joy! 💐`;
 
             formFeedback.innerHTML = `<span style="color:#6be285; font-weight:bold;">${thankYouMsg}</span>`;
 
@@ -1075,11 +994,12 @@ if (rsvpForm) {
 }
 
 // --------------------------------------------------------------------------
-// 8. LANGUAGE SELECTOR SETUP
+// 8. SINGLE LANGUAGE TOGGLE SETUP (ENGLISH ⇄ AMHARIC)
 // --------------------------------------------------------------------------
-document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
-});
+const langToggleBtn = document.getElementById('langToggleBtn');
+if (langToggleBtn) {
+    langToggleBtn.addEventListener('click', toggleLanguage);
+}
 
 // --------------------------------------------------------------------------
 // 8.1. LIGHT / DARK THEME SYSTEM (ALABASTER IVORY & GOLD / OBSIDIAN ROYALE)
