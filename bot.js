@@ -1103,26 +1103,40 @@ async function processUpdate(botToken, update) {
 
             await sendMessage(botToken, chatId, thanksMsg, thanksMarkup);
 
-            // 4. POST PURE IMAGE ONLY (NO CAPTION, NO MENU, NO OTHER TEXT) TO THE GROUP
-            if (config.photos_group_id && msg.photo) {
+            // 4. POST IMAGE WITH SENDER INFO TO THE WEDDING PHOTO GROUP
+            if (config.photos_group_id && (msg.photo || msg.video)) {
                 try {
-                    const sendRes = await callTelegram(botToken, 'sendPhoto', {
-                        chat_id: config.photos_group_id,
-                        photo: fileId
-                    });
+                    const groupCaption = `📸 Shared by <b>${escapeHtml(fullSender)}</b>${msg.caption ? `\n<i>"${escapeHtml(msg.caption)}"</i>` : ''}`;
+                    let sendRes;
+                    if (msg.photo) {
+                        sendRes = await callTelegram(botToken, 'sendPhoto', {
+                            chat_id: config.photos_group_id,
+                            photo: fileId,
+                            caption: groupCaption,
+                            parse_mode: 'HTML'
+                        });
+                    } else if (msg.video) {
+                        sendRes = await callTelegram(botToken, 'sendVideo', {
+                            chat_id: config.photos_group_id,
+                            video: fileId,
+                            caption: groupCaption,
+                            parse_mode: 'HTML'
+                        });
+                    }
+
                     if (sendRes && sendRes.ok) {
-                        console.log(`[Group Stream]: Posted pure image to Wedding Photo Group (${config.photos_group_id})`);
+                        console.log(`[Group Stream]: Posted media with sender info (${fullSender}) to Wedding Photo Group (${config.photos_group_id})`);
                     } else {
                         const errDesc = (sendRes && sendRes.description) || 'Unknown error';
                         console.error('[Group Stream Error]:', errDesc);
-                        await notifyAdmins(botToken, `⚠️ <b>Could not stream photo to Wedding Group:</b>\n<i>${escapeHtml(errDesc)}</i>\n\nTarget Group ID: <code>${config.photos_group_id}</code>\n<i>Tip: Ensure @${config.bot_username} is an <b>Administrator</b> in the group with permission to send photos!</i>`);
+                        await notifyAdmins(botToken, `⚠️ <b>Could not stream media to Wedding Group:</b>\n<i>${escapeHtml(errDesc)}</i>\n\nTarget Group ID: <code>${config.photos_group_id}</code>\n<i>Tip: Ensure @${config.bot_username} is an <b>Administrator</b> in the group with permission to send media!</i>`);
                     }
                 } catch (groupErr) {
                     console.error('[Group Stream Error]:', groupErr.message);
                 }
-            } else if (!config.photos_group_id && msg.photo) {
-                console.warn('[Group Stream]: Guest photo received, but photos_group_id is not set.');
-                await notifyAdmins(botToken, `⚠️ <b>Photo received from guest, but Wedding Photo Group is not connected!</b>\n\nTo connect the group:\n1. Make @${config.bot_username} an <b>Admin</b> in the group.\n2. Type <code>/connect_group@${config.bot_username}</code> in the group, or send <code>/set_group &lt;chat_id&gt;</code> here.`);
+            } else if (!config.photos_group_id && (msg.photo || msg.video)) {
+                console.warn('[Group Stream]: Guest media received, but photos_group_id is not set.');
+                await notifyAdmins(botToken, `⚠️ <b>Media received from guest, but Wedding Photo Group is not connected!</b>\n\nTo connect the group:\n1. Make @${config.bot_username} an <b>Admin</b> in the group.\n2. Type <code>/connect_group@${config.bot_username}</code> in the group, or send <code>/set_group &lt;chat_id&gt;</code> here.`);
             }
 
             // 5. FORWARD MEDIA IN REAL TIME TO ALL REGISTERED ADMINS
