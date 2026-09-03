@@ -286,7 +286,7 @@ function getWelcomeMessage(userLang = 'en', user = {}) {
 — <b>ዕብራውያን 3:4</b>
 
 📅 <b>የሰርግ ቀን:</b> እሁድ መስከረም 10 ቀን 2018 ዓ.ም (September 20, 2026)
-📍 <b>ቦታ:</b> ቡላላ እና ሴንትራል ሆቴል ሀዋሳ፣ ኢትዮጵያ
+📍 <b>ቦታ:</b> ዲላ እና ሴንትራል ሆቴል ሀዋሳ፣ ኢትዮጵያ
 
 ይህ የተከበረ ቀን በጋራ ለማክበር እና በደስታ ለመካፈል ከታች ያሉትን አማራጮች ይጠቀሙ:`
         );
@@ -333,25 +333,25 @@ function getScheduleMessage(userLang = 'en') {
 
 <b>1️⃣ 10:00 AM - 12:00 PM</b>
 🚗 <b>ጉዞ ወደ ሙሽሪት መኖሪያ ቤት</b>
-የሚዜዎችና የታዳሚዎች ጉዞ ወደ ቡላላ
+የሚዜዎችና የታዳሚዎች ጉዞ ወደ ዲላ
 
 <b>2️⃣ 12:00 PM - 12:15 PM</b>
 💐 <b>የሙሽራው አቀባበል</b>
 በሙሽሪት ቤተሰብ ደማቅ የደስታ አቀባበል
 
-<b>3️⃣ 12:15 PM - 03:00 PM</b>
+<b>3️⃣ 12:15 PM - 3:00 PM</b>
 🍽️ <b>የምሳ ግብዣ፣ ምርቃትና ፎቶ</b>
-የወላጆች ምርቃት፣ የሰርግ ምሳ ግብዣ በቡላላ መኖሪያ ቤት
+የወላጆች ምርቃት፣ የሰርግ ምሳ ግብዣ በዲላ መኖሪያ ቤት
 
-<b>4️⃣ 03:00 PM - 05:00 PM</b>
+<b>4️⃣ 3:00 PM - 5:00 PM</b>
 🎺 <b>ደማቅ የክብር ኮንቮይ ጉዞ ወደ ሀዋሳ</b>
 የሰርግ አጀብና የደስታ ጉዞ ወደ ሀዋሳ ከተማ
 
-<b>5️⃣ 05:00 PM - 06:00 PM</b>
+<b>5️⃣ 5:00 PM - 6:00 PM</b>
 🏨 <b>የሆቴል እረፍትና ዝግጅት</b>
 ለማታው ደማቅ ዝግጅት እረፍትና ሽኝት
 
-<b>6️⃣ 06:00 PM - 09:00 PM</b>
+<b>6️⃣ 6:00 PM - 9:00 PM</b>
 🥂 <b>ደማቅ የምሽት ግብዣና ጭፈራ</b>
 በሴንትራል ሆቴል ሀዋሳ ታላቅ የምሽት እራት ግብዣ፣ ኬክ ቆረሳና ደማቅ ጭፈራ! 🎉`
         );
@@ -370,19 +370,19 @@ Departure of the wedding entourage to Dila
 💐 <b>Arrival & Welcoming</b>
 Warm reception at the Bride's family home
 
-<b>3️⃣ 12:15 PM - 03:00 PM</b>
+<b>3️⃣ 12:15 PM - 3:00 PM</b>
 🍽️ <b>Luncheon, Blessings & Portraits</b>
 Parental blessings and wedding feast at Dila
 
-<b>4️⃣ 03:00 PM - 05:00 PM</b>
+<b>4️⃣ 3:00 PM - 5:00 PM</b>
 🎺 <b>Grand Procession to Hawassa</b>
 Motorcade procession traveling to Hawassa
 
-<b>5️⃣ 05:00 PM - 06:00 PM</b>
+<b>5️⃣ 5:00 PM - 6:00 PM</b>
 🏨 <b>Rest & Hotel Refreshment</b>
 Hotel check-in and preparation for gala night
 
-<b>6️⃣ 06:00 PM - 09:00 PM</b>
+<b>6️⃣ 6:00 PM - 9:00 PM</b>
 🥂 <b>Gala Dinner & Celebration</b>
 Dinner reception, cake ceremony & dancing at Central Hotel Hawassa! 🎉`
     );
