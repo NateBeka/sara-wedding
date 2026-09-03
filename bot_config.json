@@ -1,0 +1,46 @@
+{
+  "bot_token": "",
+  "bot_username": "sara_tewodros_wedding_bot",
+  "admin_passcode": "sara_tewodros_royal_2026",
+  "admins": [
+    {
+      "id": "sara",
+      "name": "Dr. Sara Ayele",
+      "role": "Bride",
+      "telegram_username": "sara",
+      "chat_id": null
+    },
+    {
+      "id": "tewodros",
+      "name": "Eng. Tewodros Belay",
+      "role": "Groom",
+      "telegram_username": "tewodros",
+      "chat_id": null
+    }
+  ],
+  "event": {
+    "couple": "Dr. Sara Ayele & Eng. Tewodros Belay",
+    "scripture": "\"For every house is built by someone, but God is the builder of everything.\" — Hebrews 3:4",
+    "date_western": "Sunday, September 20, 2026",
+    "date_ethiopian": "መስከረም 10, 2018 ዓ.ም",
+    "city": "Hawassa, Ethiopia",
+    "venues": [
+      {
+        "name": "Bride's Residence (የሙሽሪት መኖሪያ ቤት)",
+        "time": "12:00 PM - 03:00 PM",
+        "description": "Parental blessings & wedding luncheon at Bulala",
+        "google_maps": "https://maps.google.com/maps?q=Bulala",
+        "lat": 7.0504,
+        "lng": 38.4833
+      },
+      {
+        "name": "Central Hotel Hawassa (ሴንትራል ሆቴል ሀዋሳ)",
+        "time": "06:00 PM - 09:00 PM",
+        "description": "Gala dinner reception, cake cutting & dancing celebration",
+        "google_maps": "https://maps.google.com/maps?q=Central+Hotel+Hawassa",
+        "lat": 7.0526,
+        "lng": 38.4735
+      }
+    ]
+  }
+}
