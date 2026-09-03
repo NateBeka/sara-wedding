@@ -64,7 +64,7 @@ const server = http.createServer((req, res) => {
   if (pathname === '/api/admin/rsvps' && req.method === 'GET') {
     const config = loadConfig();
     const providedPasscode = parsedUrl.searchParams.get('passcode') || req.headers['x-admin-passcode'];
-    const expectedPasscode = (config && config.admin_passcode) || 'sara_tewodros_royal_2026';
+    const expectedPasscode = (config && config.admin_passcode) || 'sara_tewodros_2026';
 
     if (providedPasscode !== expectedPasscode) {
       sendJsonResponse(res, 401, { success: false, error: 'Unauthorized: invalid passcode' });
@@ -123,7 +123,7 @@ const server = http.createServer((req, res) => {
         if (config && config.bot_token) {
           const partyLine = rsvpEntry.isAttending ? `👥 <b>Party Size:</b> ${escapeHtml(rsvpEntry.guestCount)} Guests\n` : `👥 <b>Attending:</b> No\n`;
           const adminAlert = 
-`👑 <b>NEW WEBSITE RSVP RECEIVED!</b> 👑
+`💒 <b>NEW WEBSITE RSVP RECEIVED!</b> 💒
 ✦ ══════════════════════════ ✦
 👤 <b>Guest:</b> ${escapeHtml(rsvpEntry.guestName)}
 ✅ <b>Attending:</b> ${escapeHtml(rsvpEntry.attending)}

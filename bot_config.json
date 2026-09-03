@@ -1,13 +1,20 @@
 {
-  "bot_token": "8255950426:AAH46CsbdKZNo0Wbtn6lK9LvPAHmNhcedJw",
+  "bot_token": "8805482813:AAGUKSu-t5vYBOjCzXp5ZKhL7dGoOfVBoXk",
   "bot_username": "sara_tewodros_wedding_bot",
-  "admin_passcode": "sara_tewodros_royal_2026",
+  "admin_passcode": "sara_tewodros_2026",
   "admins": [
+    {
+      "id": "nate",
+      "name": "Nate Beka",
+      "role": "Organizer",
+      "telegram_username": "nate_beka",
+      "chat_id": 581789098
+    },
     {
       "id": "sara",
       "name": "Dr. Sara Ayele",
       "role": "Bride",
-      "telegram_username": "@nate_beka",
+      "telegram_username": "",
       "chat_id": null
     },
     {

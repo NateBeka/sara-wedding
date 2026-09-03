@@ -1,5 +1,5 @@
 // ==========================================================================
-// DR. SARA AYELE & ENG. TEWODROS BELAY - ROYAL WEDDING EXPERIENCE
+// DR. SARA AYELE & ENG. TEWODROS BELAY - WEDDING EXPERIENCE
 // Pure Trilingual Localization, Dual Audio, WhatsApp & Robust UI
 // ==========================================================================
 
@@ -43,7 +43,7 @@ const translations = {
     en: {
         music_label: "Play Song",
         music_playing: "Playing",
-        splash_subtitle: "Royal Wedding Invitation",
+        splash_subtitle: "Wedding Invitation",
         splash_title: "Dr. Sara & Eng. Tewodros",
         splash_tap: "✨ Open Invitation ✨",
         splash_hint: "✦ Tap anywhere to enter ✦",
@@ -747,7 +747,6 @@ function updateTimer() {
 
         if (timerLabel) {
             if (currentLang === 'am') timerLabel.textContent = 'በትዳር ያሳለፍናቸው ቀናት';
-            else if (currentLang === 'ao') timerLabel.textContent = "Guyyoota gaa'ela keessa jiraanne";
             else timerLabel.textContent = 'Days we have been married';
         }
     }
@@ -1097,7 +1096,7 @@ if (rsvpForm) {
         }
 
         rsvpSubmitBtn.disabled = true;
-        rsvpSubmitBtn.textContent = currentLang === 'am' ? "ምላሽዎን በመላክ ላይ..." : (currentLang === 'ao' ? "Deebii ergaa jira..." : "Delivering RSVP...");
+        rsvpSubmitBtn.textContent = currentLang === 'am' ? "ምላሽዎን በመላክ ላይ..." : "Delivering RSVP...";
         formFeedback.innerHTML = `<span style="color:var(--gold-300);">⏳ Delivering...</span>`;
 
         try {
