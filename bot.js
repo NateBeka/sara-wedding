@@ -952,7 +952,7 @@ async function processUpdate(botToken, update) {
         // Auto-detect and link admin chat ID
         autoBindAdmin(config, user);
 
-        // Handle Telegram Group / Supergroup messages & connection
+        // Handle Telegram Group / Supergroup messages & connection (STRICTLY SILENT: NO TEXT, NO MENU)
         const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
         if (isGroup) {
             const isConnectCommand = text === '/connect_group' || text === '/link_group' || text.startsWith('/connect_group');
@@ -961,14 +961,11 @@ async function processUpdate(botToken, update) {
             if (isConnectCommand || isBotAdded) {
                 config.photos_group_id = msg.chat.id;
                 saveConfig(config);
-                const title = msg.chat.title || 'Sara & Tewodros Wedding Photo Stream';
-                await sendMessage(botToken, msg.chat.id,
-                    `🎉 <b>WEDDING PHOTO STREAM CONNECTED!</b>\n✦ ══════════════════════════ ✦\n\n` +
-                    `<b>"${escapeHtml(title)}"</b> is now officially connected as the Live Wedding Photo Group for Dr. Sara & Eng. Tewodros! 💛\n\n` +
-                    `All celebration photos and videos sent by guests to @${config.bot_username || 'bot'} will appear here automatically in real time! 📸✨`
-                );
+                console.log(`[Group Connected]: Silently linked photos_group_id to ${msg.chat.id}`);
+                await notifyAdmins(botToken, `📸 Wedding Photo Group connected (Chat ID: <code>${msg.chat.id}</code>). The bot will send images only to this group.`);
                 return;
             }
+            // In groups, NEVER send any text, messages, or menus
             return;
         }
 
@@ -1085,17 +1082,14 @@ async function processUpdate(botToken, update) {
 
             await sendMessage(botToken, chatId, thanksMsg, thanksMarkup);
 
-            // 4. POST IMAGES ONLY TO THE CONNECTED WEDDING PHOTO GROUP STREAM
+            // 4. POST PURE IMAGE ONLY (NO CAPTION, NO MENU, NO OTHER TEXT) TO THE GROUP
             if (config.photos_group_id && msg.photo) {
                 try {
-                    const groupCaption = `📸 Shared by <b>${escapeHtml(fullSender)}</b>\n${msg.caption ? `<i>"${escapeHtml(msg.caption)}"</i>\n` : ''}<i>Dr. Sara & Eng. Tewodros Wedding</i> 💛`;
                     await callTelegram(botToken, 'sendPhoto', {
                         chat_id: config.photos_group_id,
-                        photo: fileId,
-                        caption: groupCaption,
-                        parse_mode: 'HTML'
+                        photo: fileId
                     });
-                    console.log(`[Group Stream]: Posted image to Wedding Photo Group (${config.photos_group_id})`);
+                    console.log(`[Group Stream]: Posted pure image to Wedding Photo Group (${config.photos_group_id})`);
                 } catch (groupErr) {
                     console.error('[Group Stream Error]:', groupErr.message);
                 }
