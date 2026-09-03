@@ -1831,18 +1831,26 @@ body.theme-light #timelineSection::before {
   opacity: 0.35;
 }
 
-/* Translucent step cards so photo is clearly visible through the schedule */
+/* Premium step cards with reduced transparency and luxury 22px border radius */
 #timelineSection .step-content {
-  background: rgba(14, 18, 28, 0.46) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(212, 175, 55, 0.3) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  background: rgba(14, 18, 28, 0.76) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  border-radius: 22px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-left: 4px solid var(--gold-400) !important;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+  padding: 1.2rem 1.5rem;
 }
 
 body.theme-light #timelineSection .step-content {
-  background: rgba(255, 255, 255, 0.62) !important;
-  border: 1px solid rgba(184, 134, 11, 0.35) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  border-radius: 22px !important;
+  border: 1px solid rgba(184, 134, 11, 0.3) !important;
+  border-left: 4px solid var(--gold-600) !important;
+  box-shadow: 0 8px 25px rgba(60, 45, 30, 0.1) !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -1916,21 +1924,22 @@ body.theme-light #timelineSection .step-content {
 
 .step-content {
   flex: 1;
-  background: var(--bg-glass-subcard);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: var(--radius-md);
-  padding: 1.1rem 1.4rem;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.3);
+  background: rgba(14, 18, 28, 0.76);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid var(--gold-400);
+  border-radius: 22px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 10px 32px rgba(0, 0, 0, 0.55);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
 .timeline-step:hover .step-content {
   transform: translateX(6px);
-  border-color: rgba(212, 175, 55, 0.35);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.45);
+  border-left-color: var(--gold-300);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.65), 0 0 20px rgba(212, 175, 55, 0.2);
 }
 
 .step-time-pills {
@@ -2576,18 +2585,24 @@ body.modal-scroll-locked {
   justify-content: center;
   text-align: center;
   max-width: 520px;
-  margin: 1rem auto 0;
+  margin: 1.2rem auto 0;
+  width: 100%;
 }
 
 .qr-clickable-card {
-  display: inline-block;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
   text-decoration: none;
   cursor: pointer;
+  margin: 0 auto;
   transition: var(--transition-smooth);
 }
 
 .qr-clickable-card:hover {
-  transform: translateY(-5px) scale(1.03);
+  transform: translateY(-4px) scale(1.02);
 }
 
 .qr-clickable-card:hover .qr-glass-card {
@@ -2605,14 +2620,15 @@ body.modal-scroll-locked {
 .qr-glass-card {
   position: relative;
   background: #ffffff;
-  padding: 12px;
+  padding: 14px;
   border-radius: 20px;
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 1);
   border: 2px solid rgba(212, 175, 55, 0.35);
   transition: var(--transition-smooth);
-  display: inline-flex;
+  display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0 auto;
 }
 
 .qr-glass-card img {
@@ -2636,7 +2652,11 @@ body.modal-scroll-locked {
   border: 1px solid rgba(212, 175, 55, 0.4);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
   letter-spacing: 0.5px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
   transition: var(--transition-smooth);
 }
 
@@ -2646,6 +2666,7 @@ body.modal-scroll-locked {
   color: var(--text-dim);
   font-weight: 500;
   letter-spacing: 0.4px;
+  text-align: center;
 }
 
 /* ==========================================================================
