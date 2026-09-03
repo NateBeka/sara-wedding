@@ -1073,28 +1073,6 @@ body.lang-am, body.lang-ao {
   line-height: 1.5;
 }
 
-.timeline-gratitude-plaque {
-  margin: 2.2rem auto 0;
-  text-align: center;
-  padding: 1.1rem 2rem;
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(12, 14, 20, 0.9));
-  border: 1.5px solid var(--gold-border-bright);
-  border-radius: var(--radius-full);
-  max-width: 480px;
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.25);
-  animation: floatEntrance 0.5s ease;
-}
-
-.gratitude-quote {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  background: var(--gold-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 0.5px;
-}
-
 /* ==========================================================================
    LOCATIONS & INTERACTIVE MAPS (RESPONSIVE & PROPORTIONATE)
    ========================================================================== */
@@ -1579,19 +1557,18 @@ body.lang-am, body.lang-ao {
   margin-top: 1rem;
 }
 
-@media (max-width: 600px) {
-  .rsvp-actions-dual {
-    grid-template-columns: 1fr;
-  }
+.rsvp-actions-single {
+  width: 100%;
+  margin-top: 1.4rem;
 }
 
 .rsvp-submit-btn {
   width: 100%;
   background: var(--gold-gradient);
   color: #0b0c10;
-  font-weight: 700;
-  font-size: 1rem;
-  padding: 15px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  padding: 16px 28px;
   border-radius: var(--radius-full);
   border: none;
   cursor: pointer;
@@ -1602,33 +1579,7 @@ body.lang-am, body.lang-ao {
 
 .rsvp-submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 35px rgba(212, 175, 55, 0.6);
-}
-
-.rsvp-whatsapp-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: #25D366;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 1rem;
-  padding: 15px;
-  border-radius: var(--radius-full);
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
-  letter-spacing: 0.5px;
-  text-decoration: none;
-  width: 100%;
-}
-
-.rsvp-whatsapp-btn:hover {
-  background: #20ba59;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(37, 211, 102, 0.5);
+  box-shadow: 0 10px 35px rgba(212, 175, 55, 0.65);
 }
 
 .rsvp-status-message {
@@ -1705,60 +1656,6 @@ body.lang-am, body.lang-ao {
   font-weight: 600;
   letter-spacing: 0.5px;
 }
-
-.share-badges-centered {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 14px;
-  margin-top: 1.6rem;
-  width: 100%;
-}
-
-.telegram-bot-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #0088cc, #006699);
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 0.95rem;
-  padding: 13px 24px;
-  border-radius: var(--radius-full);
-  text-decoration: none;
-  box-shadow: 0 6px 20px rgba(0, 136, 204, 0.4);
-  transition: var(--transition-smooth);
-}
-
-.telegram-bot-badge:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(0, 136, 204, 0.6);
-  color: #ffffff;
-}
-
-.whatsapp-bot-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #25D366, #1ca851);
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 0.95rem;
-  padding: 13px 24px;
-  border-radius: var(--radius-full);
-  text-decoration: none;
-  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
-  transition: var(--transition-smooth);
-}
-
-.whatsapp-bot-badge:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(37, 211, 102, 0.55);
-  color: #ffffff;
-}
-
 /* ==========================================================================
    FOOTER
    ========================================================================== */

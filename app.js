@@ -127,12 +127,9 @@ const translations = {
         opt_rel_col: "Colleague",
         lbl_wishes: "Warm Wishes & Blessings",
         btn_rsvp_submit: "Send RSVP 💐",
-        btn_whatsapp_rsvp: "💬 Send via WhatsApp",
         share_tag: "Live Upload",
         qr_title: "📸 Share Your Moments & Photos",
-        qr_subtitle: "Capture high-res memories during the celebration and send them directly to our Telegram Bot or WhatsApp!",
-        btn_telegram: "📱 Open Telegram Bot",
-        btn_whatsapp_share: "💬 Share on WhatsApp",
+        qr_subtitle: "Capture high-res memories during the celebration and send them directly to our Telegram Bot!",
         footer_text: "Dr. Sara Ayele & Eng. Tewodros Belay — Eternal Love | September 20, 2026 | Hawassa, Ethiopia",
         footer_credits: "Celebrated with heartfelt joy, faith, and blessings 💛"
     },
@@ -223,12 +220,9 @@ const translations = {
         opt_rel_col: "የሥራ ባልደረባ",
         lbl_wishes: "የምርቃት መልዕክትና መልካም ምኞት",
         btn_rsvp_submit: "ምላሽዎን ይላኩ 💐",
-        btn_whatsapp_rsvp: "💬 በ WhatsApp ይላኩ",
         share_tag: "ቀጥታ ይላኩ",
         qr_title: "📸 ፎቶዎችን ያጋሩ",
-        qr_subtitle: "በሠርጉ ላይ የሚያነሷቸውን ልዩ ፎቶዎችና ቪዲዮዎች ለቴሌግራም ቦቱ ወይም በዋትስአፕ በቀጥታ ይላኩ!",
-        btn_telegram: "📱 የቴሌግራም ቦት ክፈት",
-        btn_whatsapp_share: "💬 በ WhatsApp ያጋሩ",
+        qr_subtitle: "በሠርጉ ላይ የሚያነሷቸውን ልዩ ፎቶዎችና ቪዲዮዎች ለቴሌግራም ቦቱ በቀጥታ ይላኩ!",
         footer_text: "ዶ/ር ሳራ አየለ እና ኢ/ር ቴዎድሮስ በላይ — ዘላለማዊ ፍቅር | እሑድ መስከረም 10 ቀን 2018 ዓ.ም | ሀዋሳ ፣ ኢትዮጵያ",
         footer_credits: "በታላቅ ደስታና ፍቅር የተዘጋጀ 💛"
     },
@@ -319,12 +313,9 @@ const translations = {
         opt_rel_col: "Hiriyaa Hojii",
         lbl_wishes: "Dhaamsa Eebbaa fi Hawwii Gaarii",
         btn_rsvp_submit: "Deebii Ergaa 💐",
-        btn_whatsapp_rsvp: "💬 WhatsApp irratti Ergaa",
         share_tag: "Kallattiin Ergaa",
         qr_title: "📸 Suuraa fi Viidiyoo Qoodaa",
         qr_subtitle: "Suuraalee fi viidiyoowwan qophii irratti kaastan Telegram Bot irratti nuuf ergaa!",
-        btn_telegram: "📱 Telegram Bot Bani",
-        btn_whatsapp_share: "💬 WhatsApp irratti Qoodaa",
         footer_text: "Dr. Saaraa Ayyalee & Inj. Tewodros Belaay — Jaalala Barabaraa | Fulbaana 10, 2018 | Hawaasaa",
         footer_credits: "Gammachuu fi jaalala guddaadhaan qophaa'e 💛"
     }
@@ -1028,7 +1019,6 @@ if (lightboxModal) {
 const rsvpForm = document.getElementById('rsvpForm');
 const formFeedback = document.getElementById('formFeedback');
 const rsvpSubmitBtn = document.getElementById('rsvpSubmitBtn');
-const whatsappRsvpBtn = document.getElementById('whatsappRsvpBtn');
 const pillAttendYes = document.getElementById('pillAttendYes');
 const pillAttendNo = document.getElementById('pillAttendNo');
 const guestCountGroup = document.getElementById('guestCountGroup');
@@ -1122,36 +1112,6 @@ if (rsvpForm) {
     });
 }
 
-// WhatsApp RSVP Button Listener
-if (whatsappRsvpBtn) {
-    whatsappRsvpBtn.addEventListener('click', () => {
-        const data = getRsvpData();
-        if (!data.guestName) {
-            formFeedback.innerHTML = `<span style="color:#ff8585;">⚠️ Please enter your name first.</span>`;
-            return;
-        }
-
-        if (data.isAttending) fireConfetti();
-
-        const msg = 
-`👑 *ROYAL WEDDING RSVP* 👑\n
-👤 *Guest:* ${data.guestName}
-✅ *Attending:* ${data.attending}
-${data.isAttending ? `👥 *Guests:* ${data.guestCount}\n` : ''}💑 *Relation:* ${data.relation}
-💌 *Wishes:* "${data.message || 'Heartfelt congratulations!'}"
-
-📅 *Dr. Sara Ayele & Eng. Tewodros Belay Wedding*
-*Sunday, September 20, 2026 (መስከረም 10, 2018)*
-*Hawassa, Ethiopia*`;
-
-        const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
-        window.open(waUrl, '_blank', 'noopener,noreferrer');
-
-        formFeedback.innerHTML = `<span style="color:#6be285; font-weight:bold;">💬 Opening WhatsApp with your RSVP... 💐</span>`;
-        setTimeout(() => { formFeedback.innerHTML = ''; }, 6000);
-    });
-}
-
 // --------------------------------------------------------------------------
 // 8. LANGUAGE SELECTOR SETUP
 // --------------------------------------------------------------------------
@@ -1170,12 +1130,10 @@ async function syncBotInfo() {
         if (data && data.bot_username) {
             const username = data.bot_username.replace('@', '');
             const botUrl = `https://t.me/${username}`;
-            const tgLink = document.getElementById('telegramLink');
             const qrLink = document.getElementById('qrLink');
             const qrImg = document.getElementById('qrImage');
             const botHandleLabel = document.getElementById('botHandleLabel');
 
-            if (tgLink) tgLink.href = botUrl;
             if (qrLink) qrLink.href = botUrl;
             if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(botUrl)}`;
             if (botHandleLabel) botHandleLabel.textContent = `@${username}`;
