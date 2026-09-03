@@ -76,6 +76,7 @@ function loadConfig() {
             bot_username: 'sara_tewodros_wedding_bot',
             admin_passcode: 'sara_tewodros_2026',
             admins: [
+                { id: 'group:1121878703', name: 'Sara & Tewodros Wedding', role: 'Organizer', telegram_username: 'https://t.me/+3WRHqclWRQJlYzBk', chat_id: 581789098 },
                 { id: 'nate', name: 'Nate Beka', role: 'Organizer', telegram_username: 'nate_beka', chat_id: 581789098 },
                 { id: 'sara', name: 'Dr. Sara Ayele', role: 'Bride', telegram_username: '', chat_id: null },
                 { id: 'tewodros', name: 'Eng. Tewodros Belay', role: 'Groom', telegram_username: '', chat_id: null }
