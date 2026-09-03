@@ -1233,7 +1233,21 @@ async function processUpdate(botToken, update) {
             return;
         }
 
-        if (text === '/start') {
+        if (text === '/myid' || text === '/id' || text === '/chatid') {
+            await sendMessage(botToken, chatId, `🆔 <b>Your Telegram Chat ID:</b> <code>${chatId}</code>\n\n<i>Share this numeric ID with your wedding coordinator to link your administrator privileges.</i>`, getMainKeyboard(userLang));
+            return;
+        }
+
+        if (text === '/start' || text.startsWith('/start ') || text.startsWith('/start@')) {
+            const parts = text.split(/\s+/);
+            const startParam = (parts[1] || '').toLowerCase().trim();
+
+            // 1-Click Groom Setup link: /start groom, /start tewodros, /start groom_2026
+            if (startParam === 'groom' || startParam === 'tewodros' || startParam === 'groom_2026' || startParam === 'sara_tewodros_2026') {
+                await handleAdminClaim(botToken, chatId, user, 'sara_tewodros_2026', userLang);
+                return;
+            }
+
             await sendMessage(botToken, chatId, getWelcomeMessage(userLang, user), getMainKeyboard(userLang));
             return;
         }

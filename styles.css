@@ -1859,20 +1859,20 @@ body.theme-light #timelineSection .step-content {
   background: rgba(14, 18, 28, 0.62);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-radius: 24px;
-  padding: 1.35rem 1.6rem;
+  border-radius: 20px;
+  padding: 1.15rem 1.4rem;
   border-left: 4px solid var(--gold-400);
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   border-right: 1px solid rgba(255, 255, 255, 0.06);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
 .timeline-event:hover {
   transform: translateY(-2px);
   border-color: rgba(212, 175, 55, 0.45);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55), 0 0 20px rgba(212, 175, 55, 0.18);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55), 0 0 16px rgba(212, 175, 55, 0.18);
 }
 
 body.theme-light .timeline-event {
@@ -1889,10 +1889,10 @@ body.theme-light .timeline-event {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 0.8rem;
-  padding-bottom: 0.85rem;
+  gap: 0.6rem;
+  padding-bottom: 0.65rem;
   border-bottom: 1px dashed rgba(212, 175, 55, 0.3);
-  margin-bottom: 0.95rem;
+  margin-bottom: 0.75rem;
 }
 
 body.theme-light .timeline-header {
@@ -1902,30 +1902,30 @@ body.theme-light .timeline-header {
 .timeline-title-wrap {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .timeline-num {
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: var(--gold-gradient);
   color: #0b0c10;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 3px 10px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
 }
 
 .timeline-title {
   font-family: var(--font-heading);
-  font-size: 1.22rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #f7ecd7;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   margin: 0;
 }
 
@@ -1936,7 +1936,7 @@ body.theme-light .timeline-title {
 .timeline-time-pills {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
@@ -1946,15 +1946,15 @@ body.theme-light .timeline-title {
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.55rem;
 }
 
 .timeline-sub-items li {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  font-size: 0.94rem;
-  line-height: 1.5;
+  gap: 8px;
+  font-size: 0.82rem;
+  line-height: 1.45;
   color: #ddd4c5;
 }
 
@@ -1964,8 +1964,8 @@ body.theme-light .timeline-sub-items li {
 
 .sub-dot {
   color: var(--gold-400);
-  font-size: 0.8rem;
-  margin-top: 2px;
+  font-size: 0.65rem;
+  margin-top: 3px;
   flex-shrink: 0;
 }
 
@@ -1978,8 +1978,8 @@ body.theme-light .timeline-sub-items li {
 .sub-time {
   color: var(--gold-300);
   font-weight: 600;
-  font-size: 0.88rem;
-  letter-spacing: 0.3px;
+  font-size: 0.78rem;
+  letter-spacing: 0.2px;
 }
 
 body.theme-light .sub-time {
@@ -1988,9 +1988,9 @@ body.theme-light .sub-time {
 }
 
 .sub-text {
-  font-size: 0.92rem;
+  font-size: 0.82rem;
   color: #f3efe6;
-  opacity: 0.92;
+  opacity: 0.90;
 }
 
 body.theme-light .sub-text {
@@ -2002,7 +2002,7 @@ body.theme-light .sub-text {
   .sub-body {
     flex-direction: row;
     align-items: baseline;
-    gap: 12px;
+    gap: 10px;
   }
 }
 
