@@ -804,34 +804,81 @@ function unveilInvitation(immediate = false) {
         if (immediate) {
             royalSplash.style.display = 'none';
             if (mainContent) mainContent.classList.add('show');
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
             triggerScrollRevealCheck();
             return;
         }
         royalSplash.classList.add('hide');
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+
         setTimeout(() => {
             royalSplash.style.display = 'none';
             if (mainContent) mainContent.classList.add('show');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+            const heroSection = document.getElementById('heroSection');
+            if (heroSection) {
+                heroSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
             triggerScrollRevealCheck();
-        }, 600);
+        }, 500);
     } else {
         if (mainContent) mainContent.classList.add('show');
         triggerScrollRevealCheck();
     }
 }
 
-// Click or tap anywhere on the first page (or on the button) to open invitation
+// Click, tap or swipe anywhere on the first page (or on the button) to open invitation and scroll to 2nd page
 if (royalSplash) {
     royalSplash.addEventListener('click', unveilInvitation);
     royalSplash.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') unveilInvitation();
     });
+
+    let splashTouchStartY = 0;
+    royalSplash.addEventListener('touchstart', (e) => {
+        if (e.touches && e.touches.length === 1) {
+            splashTouchStartY = e.touches[0].clientY;
+        }
+    }, { passive: true });
+
+    royalSplash.addEventListener('touchend', (e) => {
+        if (e.changedTouches && e.changedTouches.length === 1) {
+            const diffY = splashTouchStartY - e.changedTouches[0].clientY;
+            if (diffY > 30) {
+                unveilInvitation();
+            }
+        }
+    }, { passive: true });
 }
 if (openInvitationBtn) {
     openInvitationBtn.addEventListener('click', unveilInvitation);
 }
 if (new URLSearchParams(window.location.search).has('unveil')) {
     unveilInvitation(true);
+}
+
+// Floating Scroll-to-Top Button Handler
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+if (scrollTopBtn) {
+    scrollTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+    });
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 350 || document.documentElement.scrollTop > 350) {
+            scrollTopBtn.classList.add('visible');
+        } else {
+            scrollTopBtn.classList.remove('visible');
+        }
+    }, { passive: true });
 }
 
 // --------------------------------------------------------------------------

@@ -810,7 +810,8 @@ body.lang-am, body.lang-ao {
   background-size: cover;
   background-repeat: no-repeat;
   cursor: pointer;
-  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease;
+  transform: translateY(0);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.65s ease;
   overflow: hidden;
   padding: 1.5rem 1.2rem 2.8rem;
   box-sizing: border-box;
@@ -853,6 +854,7 @@ body.lang-am, body.lang-ao {
 
 .royal-splash.hide {
   opacity: 0;
+  transform: translateY(-80px);
   visibility: hidden;
   pointer-events: none;
 }
@@ -2687,6 +2689,61 @@ footer {
 }
 
 
+/* Floating Scroll-to-Top Button */
+.scroll-top-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  z-index: 4900;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: rgba(18, 22, 34, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: var(--gold-300);
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(16px);
+  transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease, background 0.3s ease, border-color 0.3s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.scroll-top-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.scroll-top-btn:hover {
+  background: var(--gold-gradient);
+  color: #0b0c10;
+  border-color: var(--gold-300);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.55);
+  transform: translateY(-2px);
+}
+
+body.theme-light .scroll-top-btn {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(184, 134, 11, 0.45);
+  color: #6b5114;
+  box-shadow: 0 6px 20px rgba(60, 45, 30, 0.15);
+}
+
+body.theme-light .scroll-top-btn:hover {
+  background: linear-gradient(135deg, #d4a72d 0%, #b88d22 100%);
+  color: #ffffff;
+}
+
 /* ==========================================================================
    MEDIA QUERIES
    ========================================================================== */
@@ -2716,6 +2773,7 @@ footer {
   .attendance-pill-radio,
   .invitation-card-wrapper,
   .footer-vip-link,
+  .scroll-top-btn,
   footer {
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
