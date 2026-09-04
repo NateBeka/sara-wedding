@@ -863,23 +863,7 @@ if (new URLSearchParams(window.location.search).has('unveil')) {
     unveilInvitation(true);
 }
 
-// Floating Scroll-to-Top Button Handler
-const scrollTopBtn = document.getElementById('scrollTopBtn');
-if (scrollTopBtn) {
-    scrollTopBtn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-    });
 
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 350 || document.documentElement.scrollTop > 350) {
-            scrollTopBtn.classList.add('visible');
-        } else {
-            scrollTopBtn.classList.remove('visible');
-        }
-    }, { passive: true });
-}
 
 // --------------------------------------------------------------------------
 // 5. LIVE COUNTDOWN TIMER & PURE LINGUISTIC CALENDAR
