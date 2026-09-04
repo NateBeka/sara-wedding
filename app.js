@@ -111,7 +111,7 @@ const translations = {
         timeline_5_desc: "Hotel check-in, rest, and preparation for the evening celebration",
         timeline_6_time: "6:00 PM - 9:00 PM",
         timeline_6_title: "Stay at Central Hotel",
-        timeline_6_desc: "Dinner reception, ceremonial cake-cutting, and dancing celebration at Central Hotel Hawassa!",
+        timeline_6_desc: "Dinner reception, ceremonial cake-cutting, and celebration at Central Hotel Hawassa!",
         locations_tag: "Directions",
         locations_heading: '<span class="title-icon">📍</span> <span class="title-text">Event Locations</span>',
         locations_subtitle: "Easily find your way with interactive maps and navigation",
