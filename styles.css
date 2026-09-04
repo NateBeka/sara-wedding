@@ -794,6 +794,25 @@ body.lang-am, body.lang-ao {
 /* ==========================================================================
    ROYAL INVITATION SPLASH (CINEMATIC FULL-PORTRAIT - ZERO CARD/NO BOX)
    ========================================================================== */
+/* Lock scroll and viewport completely while royal splash screen is active */
+html.splash-active,
+body.splash-active {
+  overflow: hidden !important;
+  height: 100% !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+}
+
+body.splash-active .main-content {
+  visibility: hidden !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
 .royal-splash {
   position: fixed;
   top: 0;
@@ -819,6 +838,8 @@ body.lang-am, body.lang-ao {
   background-size: cover;
   background-repeat: no-repeat;
   cursor: pointer;
+  touch-action: none;
+  overscroll-behavior: none;
   transform: translateY(0);
   transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.65s ease;
   overflow: hidden;

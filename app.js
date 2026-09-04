@@ -800,6 +800,10 @@ function unveilInvitation(immediate = false) {
     ensureAudioUnlocked();
     startMusic();
 
+    // Release scroll lock on html and body so 2nd page can be scrolled normally
+    document.documentElement.classList.remove('splash-active');
+    document.body.classList.remove('splash-active');
+
     if (royalSplash) {
         if (immediate) {
             royalSplash.style.display = 'none';
@@ -811,13 +815,13 @@ function unveilInvitation(immediate = false) {
             return;
         }
         royalSplash.classList.add('hide');
+        if (mainContent) mainContent.classList.add('show');
         window.scrollTo(0, 0);
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
 
         setTimeout(() => {
             royalSplash.style.display = 'none';
-            if (mainContent) mainContent.classList.add('show');
             window.scrollTo({ top: 0, behavior: 'smooth' });
             document.documentElement.scrollTop = 0;
             document.body.scrollTop = 0;
@@ -839,6 +843,13 @@ if (royalSplash) {
     royalSplash.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') unveilInvitation();
     });
+
+    // Prevent background scrolling while guest is viewing the 1st page
+    royalSplash.addEventListener('touchmove', (e) => {
+        if (!hasOpened) {
+            e.preventDefault();
+        }
+    }, { passive: false });
 
     let splashTouchStartY = 0;
     royalSplash.addEventListener('touchstart', (e) => {
