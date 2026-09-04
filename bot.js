@@ -288,7 +288,7 @@ async function notifyAdmins(botToken, text, extra = null) {
 }
 
 // ============================================================================
-// NAVIGATION MENUS & KEYBOARDS (CLEAN 5 BUTTONS ONLY - NO ADMIN/LANG BUTTONS)
+// NAVIGATION MENUS & KEYBOARDS
 // ============================================================================
 function getMainKeyboard(userLang = 'en') {
     const labels = {
@@ -297,14 +297,16 @@ function getMainKeyboard(userLang = 'en') {
             schedule: '📅 Program & Schedule',
             venues: '📍 Venues & Maps',
             photos: '📸 Send Photos & Wishes',
-            wishes: '💐 Leave Blessings'
+            wishes: '💐 Leave Blessings',
+            lang: '🌍 Language / ቋንቋ'
         },
         am: {
             rsvp: '💌 ምላሽ ይስጡ (RSVP)',
             schedule: '📅 የሰርግ መርሃ ግብር',
             venues: '📍 የሰርግ ቦታዎችና ካርታ',
             photos: '📸 ፎቶዎችና ቪዲዮ ይላኩ',
-            wishes: '💐 ምርቃት ይጻፉ'
+            wishes: '💐 ምርቃት ይጻፉ',
+            lang: '🌍 ቋንቋ / Language'
         }
     };
 
@@ -313,7 +315,7 @@ function getMainKeyboard(userLang = 'en') {
     const keyboard = [
         [{ text: l.rsvp }, { text: l.schedule }],
         [{ text: l.venues }, { text: l.photos }],
-        [{ text: l.wishes }]
+        [{ text: l.wishes }, { text: l.lang }]
     ];
 
     return {
@@ -323,12 +325,12 @@ function getMainKeyboard(userLang = 'en') {
     };
 }
 
-function getLanguageInlineKeyboard() {
+function getLanguageInlineKeyboard(currentLang = 'en') {
     return {
         inline_keyboard: [
             [
-                { text: '🇺🇸 English', callback_data: 'lang_en' },
-                { text: '🇪🇹 አማርኛ (Amharic)', callback_data: 'lang_am' }
+                { text: (currentLang === 'en' ? '✓ ' : '') + '🇺🇸 English', callback_data: 'lang_en' },
+                { text: (currentLang === 'am' ? '✓ ' : '') + '🇪🇹 አማርኛ (Amharic)', callback_data: 'lang_am' }
             ]
         ]
     };
@@ -866,9 +868,18 @@ async function processUpdate(botToken, update) {
             dataStore.guest_users[chatId].lang = newLang;
             saveData(dataStore);
 
-            const langNames = { en: 'English 🇺🇸', am: 'አማርኛ 🇪🇹' };
-            await sendMessage(botToken, chatId, `✅ <i>Language updated to ${langNames[newLang] || 'English'}.</i>`, getMainKeyboard(newLang));
-            await sendMessage(botToken, chatId, getWelcomeMessage(newLang, user));
+            const activeSession = userSessions.get(chatId);
+            if (activeSession) {
+                activeSession.lang = newLang;
+            }
+
+            const isAm = newLang === 'am';
+            const switchNotice = isAm
+                ? `✅ <b>ቋንቋ ወደ አማርኛ 🇪🇹 ተቀይሯል!</b>`
+                : `✅ <b>Language switched to English 🇺🇸!</b>`;
+
+            await sendMessage(botToken, chatId, switchNotice, getMainKeyboard(newLang));
+            await sendMessage(botToken, chatId, getWelcomeMessage(newLang, user), getMainKeyboard(newLang));
             return;
         }
 
@@ -1020,6 +1031,7 @@ async function processUpdate(botToken, update) {
             '📍', 'Venues', 'Maps', 'ቦታዎች',
             '📸', 'Photos', 'ፎቶ',
             '💐', 'Wishes', 'Blessings', 'ምርቃት',
+            '🌍', 'Language', 'ቋንቋ',
             '/start', '/rsvp', '/schedule', '/venues', '/photos', '/wishes', '/admin', '/language', '/lang', '/claim_admin', '/get_photos', '/moments', '/cancel'
         ];
 
@@ -1249,6 +1261,11 @@ async function processUpdate(botToken, update) {
             }
 
             await sendMessage(botToken, chatId, getWelcomeMessage(userLang, user), getMainKeyboard(userLang));
+
+            const langPrompt = userLang === 'am'
+                ? `🌍 <b>ቋንቋ መቀየር ይፈልጋሉ? / Switch Language:</b>`
+                : `🌍 <b>Select your preferred language / እባክዎ የሚፈልጉትን ቋንቋ ይምረጡ:</b>`;
+            await sendMessage(botToken, chatId, langPrompt, getLanguageInlineKeyboard(userLang));
             return;
         }
 
@@ -1263,7 +1280,7 @@ async function processUpdate(botToken, update) {
         }
 
         if (text === '/venues' || text.includes('Venues') || text.includes('ቦታዎች')) {
-            await sendMessage(botToken, chatId, getVenuesMessage(userLang));
+            await sendMessage(botToken, chatId, getVenuesMessage(userLang), getMainKeyboard(userLang));
             // Send Native Telegram Venue GPS Pins
             if (config.event && config.event.venues) {
                 for (const v of config.event.venues) {
@@ -1314,7 +1331,11 @@ async function processUpdate(botToken, update) {
         }
 
         if (text === '/language' || text === '/lang' || text.includes('Language') || text.includes('ቋንቋ')) {
-            await sendMessage(botToken, chatId, `🌍 <b>Please select your preferred language / ቋንቋ ይምረጡ:</b>`, getLanguageInlineKeyboard());
+            const isAm = userLang === 'am';
+            const prompt = isAm
+                ? `🌍 <b>እባክዎ የሚፈልጉትን ቋንቋ ይምረጡ / Please select your preferred language:</b>`
+                : `🌍 <b>Please select your preferred language / እባክዎ የሚፈልጉትን ቋንቋ ይምረጡ:</b>`;
+            await sendMessage(botToken, chatId, prompt, getLanguageInlineKeyboard(userLang));
             return;
         }
 
@@ -1343,6 +1364,24 @@ async function startPolling() {
 
     console.log(`[Telegram Bot]: Successfully connected as @${me.result.username} (${me.result.first_name})`);
     console.log(`[Telegram Bot]: Dr. Sara Ayele & Eng. Tewodros Belay Wedding Bot is ACTIVE!`);
+
+    // Register Telegram menu commands
+    try {
+        await callTelegram(config.bot_token, 'setMyCommands', {
+            commands: [
+                { command: 'start', description: 'Start Bot / ቦቱን ያስጀምሩ' },
+                { command: 'language', description: 'Change Language / ቋንቋ ይምረጡ' },
+                { command: 'rsvp', description: 'Wedding RSVP / የሰርግ ምላሽ' },
+                { command: 'schedule', description: 'Wedding Schedule / የቀኑ መርሃ ግብር' },
+                { command: 'venues', description: 'Venues & Navigation / ቦታዎችና ካርታ' },
+                { command: 'photos', description: 'Share Photos / ፎቶዎችና ቪዲዮ ይላኩ' },
+                { command: 'wishes', description: 'Leave Blessings / ምርቃት ይጻፉ' },
+                { command: 'admin', description: 'Admin Access / የአድሚን ክፍል' }
+            ]
+        });
+    } catch (cmdErr) {
+        console.warn('[Telegram Bot]: setMyCommands notice:', cmdErr.message);
+    }
 
     pollingActive = true;
     pollingAbortController = new AbortController();
@@ -1398,7 +1437,10 @@ module.exports = {
     escapeHtml,
     getTelegramFileUrl,
     downloadAndSavePhoto,
-    sendAllMomentsToAdmin
+    sendAllMomentsToAdmin,
+    getMainKeyboard,
+    getLanguageInlineKeyboard,
+    getWelcomeMessage
 };
 
 // Run standalone if executed directly
