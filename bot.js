@@ -394,24 +394,24 @@ function getScheduleMessage(userLang = 'en') {
             `📅 <b>የሰርግ ቀን ሙሉ መርሃ ግብር</b>\n` +
             `<b>እሁድ መስከረም 10 ቀን 2018 ዓ.ም (Sept 20, 2026)</b>\n` +
             `✦ ══════════════════════════ ✦\n\n` +
-            `<b>1️⃣ 10:00 AM - 12:00 PM</b>\n` +
-            `🚗 <b>ጉዞ ወደ ሙሽሪት መኖሪያ ቤት</b>\n` +
-            `የሚዜዎችና የታዳሚዎች ጉዞ ወደ ዲላ\n\n` +
-            `<b>2️⃣ 12:00 PM - 12:15 PM</b>\n` +
-            `💐 <b>የሙሽራው አቀባበል</b>\n` +
-            `በሙሽሪት ቤተሰብ ደማቅ የደስታ አቀባበል\n\n` +
-            `<b>3️⃣ 12:15 PM - 3:00 PM</b>\n` +
-            `🍽️ <b>የምሳ ግብዣ፣ ምርቃትና ፎቶ</b>\n` +
-            `የወላጆች ምርቃት፣ የሰርግ ምሳ ግብዣ በዲላ መኖሪያ ቤት\n\n` +
-            `<b>4️⃣ 3:00 PM - 5:00 PM</b>\n` +
-            `🎺 <b>ደማቅ የክብር ኮንቮይ ጉዞ ወደ ሀዋሳ</b>\n` +
-            `የሰርግ አጀብና የደስታ ጉዞ ወደ ሀዋሳ ከተማ\n\n` +
-            `<b>5️⃣ 5:00 PM - 6:00 PM</b>\n` +
-            `🏨 <b>የሆቴል እረፍትና ዝግጅት</b>\n` +
-            `ለማታው ደማቅ ዝግጅት እረፍትና ሽኝት\n\n` +
-            `<b>6️⃣ 6:00 PM - 9:00 PM</b>\n` +
-            `🥂 <b>ደማቅ የምሽት ግብዣና ጭፈራ</b>\n` +
-            `በሴንትራል ሆቴል ሀዋሳ ታላቅ የምሽት እራት ግብዣ፣ ኬክ ቆረሳና ደማቅ ጭፈራ! 🎉`
+            `<b>1️⃣ 4:00 - 6:00</b> (10:00 AM - 12:00 PM)\n` +
+            `🚗 <b>ጉዞ ወደ ሙሽሪት ቤት</b>\n` +
+            `ወደ ዲላ መኖሪያ ቤት ጉዞ\n\n` +
+            `<b>2️⃣ 6:00 - 6:15</b> (12:00 PM - 12:15 PM)\n` +
+            `💐 <b>ሙሽሪት ቤት መድረስ</b>\n` +
+            `የአቀባበል ስነ-ስርዓት\n\n` +
+            `<b>3️⃣ 6:15 - 9:00</b> (12:15 PM - 3:00 PM)\n` +
+            `🍽️ <b>ቆይታ በሙሽሪት ቤት</b>\n` +
+            `የምሳ ግብዣና ፎቶ ፕሮግራም\n\n` +
+            `<b>4️⃣ 9:00 - 11:00</b> (3:00 PM - 5:00 PM)\n` +
+            `🎺 <b>ጉዞ ወደ ሀዋሳ</b>\n` +
+            `የአጁቢዎች ደማቅ የክብር ሰልፍ\n\n` +
+            `<b>5️⃣ 11:00 - 12:00</b> (5:00 PM - 6:00 PM)\n` +
+            `🏨 <b>ዕረፍት</b>\n` +
+            `የዕረፍትና የዝግጅት ጊዜ\n\n` +
+            `<b>6️⃣ 12:00 - 3:00</b> (6:00 PM - 9:00 PM)\n` +
+            `🥂 <b>ቆይታ በ ሴንትራል ሆቴል</b>\n` +
+            `ታላቅ የምሽት ድግስና ደስታ 🎉`
         );
     }
 
@@ -419,24 +419,24 @@ function getScheduleMessage(userLang = 'en') {
         `📅 <b>WEDDING DAY SCHEDULE & PROCESSION</b>\n` +
         `<b>Sunday, September 20, 2026 (መስከረም 10, 2018)</b>\n` +
         `✦ ══════════════════════════ ✦\n\n` +
-        `<b>1️⃣ 10:00 AM - 12:00 PM</b>\n` +
+        `<b>1️⃣ 4:00 - 6:00</b> (10:00 AM - 12:00 PM)\n` +
         `🚗 <b>Journey to Bride's Residence</b>\n` +
         `Departure of the wedding entourage to Dila\n\n` +
-        `<b>2️⃣ 12:00 PM - 12:15 PM</b>\n` +
-        `💐 <b>Arrival & Welcoming</b>\n` +
-        `Warm reception at the Bride's family home\n\n` +
-        `<b>3️⃣ 12:15 PM - 3:00 PM</b>\n` +
-        `🍽️ <b>Luncheon, Blessings & Portraits</b>\n` +
-        `Parental blessings and wedding feast at Dila\n\n` +
-        `<b>4️⃣ 3:00 PM - 5:00 PM</b>\n` +
-        `🎺 <b>Grand Procession to Hawassa</b>\n` +
-        `Motorcade procession traveling to Hawassa\n\n` +
-        `<b>5️⃣ 5:00 PM - 6:00 PM</b>\n` +
-        `🏨 <b>Rest & Hotel Refreshment</b>\n` +
-        `Hotel check-in and preparation for gala night\n\n` +
-        `<b>6️⃣ 6:00 PM - 9:00 PM</b>\n` +
-        `🥂 <b>Gala Dinner & Celebration</b>\n` +
-        `Dinner reception, cake ceremony & dancing at Central Hotel Hawassa! 🎉`
+        `<b>2️⃣ 6:00 - 6:15</b> (12:00 PM - 12:15 PM)\n` +
+        `💐 <b>Arrival at Bride's Residence</b>\n` +
+        `Welcoming reception at the Bride's home\n\n` +
+        `<b>3️⃣ 6:15 - 9:00</b> (12:15 PM - 3:00 PM)\n` +
+        `🍽️ <b>Stay at Bride's Residence</b>\n` +
+        `Parental blessings, wedding luncheon & portraits\n\n` +
+        `<b>4️⃣ 9:00 - 11:00</b> (3:00 PM - 5:00 PM)\n` +
+        `🎺 <b>Journey to Hawassa</b>\n` +
+        `Grand motorcade procession traveling to Hawassa\n\n` +
+        `<b>5️⃣ 11:00 - 12:00</b> (5:00 PM - 6:00 PM)\n` +
+        `🏨 <b>Rest</b>\n` +
+        `Hotel check-in & refreshment for the gala night\n\n` +
+        `<b>6️⃣ 12:00 - 3:00</b> (6:00 PM - 9:00 PM)\n` +
+        `🥂 <b>Stay at Central Hotel</b>\n` +
+        `Dinner reception, cake ceremony & celebration! 🎉`
     );
 }
 
