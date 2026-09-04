@@ -12,6 +12,14 @@
       "timestamp": "2026-09-03T20:56:00.000Z"
     }
   ],
-  "guest_users": {},
+  "guest_users": {
+    "581789098": {
+      "id": 581789098,
+      "username": "Nathaeny",
+      "first_name": "፤",
+      "lang": "en",
+      "last_active": "2026-09-04T07:21:01.100Z"
+    }
+  },
   "moments": []
 }

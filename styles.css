@@ -616,103 +616,7 @@ body.lang-am, body.lang-ao {
   font-family: var(--font-ethiopic), var(--font-body);
 }
 
-/* ==========================================================================
-   AMBIENT GLOW ORBS (DYNAMIC BACKGROUND MESH FOR GLASS REFRACTION)
-   ========================================================================== */
-.ambient-glow-mesh {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
-}
 
-.glow-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.65;
-  will-change: transform;
-}
-
-.orb-1 {
-  width: 520px;
-  height: 520px;
-  top: -80px;
-  left: 12%;
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.22) 0%, rgba(212, 175, 55, 0.05) 55%, transparent 70%);
-  animation: floatOrb1 22s infinite ease-in-out alternate;
-}
-
-.orb-2 {
-  width: 620px;
-  height: 620px;
-  top: 32%;
-  right: -100px;
-  background: radial-gradient(circle, rgba(216, 129, 140, 0.16) 0%, rgba(212, 175, 55, 0.06) 55%, transparent 70%);
-  animation: floatOrb2 28s infinite ease-in-out alternate;
-}
-
-.orb-3 {
-  width: 500px;
-  height: 500px;
-  bottom: 8%;
-  left: -60px;
-  background: radial-gradient(circle, rgba(185, 142, 36, 0.18) 0%, rgba(138, 98, 20, 0.04) 55%, transparent 70%);
-  animation: floatOrb3 24s infinite ease-in-out alternate;
-}
-
-.orb-4 {
-  width: 480px;
-  height: 480px;
-  bottom: 28%;
-  right: 18%;
-  background: radial-gradient(circle, rgba(140, 103, 16, 0.14) 0%, rgba(216, 129, 140, 0.05) 55%, transparent 70%);
-  animation: floatOrb4 26s infinite ease-in-out alternate;
-}
-
-body.theme-light .orb-1 {
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.28) 0%, transparent 70%);
-  opacity: 0.7;
-}
-body.theme-light .orb-2 {
-  background: radial-gradient(circle, rgba(225, 175, 185, 0.25) 0%, transparent 70%);
-  opacity: 0.6;
-}
-body.theme-light .orb-3 {
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.22) 0%, transparent 70%);
-  opacity: 0.6;
-}
-body.theme-light .orb-4 {
-  background: radial-gradient(circle, rgba(190, 146, 35, 0.2) 0%, transparent 70%);
-  opacity: 0.6;
-}
-
-@keyframes floatOrb1 {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(60px, 80px) scale(1.1); }
-  100% { transform: translate(-40px, 120px) scale(0.95); }
-}
-
-@keyframes floatOrb2 {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-80px, -60px) scale(1.15); }
-  100% { transform: translate(-30px, 70px) scale(0.9); }
-}
-
-@keyframes floatOrb3 {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(70px, -70px) scale(1.08); }
-  100% { transform: translate(40px, 50px) scale(0.92); }
-}
-
-@keyframes floatOrb4 {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-50px, 60px) scale(1.12); }
-  100% { transform: translate(60px, -40px) scale(0.95); }
-}
 
 /* Interactive Moving Stars Canvas - Floating Over Cards & Welcome Screen */
 #sparkleCanvas {
@@ -2757,6 +2661,7 @@ footer {
 .reveal-on-scroll.is-revealed {
   opacity: 1;
   transform: translateY(0) scale(1);
+  will-change: auto;
 }
 
 /* Staggered delays for timeline steps */
@@ -2786,6 +2691,113 @@ footer {
    MEDIA QUERIES
    ========================================================================== */
 @media (max-width: 768px) {
+  /* ========================================================================
+     ULTRA-SMOOTH MOBILE PERFORMANCE (BUTTER-SMOOTH 60 FPS ON OLDER PHONES)
+     ======================================================================== */
+  /* 1. Eliminate heavy backdrop-filter blurs across all mobile elements */
+  .floating-controls,
+  .music-pill,
+  .lang-toggle-btn,
+  .theme-pill,
+  .card,
+  .hero-card,
+  .save-date-unified-card,
+  .time-tile,
+  .cal-day-cell,
+  .step-content,
+  .location-card,
+  .qr-glass-card,
+  .qr-label-pill,
+  .hero-crest-pill,
+  .hero-meta-badge,
+  .rsvp-input,
+  .rsvp-select,
+  .rsvp-textarea,
+  .attendance-pill-radio,
+  .invitation-card-wrapper,
+  .footer-vip-link,
+  footer {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* 2. Rich, opaque luxury card styling with crisp borders & zero GPU blur tax */
+  .card,
+  .hero-card,
+  .save-date-unified-card,
+  .location-card,
+  .qr-glass-card,
+  .invitation-card-wrapper {
+    background: rgba(18, 22, 34, 0.94) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  }
+  .floating-controls {
+    background: rgba(18, 22, 34, 0.92) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+  }
+  .time-tile,
+  .step-content {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  /* 3. Light Mode smooth surfaces */
+  body.theme-light .card,
+  body.theme-light .hero-card,
+  body.theme-light .save-date-unified-card,
+  body.theme-light .location-card,
+  body.theme-light .qr-glass-card,
+  body.theme-light .invitation-card-wrapper {
+    background: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 6px 20px rgba(60, 45, 30, 0.09) !important;
+    border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  }
+  body.theme-light .floating-controls {
+    background: rgba(255, 255, 255, 0.94) !important;
+    box-shadow: 0 4px 16px rgba(60, 45, 30, 0.1) !important;
+  }
+  body.theme-light .time-tile,
+  body.theme-light .step-content {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  }
+  body.theme-light footer {
+    background: #e5ded4 !important;
+  }
+
+  /* 4. Disable fixed background attachment to prevent full-screen repaints on scroll */
+  body {
+    background-attachment: scroll !important;
+  }
+  #timelineSection::before {
+    background-attachment: scroll !important;
+  }
+
+  /* 5. Touch responsiveness & eliminate 300ms click delay */
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  .gallery-thumb,
+  .time-tile,
+  .attendance-pill-radio,
+  .royal-splash {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 6. Release GPU layer textures on revealed cards to prevent mobile VRAM exhaustion */
+  .reveal-on-scroll.is-revealed {
+    will-change: auto !important;
+  }
+
+  /* 7. Hardware-accelerated smooth filmstrip */
+  .gallery-filmstrip {
+    -webkit-overflow-scrolling: touch;
+  }
+
   .hero-card {
     margin: 0.2rem auto 1.2rem;
     border-radius: 20px;

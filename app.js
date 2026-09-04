@@ -37,6 +37,28 @@ const PHOTO_ARRAY = [
     "images/photo_28_2026-09-03_19-04-18.jpg"
 ];
 
+// Lightweight thumbnails for the filmstrip to eliminate memory & decode bottlenecks on mobile
+const THUMB_ARRAY = PHOTO_ARRAY.map(src => src.replace('images/', 'images/thumbs/'));
+
+// Hardware-aware mobile smoothness detector
+const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+const isLowEndDevice = Boolean(
+    (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+    (navigator.deviceMemory && navigator.deviceMemory <= 3) ||
+    (isTouchDevice && window.innerWidth < 768)
+);
+
+// Active scroll detector: pauses background canvas during touch gestures/scrolling to yield 100% CPU/GPU to smooth scrolling
+let isUserScrolling = false;
+let scrollPauseTimer = null;
+window.addEventListener('scroll', () => {
+    isUserScrolling = true;
+    clearTimeout(scrollPauseTimer);
+    scrollPauseTimer = setTimeout(() => {
+        isUserScrolling = false;
+    }, 120);
+}, { passive: true });
+
 // Pure Trilingual Localization Dictionaries (Zero mixed-language)
 const translations = {
     en: {
@@ -362,7 +384,6 @@ function initSparkles() {
     }, { passive: true });
 
     // Only enable pointermove cursor stardust on non-touch (mouse) devices to save mobile battery & RAM
-    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
     if (!isTouchDevice) {
         window.addEventListener('pointermove', onPointerMoveSparkle, { passive: true });
     }
@@ -385,10 +406,10 @@ function initSparkles() {
     });
 
     // Mobile & low-memory particle count:
-    // Mobile phones: 14 stars (sleek, light, 0 frame drops)
-    // Desktop: 28 stars (luxurious, smooth 60-120 FPS)
-    const isMobile = window.innerWidth < 768;
-    const starCount = isMobile ? 14 : 28;
+    // Low-end / older phones: 6 stars (silky 60-120 FPS, virtually 0 CPU)
+    // Normal mobile: 10 stars
+    // Desktop: 24 stars
+    const starCount = isLowEndDevice ? 6 : (window.innerWidth < 768 ? 10 : 24);
     celestialStars = [];
 
     for (let i = 0; i < starCount; i++) {
@@ -462,8 +483,24 @@ function spawnShootingStar() {
     });
 }
 
-function renderCelestialField() {
+let lastSparkleRenderTime = 0;
+function renderCelestialField(timestamp) {
     if (!isSparkleActive || !sparkleCtx) return;
+
+    // Yield 100% of CPU and GPU to the browser during active user touch/scrolling on mobile
+    if (isUserScrolling && isLowEndDevice) {
+        sparkleAnimId = requestAnimationFrame(renderCelestialField);
+        return;
+    }
+
+    // On low-end mobile devices, cap to ~30 FPS to prevent battery drain and frame drops
+    const ts = timestamp || performance.now();
+    if (isLowEndDevice && (ts - lastSparkleRenderTime < 32)) {
+        sparkleAnimId = requestAnimationFrame(renderCelestialField);
+        return;
+    }
+    lastSparkleRenderTime = ts;
+
     sparkleCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
 
     // 1. Render Floating Ambient & Diamond Stars via cached GPU sprite blit (ZERO shadowBlur!)
@@ -947,7 +984,7 @@ function initGallery() {
         thumb.dataset.index = idx;
 
         const img = document.createElement('img');
-        img.src = src;
+        img.src = THUMB_ARRAY[idx];
         img.alt = `Wedding Portrait ${idx + 1}`;
         img.loading = 'lazy';
         img.decoding = 'async';
@@ -977,11 +1014,19 @@ function setupLazyGallery() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                initGallery();
-                observer.disconnect();
+                if (!galleryInitialized) {
+                    initGallery();
+                } else {
+                    startAutoSlide();
+                }
+            } else {
+                if (galleryAutoInterval) {
+                    clearInterval(galleryAutoInterval);
+                    galleryAutoInterval = null;
+                }
             }
         });
-    }, { rootMargin: '350px 0px' });
+    }, { rootMargin: '250px 0px' });
     observer.observe(gallerySec);
 }
 
@@ -1365,6 +1410,10 @@ function initScrollAnimations() {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-revealed');
                     observer.unobserve(entry.target);
+                    // Release GPU layer textures on revealed cards to prevent mobile VRAM exhaustion
+                    setTimeout(() => {
+                        entry.target.style.willChange = 'auto';
+                    }, 850);
                 }
             });
         }, {
@@ -1384,6 +1433,9 @@ function triggerScrollRevealCheck() {
         const rect = el.getBoundingClientRect();
         if (rect.top < window.innerHeight * 0.92) {
             el.classList.add('is-revealed');
+            setTimeout(() => {
+                el.style.willChange = 'auto';
+            }, 850);
         }
     });
 }
