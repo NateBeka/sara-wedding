@@ -17,6 +17,8 @@
 
 const fs = require('fs');
 const path = require('path');
+const { pipeline } = require('stream/promises');
+const { Readable } = require('stream');
 
 const CONFIG_PATH = path.join(__dirname, 'bot_config.json');
 const DATA_PATH = path.join(__dirname, 'data', 'rsvps.json');
@@ -36,23 +38,30 @@ function escapeHtml(str) {
         .replace(/>/g, '&gt;');
 }
 
-// Ensure data file exists
+// In-memory cached data model to eliminate disk I/O and JSON parse churn
+let cachedData = null;
+
 function loadData() {
+    if (cachedData) return cachedData;
     try {
         if (!fs.existsSync(DATA_PATH)) {
             const initial = { rsvps: [], guest_users: {}, moments: [] };
             fs.mkdirSync(path.dirname(DATA_PATH), { recursive: true });
             fs.writeFileSync(DATA_PATH, JSON.stringify(initial, null, 2), 'utf8');
+            cachedData = initial;
             return initial;
         }
-        return JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
+        cachedData = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
+        return cachedData;
     } catch (err) {
         console.error('[Bot Data Load Error]:', err);
-        return { rsvps: [], guest_users: {}, moments: [] };
+        cachedData = { rsvps: [], guest_users: {}, moments: [] };
+        return cachedData;
     }
 }
 
 function saveData(data) {
+    cachedData = data;
     try {
         fs.mkdirSync(path.dirname(DATA_PATH), { recursive: true });
         fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), 'utf8');
@@ -111,8 +120,34 @@ function saveConfig(cfg) {
     }
 }
 
-// Global In-Memory State for multi-step conversations
-const userSessions = new Map(); // chatId -> { step, data, lang }
+// Global In-Memory State for multi-step conversations (TTL-bounded to prevent memory leaks)
+const userSessions = new Map(); // chatId -> { step, data, lang, updatedAt }
+const SESSION_TTL_MS = 15 * 60 * 1000; // 15 minutes TTL
+
+// Auto-record updatedAt timestamp on all sessions
+const _origUserSessionsSet = userSessions.set.bind(userSessions);
+userSessions.set = function(key, val) {
+    if (val && typeof val === 'object') {
+        val.updatedAt = Date.now();
+    }
+    return _origUserSessionsSet(key, val);
+};
+
+// Periodic session cleanup every 5 minutes to free memory from abandoned chats
+setInterval(() => {
+    const now = Date.now();
+    for (const [chatId, session] of userSessions.entries()) {
+        if (!session || !session.updatedAt || (now - session.updatedAt > SESSION_TTL_MS)) {
+            userSessions.delete(chatId);
+        }
+    }
+    // Cap session map size to 500 max
+    if (userSessions.size > 500) {
+        const oldestKey = userSessions.keys().next().value;
+        userSessions.delete(oldestKey);
+    }
+}, 5 * 60 * 1000).unref();
+
 let pollingActive = false;
 let pollingAbortController = null;
 
@@ -196,7 +231,7 @@ async function getTelegramFileUrl(botToken, fileId) {
     return null;
 }
 
-// Download and permanently save incoming guest photo to disk (images/moments/)
+// Download and permanently save incoming guest photo to disk with streaming (Zero heap buffer spike)
 async function downloadAndSavePhoto(botToken, fileId, senderName) {
     try {
         const fileUrl = await getTelegramFileUrl(botToken, fileId);
@@ -209,11 +244,18 @@ async function downloadAndSavePhoto(botToken, fileId, senderName) {
         const res = await fetch(fileUrl);
         if (!res.ok) return null;
 
-        const arrayBuffer = await res.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        fs.writeFileSync(localPath, buffer);
+        // Stream direct to disk via pipeline (<64KB buffer footprint)
+        const fileStream = fs.createWriteStream(localPath);
+        if (res.body && res.body.getReader) {
+            await pipeline(Readable.fromWeb(res.body), fileStream);
+        } else if (res.body) {
+            await pipeline(res.body, fileStream);
+        } else {
+            const ab = await res.arrayBuffer();
+            fs.writeFileSync(localPath, Buffer.from(ab));
+        }
 
-        console.log(`[Moment Photo Saved]: ${localPath} (${buffer.length} bytes)`);
+        console.log(`[Moment Photo Streamed & Saved]: ${localPath}`);
         return {
             localPath: localPath,
             webPath: `/images/moments/${fileName}`,
@@ -298,7 +340,7 @@ function getMainKeyboard(userLang = 'en') {
             venues: '📍 Venues & Maps',
             photos: '📸 Send Photos & Wishes',
             wishes: '💐 Leave Blessings',
-            lang: '🌍 Language / ቋንቋ'
+            lang: '🌐 Language / ቋንቋ'
         },
         am: {
             rsvp: '💌 ምላሽ ይስጡ (RSVP)',
@@ -306,7 +348,7 @@ function getMainKeyboard(userLang = 'en') {
             venues: '📍 የሰርግ ቦታዎችና ካርታ',
             photos: '📸 ፎቶዎችና ቪዲዮ ይላኩ',
             wishes: '💐 ምርቃት ይጻፉ',
-            lang: '🌍 ቋንቋ / Language'
+            lang: '🌐 ቋንቋ / Language'
         }
     };
 
@@ -698,7 +740,7 @@ async function handleAdminPanel(botToken, chatId, user, userLang = 'en') {
             `<i>(Once verified, your Telegram account will receive instant alerts for all RSVPs and shared photos.)</i>`;
 
         userSessions.set(chatId, { step: 'AWAIT_ADMIN_PASSCODE', lang: userLang });
-        await sendMessage(botToken, chatId, claimPrompt);
+        await sendMessage(botToken, chatId, claimPrompt, getMainKeyboard(userLang));
         return;
     }
 
@@ -1031,7 +1073,7 @@ async function processUpdate(botToken, update) {
             '📍', 'Venues', 'Maps', 'ቦታዎች',
             '📸', 'Photos', 'ፎቶ',
             '💐', 'Wishes', 'Blessings', 'ምርቃት',
-            '🌍', 'Language', 'ቋንቋ',
+            '🌐', '🌍', 'Language', 'ቋንቋ',
             '/start', '/rsvp', '/schedule', '/venues', '/photos', '/wishes', '/admin', '/language', '/lang', '/claim_admin', '/get_photos', '/moments', '/cancel'
         ];
 
@@ -1261,11 +1303,6 @@ async function processUpdate(botToken, update) {
             }
 
             await sendMessage(botToken, chatId, getWelcomeMessage(userLang, user), getMainKeyboard(userLang));
-
-            const langPrompt = userLang === 'am'
-                ? `🌍 <b>ቋንቋ መቀየር ይፈልጋሉ? / Switch Language:</b>`
-                : `🌍 <b>Select your preferred language / እባክዎ የሚፈልጉትን ቋንቋ ይምረጡ:</b>`;
-            await sendMessage(botToken, chatId, langPrompt, getLanguageInlineKeyboard(userLang));
             return;
         }
 
@@ -1321,7 +1358,7 @@ async function processUpdate(botToken, update) {
             const prompt = userLang === 'am'
                 ? `✍️ <b>ለኢ/ር ቴዎድሮስ እና ዶ/ር ሳራ የበረከት ቃል ይጻፉ:</b>\n\n<i>መልእክትዎን ጽፈው ይላኩ...</i>`
                 : `✍️ <b>Share your heartfelt blessings for Eng. Tewodros & Dr. Sara:</b>\n\n<i>Type your message below and send...</i>`;
-            await sendMessage(botToken, chatId, prompt);
+            await sendMessage(botToken, chatId, prompt, getMainKeyboard(userLang));
             return;
         }
 
@@ -1333,8 +1370,8 @@ async function processUpdate(botToken, update) {
         if (text === '/language' || text === '/lang' || text.includes('Language') || text.includes('ቋንቋ')) {
             const isAm = userLang === 'am';
             const prompt = isAm
-                ? `🌍 <b>እባክዎ የሚፈልጉትን ቋንቋ ይምረጡ / Please select your preferred language:</b>`
-                : `🌍 <b>Please select your preferred language / እባክዎ የሚፈልጉትን ቋንቋ ይምረጡ:</b>`;
+                ? `🌐 <b>እባክዎ የሚፈልጉትን ቋንቋ ይምረጡ / Please select your preferred language:</b>`
+                : `🌐 <b>Please select your preferred language / እባክዎ የሚፈልጉትን ቋንቋ ይምረጡ:</b>`;
             await sendMessage(botToken, chatId, prompt, getLanguageInlineKeyboard(userLang));
             return;
         }
@@ -1365,22 +1402,11 @@ async function startPolling() {
     console.log(`[Telegram Bot]: Successfully connected as @${me.result.username} (${me.result.first_name})`);
     console.log(`[Telegram Bot]: Dr. Sara Ayele & Eng. Tewodros Belay Wedding Bot is ACTIVE!`);
 
-    // Register Telegram menu commands
+    // Ensure Telegram menu commands are deleted so the "Menu" button is never shown
     try {
-        await callTelegram(config.bot_token, 'setMyCommands', {
-            commands: [
-                { command: 'start', description: 'Start Bot / ቦቱን ያስጀምሩ' },
-                { command: 'language', description: 'Change Language / ቋንቋ ይምረጡ' },
-                { command: 'rsvp', description: 'Wedding RSVP / የሰርግ ምላሽ' },
-                { command: 'schedule', description: 'Wedding Schedule / የቀኑ መርሃ ግብር' },
-                { command: 'venues', description: 'Venues & Navigation / ቦታዎችና ካርታ' },
-                { command: 'photos', description: 'Share Photos / ፎቶዎችና ቪዲዮ ይላኩ' },
-                { command: 'wishes', description: 'Leave Blessings / ምርቃት ይጻፉ' },
-                { command: 'admin', description: 'Admin Access / የአድሚን ክፍል' }
-            ]
-        });
+        await callTelegram(config.bot_token, 'deleteMyCommands');
     } catch (cmdErr) {
-        console.warn('[Telegram Bot]: setMyCommands notice:', cmdErr.message);
+        // ignore
     }
 
     pollingActive = true;

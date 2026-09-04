@@ -9,15 +9,21 @@
         content="Wedding celebration of Eng. Tewodros Belay & Dr. Sara Ayele on September 20, 2026 (መስከረም 10, 2018 ዓ.ም) in Hawassa, Ethiopia.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Pinyon+Script&family=Noto+Sans+Ethiopic:wght@400;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@400;600&family=Noto+Sans+Ethiopic:wght@400;600&display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@400;600&family=Noto+Sans+Ethiopic:wght@400;600&display=swap"
+        media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@400;600&family=Noto+Sans+Ethiopic:wght@400;600&display=swap">
+    </noscript>
+    <link rel="preload" as="style" href="styles.min.css">
+    <link rel="stylesheet" href="styles.min.css">
 
     <!-- Favicon & Touch Icons -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="shortcut icon" href="favorite.ico">
     <link rel="apple-touch-icon" href="favicon.svg">
 
     <!-- Critical Asset Preload for Instant First Paint -->
@@ -37,18 +43,10 @@
     <!-- Canvas for Confetti Celebration -->
     <canvas id="confettiCanvas"></canvas>
 
-    <!-- Ambient Floating Aurora / Glow Mesh for Glassmorphism Depth -->
-    <div class="ambient-glow-mesh" aria-hidden="true">
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
-        <div class="glow-orb orb-3"></div>
-        <div class="glow-orb orb-4"></div>
-    </div>
-
     <!-- FLOATING TOP BAR (Language Switcher, Theme Toggle & Music Controller) -->
     <header class="floating-controls" aria-label="Page Controls">
         <button type="button" class="lang-toggle-btn" id="langToggleBtn" title="Switch Language / ቋንቋ ቀይር"
-            aria-label="Switch between English and Amharic">
+            aria-label="Language: EN / አማ - Switch between English and Amharic">
             <span class="lang-opt active" id="langOptEn">EN</span>
             <span class="lang-divider">/</span>
             <span class="lang-opt" id="langOptAm">አማ</span>
@@ -69,8 +67,7 @@
     </header>
 
     <!-- WEDDING INVITATION SPLASH (CINEMATIC FULL PORTRAIT - ZERO CARD/NO BOX) -->
-    <section class="royal-splash" id="royalSplash" role="button" tabindex="0" title="Click anywhere to open invitation"
-        aria-label="Wedding Invitation Welcome - Click anywhere to open">
+    <section class="royal-splash" id="royalSplash" title="Click anywhere to open invitation">
         <div class="splash-cinematic-wrap">
             <div class="splash-subtitle-badge" data-i18n="splash_subtitle">Wedding Invitation</div>
             <h1 class="splash-couples" data-i18n="splash_title">Eng. Tewodros & Dr. Sara</h1>
@@ -92,7 +89,8 @@
             <section class="hero-card glass-card reveal-on-scroll" id="heroSection" aria-label="Hero Section">
                 <div class="hero-image-wrap">
                     <img id="heroImage" src="images/photo_8_2026-09-03_19-04-18.jpg"
-                        alt="Eng. Tewodros Belay & Dr. Sara Ayele Wedding Portrait">
+                        alt="Eng. Tewodros Belay & Dr. Sara Ayele Wedding Portrait"
+                        fetchpriority="high" decoding="async" width="800" height="1066">
                     <div class="hero-gradient-overlay"></div>
                 </div>
 
@@ -114,8 +112,8 @@
             <section class="card glass-card reveal-on-scroll" id="saveDateSection" aria-label="Save the Date and Countdown">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="save_date_badge">Save The Date</span>
-                    <h3 class="section-title" data-i18n="save_date_title"><span class="title-icon">💍</span> <span
-                            class="title-text">Join Our Celebration</span></h3>
+                    <h2 class="section-title" data-i18n="save_date_title"><span class="title-icon">💍</span> <span
+                            class="title-text">Join Our Celebration</span></h2>
                     <p class="section-subtitle" data-i18n="save_date_subtitle">Sunday, September 20, 2026</p>
                     <div class="gold-divider">✦ ✤ ✦</div>
                 </div>
@@ -188,8 +186,8 @@
             <section class="card glass-card" id="timelineSection" aria-label="Event Timeline">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="timeline_tag">Ajubi Program</span>
-                    <h3 class="section-title" data-i18n="timeline_heading"><span class="title-icon">📅</span> <span
-                            class="title-text">Event Schedule</span></h3>
+                    <h2 class="section-title" data-i18n="timeline_heading"><span class="title-icon">📅</span> <span
+                            class="title-text">Event Schedule</span></h2>
                     <p class="section-subtitle" data-i18n="timeline_subtitle">Wedding Day Schedule & Procession</p>
                     <div class="gold-divider">✦ ✤ ✦</div>
                 </div>
@@ -203,7 +201,7 @@
                                 <span class="pill-time-accent">4:00 - 6:00</span>
                                 <span class="pill-time-greg" data-i18n="timeline_1_time">10:00 AM - 12:00 PM</span>
                             </div>
-                            <h4 class="step-title" data-i18n="timeline_1_title">ጉዞ ወደ ሙሽሪት ቤት</h4>
+                            <h3 class="step-title" data-i18n="timeline_1_title">ጉዞ ወደ ሙሽሪት ቤት</h3>
                             <p class="step-desc" data-i18n="timeline_1_desc">ወደ ዲላ መኖሪያ ቤት ጉዞ</p>
                         </div>
                     </div>
@@ -216,7 +214,7 @@
                                 <span class="pill-time-accent">6:00 - 6:15</span>
                                 <span class="pill-time-greg" data-i18n="timeline_2_time">12:00 PM - 12:15 PM</span>
                             </div>
-                            <h4 class="step-title" data-i18n="timeline_2_title">ሙሽሪት ቤት መድረስ</h4>
+                            <h3 class="step-title" data-i18n="timeline_2_title">ሙሽሪት ቤት መድረስ</h3>
                             <p class="step-desc" data-i18n="timeline_2_desc">የአቀባበል ስነ-ስርዓት</p>
                         </div>
                     </div>
@@ -229,7 +227,7 @@
                                 <span class="pill-time-accent">6:15 - 9:00</span>
                                 <span class="pill-time-greg" data-i18n="timeline_3_time">12:15 PM - 3:00 PM</span>
                             </div>
-                            <h4 class="step-title" data-i18n="timeline_3_title">ቆይታ በሙሽሪት ቤት</h4>
+                            <h3 class="step-title" data-i18n="timeline_3_title">ቆይታ በሙሽሪት ቤት</h3>
                             <p class="step-desc" data-i18n="timeline_3_desc">የምሳ ግብዣና ፎቶ ፕሮግራም</p>
                         </div>
                     </div>
@@ -242,7 +240,7 @@
                                 <span class="pill-time-accent">9:00 - 11:00</span>
                                 <span class="pill-time-greg" data-i18n="timeline_4_time">3:00 PM - 5:00 PM</span>
                             </div>
-                            <h4 class="step-title" data-i18n="timeline_4_title">ጉዞ ወደ ሀዋሳ</h4>
+                            <h3 class="step-title" data-i18n="timeline_4_title">ጉዞ ወደ ሀዋሳ</h3>
                             <p class="step-desc" data-i18n="timeline_4_desc">የአጁቢዎች ደማቅ የክብር ሰልፍ</p>
                         </div>
                     </div>
@@ -255,7 +253,7 @@
                                 <span class="pill-time-accent">11:00 - 12:00</span>
                                 <span class="pill-time-greg" data-i18n="timeline_5_time">5:00 PM - 6:00 PM</span>
                             </div>
-                            <h4 class="step-title" data-i18n="timeline_5_title">ዕረፍት</h4>
+                            <h3 class="step-title" data-i18n="timeline_5_title">ዕረፍት</h3>
                             <p class="step-desc" data-i18n="timeline_5_desc">የዕረፍትና የዝግጅት ጊዜ</p>
                         </div>
                     </div>
@@ -268,7 +266,7 @@
                                 <span class="pill-time-accent">12:00 - 3:00</span>
                                 <span class="pill-time-greg" data-i18n="timeline_6_time">6:00 PM - 9:00 PM</span>
                             </div>
-                            <h4 class="step-title" data-i18n="timeline_6_title">ቆይታ በ ሴንትራል ሆቴል</h4>
+                            <h3 class="step-title" data-i18n="timeline_6_title">ቆይታ በ ሴንትራል ሆቴል</h3>
                             <p class="step-desc" data-i18n="timeline_6_desc">ታላቅ የምሽት ድግስና ደስታ</p>
                         </div>
                     </div>
@@ -279,8 +277,8 @@
             <section class="card glass-card reveal-on-scroll" id="locationsSection" aria-label="Event Locations">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="locations_tag">Directions</span>
-                    <h3 class="section-title" data-i18n="locations_heading"><span class="title-icon">📍</span> <span
-                            class="title-text">Event Locations</span></h3>
+                    <h2 class="section-title" data-i18n="locations_heading"><span class="title-icon">📍</span> <span
+                            class="title-text">Event Locations</span></h2>
                     <p class="section-subtitle" data-i18n="locations_subtitle">Easily find your way with interactive
                         maps and navigation</p>
                     <div class="gold-divider">✦ ✤ ✦</div>
@@ -292,18 +290,18 @@
                         <div class="location-header">
                             <span class="location-badge" data-i18n="loc_badge_day">6:00 – 9:00• Morning &
                                 Luncheon</span>
-                            <h4 class="location-title" data-i18n="loc_Dila_title">የሙሽሪት መኖሪያ ቤት (Bride's Residence -
-                                Dila)</h4>
+                            <h3 class="location-title" data-i18n="loc_Dila_title">የሙሽሪት መኖሪያ ቤት (Bride's Residence -
+                                Dila)</h3>
                             <p class="location-address" data-i18n="loc_Dila_desc">ዲላ ቅርንጫፍ ት/ቤት አጠገብ • Near Dila Branch
                                 School, Dila</p>
                         </div>
                         <div class="location-map-frame">
-                            <iframe src="https://maps.google.com/maps?q=Dila+Ethiopia&z=15&output=embed"
+                            <iframe data-src="https://maps.google.com/maps?q=Dila+Ethiopia&z=15&output=embed"
                                 title="Dila Location Map" allowfullscreen loading="lazy"></iframe>
                         </div>
                         <div class="location-footer">
                             <a href="https://maps.app.goo.gl/6jrLC4tTxsNgbRdn9" target="_blank" rel="noopener"
-                                class="location-link-btn" data-i18n="btn_maps">
+                                class="location-link-btn" data-i18n="btn_maps" aria-label="Open Dila Residence location in Google Maps">
                                 Open in Google Maps
                             </a>
                         </div>
@@ -314,18 +312,18 @@
                         <div class="location-header">
                             <span class="location-badge" data-i18n="loc_badge_night">ምሽት 12:00 – 3:00 (6:00 PM – 9:00
                                 PM) • Evening Banquet & Gala</span>
-                            <h4 class="location-title" data-i18n="loc_central_title">ሴንትራል ሆቴል (Central Hotel Hawassa)
-                            </h4>
+                            <h3 class="location-title" data-i18n="loc_central_title">ሴንትራል ሆቴል (Central Hotel Hawassa)
+                            </h3>
                             <p class="location-address" data-i18n="loc_central_desc">Lake Hawassa Boulevard, Hawassa,
                                 Ethiopia</p>
                         </div>
                         <div class="location-map-frame">
-                            <iframe src="https://maps.google.com/maps?q=Central+Hotel+Hawassa&z=15&output=embed"
+                            <iframe data-src="https://maps.google.com/maps?q=Central+Hotel+Hawassa&z=15&output=embed"
                                 title="Central Hotel Hawassa Location Map" allowfullscreen loading="lazy"></iframe>
                         </div>
                         <div class="location-footer">
                             <a href="https://maps.google.com/maps?q=Central+Hotel+Hawassa" target="_blank"
-                                rel="noopener" class="location-link-btn" data-i18n="btn_maps">
+                                rel="noopener" class="location-link-btn" data-i18n="btn_maps" aria-label="Open Central Hotel Hawassa location in Google Maps">
                                 Open in Google Maps
                             </a>
                         </div>
@@ -337,9 +335,9 @@
             <section class="card glass-card reveal-on-scroll" id="gallerySection" aria-label="Photo Gallery">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="gallery_tag">Memories</span>
-                    <h3 class="section-title" data-i18n="photos_heading"><span class="title-icon">✨</span> <span
+                    <h2 class="section-title" data-i18n="photos_heading"><span class="title-icon">✨</span> <span
                             class="title-text">Our Wedding Photos</span> <span class="title-icon">✨</span>
-                    </h3>
+                    </h2>
                     <p class="section-subtitle" data-i18n="photos_subtitle">A cherished collection of 28 portraits and
                         love-filled memories</p>
                     <div class="gold-divider">✦ ✤ ✦</div>
@@ -348,7 +346,8 @@
                 <div class="gallery-wrapper">
                     <div class="featured-photo-box" id="featuredPhotoBox">
                         <img id="featuredPhotoImg" src="images/photo_1_2026-09-03_19-04-18.jpg"
-                            alt="Featured Wedding Portrait" title="Click to view full screen">
+                            alt="Featured Wedding Portrait" title="Click to view full screen"
+                            decoding="async" width="800" height="1066">
                         <button type="button" class="gallery-nav-btn prev" id="prevSlideBtn"
                             aria-label="Previous Photo">‹</button>
                         <button type="button" class="gallery-nav-btn next" id="nextSlideBtn"
@@ -376,8 +375,8 @@
             <section class="card glass-card reveal-on-scroll" id="rsvpSection" aria-label="RSVP Form">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="rsvp_tag">RSVP</span>
-                    <h3 class="section-title" data-i18n="rsvp_heading"><span class="title-icon">💌</span> <span
-                            class="title-text">Will You Attend?</span></h3>
+                    <h2 class="section-title" data-i18n="rsvp_heading"><span class="title-icon">💌</span> <span
+                            class="title-text">Will You Attend?</span></h2>
                     <p class="section-subtitle" data-i18n="rsvp_subtitle">Kindly let us know so we can reserve your seat
                     </p>
                     <div class="gold-divider">✦ ✤ ✦</div>
@@ -455,8 +454,8 @@
             <section class="card glass-card reveal-on-scroll" id="shareSection" aria-label="Share Photos and Videos">
                 <div class="section-header">
                     <span class="section-tag" data-i18n="share_tag">Live Upload</span>
-                    <h3 class="section-title" data-i18n="qr_title"><span class="title-icon">📸</span> <span
-                            class="title-text">Share Your Moments</span></h3>
+                    <h2 class="section-title" data-i18n="qr_title"><span class="title-icon">📸</span> <span
+                            class="title-text">Share Your Moments</span></h2>
                     <p class="section-subtitle" data-i18n="qr_subtitle">Tap or scan the QR code to send your celebration
                         photos and warm wishes directly to the couple!</p>
                     <div class="gold-divider">✦ ✤ ✦</div>
@@ -468,7 +467,8 @@
                         class="qr-clickable-card" id="qrLink" title="Tap to Open Telegram Bot">
                         <div class="qr-glass-card">
                             <img id="qrImage" alt="Telegram Bot QR Code"
-                                src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https%3A%2F%2Ft.me%2Fsara_tewodros_wedding_bot">
+                                src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https%3A%2F%2Ft.me%2Fsara_tewodros_wedding_bot"
+                                width="200" height="200" loading="lazy" decoding="async">
                         </div>
                         <div class="qr-label-pill" id="botHandleLabel">@sara_tewodros_wedding_bot</div>
                         <div class="qr-tap-instruction">👆 Tap QR to Open Bot</div>
@@ -498,13 +498,13 @@
         <button type="button" class="gallery-nav-btn prev" id="lightboxPrevBtn" aria-label="Previous Image">‹</button>
         <button type="button" class="gallery-nav-btn next" id="lightboxNextBtn" aria-label="Next Image">›</button>
         <div class="lightbox-img-container">
-            <img id="lightboxImage" src="" alt="Full Resolution Wedding Memory">
+            <img id="lightboxImage" src="" alt="Full Resolution Wedding Memory" width="1200" height="800">
         </div>
     </div>
 
 
 
-    <script src="app.js"></script>
+    <script src="app.min.js" defer></script>
 </body>
 
 </html>

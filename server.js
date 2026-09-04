@@ -225,14 +225,11 @@ ${partyLine}💑 <b>Relation:</b> ${escapeHtml(rsvpEntry.relation)}
     const acceptEncoding = req.headers['accept-encoding'] || '';
 
     // Optimized Caching Strategy:
-    // - Static media, images, audio: 7 days
-    // - Stylesheets & Scripts: 1 day
-    // - HTML: 2 minutes
-    let cacheControl = 'public, max-age=604800';
+    // - Static media, images, audio, css, js: 1 year immutable
+    // - HTML: 0 seconds must-revalidate (instant fresh updates)
+    let cacheControl = 'public, max-age=31536000, immutable';
     if (ext === '.html') {
-      cacheControl = 'public, max-age=120';
-    } else if (ext === '.css' || ext === '.js') {
-      cacheControl = 'public, max-age=86400';
+      cacheControl = 'public, max-age=0, must-revalidate';
     }
 
     const headers = {
