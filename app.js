@@ -1513,6 +1513,100 @@ function setupLazyMaps() {
 }
 
 // --------------------------------------------------------------------------
+// 9.2 DIRECT CELEBRATION PHOTO UPLOAD
+// --------------------------------------------------------------------------
+function setupDirectPhotoUpload() {
+    const btnOpen = document.getElementById('btnOpenWebUpload');
+    const modal = document.getElementById('uploadModal');
+    const btnClose = document.getElementById('closeUploadModalBtn');
+    const form = document.getElementById('webUploadForm');
+    const submitBtn = document.getElementById('uploadSubmitBtn');
+    const feedback = document.getElementById('uploadFeedback');
+
+    if (btnOpen && modal) {
+        btnOpen.addEventListener('click', () => {
+            modal.style.display = 'flex';
+        });
+    }
+    if (btnClose && modal) {
+        btnClose.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    }
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nameInput = document.getElementById('uploadSenderName');
+            const captionInput = document.getElementById('uploadCaption');
+            const fileInput = document.getElementById('uploadPhotoFile');
+
+            const senderName = nameInput ? nameInput.value.trim() : '';
+            const caption = captionInput ? captionInput.value.trim() : '';
+            const file = fileInput && fileInput.files ? fileInput.files[0] : null;
+
+            if (!file) {
+                if (feedback) feedback.innerHTML = '<span style="color:#ff7575;">⚠️ Please select an image file.</span>';
+                return;
+            }
+
+            if (file.size > 15 * 1024 * 1024) {
+                if (feedback) feedback.innerHTML = '<span style="color:#ff7575;">⚠️ Photo size must be under 15MB.</span>';
+                return;
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Uploading photo...';
+            }
+            if (feedback) {
+                feedback.innerHTML = '<span style="color:var(--gold-300);">⏳ Streaming photo to wedding live stream...</span>';
+            }
+
+            const reader = new FileReader();
+            reader.onload = async () => {
+                try {
+                    const res = await fetch('/api/upload-moment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            senderName: senderName || 'Valued Guest',
+                            caption: caption,
+                            imageBase64: reader.result
+                        })
+                    });
+                    const json = await res.json();
+                    if (json && json.success) {
+                        if (feedback) feedback.innerHTML = '<span style="color:#6be285; font-weight:bold;">🎉 Photo shared successfully! 📸</span>';
+                        form.reset();
+                        if (typeof fireConfetti === 'function') fireConfetti();
+                        setTimeout(() => {
+                            if (modal) modal.style.display = 'none';
+                            if (feedback) feedback.innerHTML = '';
+                        }, 2800);
+                    } else {
+                        if (feedback) feedback.innerHTML = `<span style="color:#ff7575;">⚠️ ${json.error || 'Upload failed. Please try again.'}</span>`;
+                    }
+                } catch (err) {
+                    if (feedback) feedback.innerHTML = '<span style="color:#ff7575;">⚠️ Connection error. Please try again.</span>';
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '✨ Share Photo Now ✨';
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+}
+
+// --------------------------------------------------------------------------
 // 10. INITIALIZATION
 // --------------------------------------------------------------------------
 function initApp() {
@@ -1527,6 +1621,7 @@ function initApp() {
         setupLazyGallery();
         setupLazyMaps();
         initScrollAnimations();
+        setupDirectPhotoUpload();
         setTimeout(() => {
             syncBotInfo();
         }, 80);

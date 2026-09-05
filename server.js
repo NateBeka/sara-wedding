@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
-const { startPolling, notifyAdmins, loadConfig, loadData, saveData, escapeHtml } = require('./bot');
+const { startPolling, notifyAdmins, loadConfig, loadData, saveData, escapeHtml, getTelegramFileUrl, callTelegram, sendMessage } = require('./bot');
 
 const PORT = process.env.PORT || 8080;
 const MIME_TYPES = {
@@ -60,6 +60,7 @@ const server = http.createServer((req, res) => {
   }
 
   // --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // API ROUTE: GET /api/admin/rsvps (SECURE ADMIN ACCESS)
   // --------------------------------------------------------------------------
   if (pathname === '/api/admin/rsvps' && req.method === 'GET') {
@@ -73,12 +74,125 @@ const server = http.createServer((req, res) => {
     }
 
     const dataStore = loadData();
+
+    // ------------------------------------------------------------------------
+    // 1. DEDUPLICATE RSVPS (Keep unique entries, clean duplicates)
+    // ------------------------------------------------------------------------
+    const rawRsvps = Array.isArray(dataStore.rsvps) ? dataStore.rsvps : [];
+    const dedupRsvps = [];
+    const seenRsvpKeys = new Set();
+
+    for (const r of rawRsvps) {
+      if (!r) continue;
+      const cleanName = (r.guestName || '').trim().toLowerCase();
+      const cleanMsg = (r.message || '').trim().toLowerCase();
+      const timeMinute = r.timestamp ? new Date(r.timestamp).toISOString().slice(0, 16) : '';
+      const rKey = r.id ? `id:${r.id}` : `${cleanName}:::${timeMinute}:::${cleanMsg}`;
+
+      if (!seenRsvpKeys.has(rKey)) {
+        seenRsvpKeys.add(rKey);
+        dedupRsvps.push(r);
+      }
+    }
+
+    // ------------------------------------------------------------------------
+    // 2. COMPREHENSIVELY AGGREGATE ALL SENT MESSAGES & DEDUPLICATE
+    // ------------------------------------------------------------------------
+    const allWishes = [];
+    const seenWishSignatures = new Set();
+    const seenWishIds = new Set();
+
+    function normalizeText(txt) {
+      return (txt || '').trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function addWishUnique(item) {
+      if (!item || !item.message) return;
+      const cleanMsg = item.message.trim();
+      if (!cleanMsg || cleanMsg.length < 2) return;
+
+      if (item.id && seenWishIds.has(item.id)) return;
+
+      const author = (item.guestName || item.sender_name || item.from_user || 'Honored Guest').trim();
+      const authorNorm = author.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const textNorm = normalizeText(cleanMsg);
+      const signature = `${authorNorm}:::${textNorm}`;
+
+      if (seenWishSignatures.has(signature)) return;
+      seenWishSignatures.add(signature);
+      if (item.id) seenWishIds.add(item.id);
+
+      allWishes.push({
+        id: item.id || 'wish_' + Math.random().toString(36).substring(2, 8),
+        guestName: author,
+        relation: item.relation || 'Friend',
+        message: cleanMsg,
+        source: item.source || 'Website',
+        timestamp: item.timestamp || new Date().toISOString()
+      });
+    }
+
+    // A. From RSVPs (guests writing wishes alongside RSVP)
+    dedupRsvps.forEach(r => {
+      if (r.message && r.message.trim().length > 0) {
+        addWishUnique({
+          id: r.id ? 'wish_' + r.id : undefined,
+          guestName: r.guestName,
+          relation: r.relation || 'Friend',
+          message: r.message,
+          source: r.source === 'telegram_bot' ? 'Telegram RSVP' : 'Website RSVP',
+          timestamp: r.timestamp
+        });
+      }
+    });
+
+    // B. From standalone Wishes (sent via /wishes or direct text to bot)
+    if (Array.isArray(dataStore.wishes)) {
+      dataStore.wishes.forEach(w => addWishUnique(w));
+    }
+
+    // C. From Moment Photo Captions (guests sharing personal blessings with photos)
+    if (Array.isArray(dataStore.moments)) {
+      dataStore.moments.forEach(m => {
+        if (m.caption && m.caption.trim().length > 2) {
+          addWishUnique({
+            id: 'wish_moment_' + (m.id || Math.random().toString(36).substring(2, 8)),
+            guestName: m.sender_name || m.from_user || 'Guest',
+            relation: 'Wedding Guest',
+            message: m.caption,
+            source: m.source ? `${m.source} Photo` : 'Photo Caption',
+            timestamp: m.timestamp
+          });
+        }
+      });
+    }
+
+    // Sort wishes chronologically (newest first)
+    allWishes.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+
+    // ------------------------------------------------------------------------
+    // 3. DEDUPLICATE MOMENTS / CELEBRATION PHOTOS
+    // ------------------------------------------------------------------------
+    const rawMoments = Array.isArray(dataStore.moments) ? dataStore.moments : [];
+    const dedupMoments = [];
+    const seenMomentKeys = new Set();
+
+    for (const m of rawMoments) {
+      if (!m) continue;
+      const mKey = m.file_id || m.id || m.file_path || ((m.sender_name || '') + '_' + (m.timestamp || ''));
+      if (!seenMomentKeys.has(mKey)) {
+        seenMomentKeys.add(mKey);
+        dedupMoments.push(m);
+      }
+    }
+
     sendJsonResponse(res, 200, {
       success: true,
       photos_group_id: (config && config.photos_group_id) || null,
       photos_group_link: (config && config.photos_group_link) || null,
-      rsvps: dataStore.rsvps || [],
-      moments: dataStore.moments || []
+      rsvps: dedupRsvps,
+      wishes: allWishes,
+      moments: dedupMoments
     });
     return;
   }
@@ -102,12 +216,26 @@ const server = http.createServer((req, res) => {
       if (body.length > 1e4) req.destroy();
     });
 
-    req.on('end', () => {
+    req.on('end', async () => {
       try {
         const payload = JSON.parse(body || '{}');
         if (payload.photos_group_id !== undefined) {
-          config.photos_group_id = payload.photos_group_id;
+          config.photos_group_id = payload.photos_group_id ? (isNaN(payload.photos_group_id) ? payload.photos_group_id : Number(payload.photos_group_id)) : null;
           saveConfig(config);
+
+          // If testing the group, send a test verification message
+          if (config.photos_group_id && config.bot_token) {
+            try {
+              await callTelegram(config.bot_token, 'sendMessage', {
+                chat_id: config.photos_group_id,
+                text: `✨ <b>Wedding Photo Stream Connected!</b>\n\nEng. Tewodros & Dr. Sara Wedding Bot is now active in this group. All guest photos and celebration memories will stream here! 📸💒`,
+                parse_mode: 'HTML'
+              });
+            } catch (testErr) {
+              console.warn('[Telegram Group Test Note]:', testErr.message);
+            }
+          }
+
           sendJsonResponse(res, 200, {
             success: true,
             photos_group_id: config.photos_group_id
@@ -117,6 +245,182 @@ const server = http.createServer((req, res) => {
         }
       } catch (err) {
         sendJsonResponse(res, 400, { success: false, error: 'Invalid JSON payload' });
+      }
+    });
+    return;
+  }
+
+  // --------------------------------------------------------------------------
+  // API ROUTE: GET /api/moment-photo (RESILIENT CLOUD PHOTO STREAMING)
+  // --------------------------------------------------------------------------
+  if (pathname === '/api/moment-photo' && req.method === 'GET') {
+    const fileId = parsedUrl.searchParams.get('file_id');
+    if (!fileId) {
+      res.writeHead(400, { 'Content-Type': 'text/plain' });
+      res.end('file_id parameter is required');
+      return;
+    }
+
+    const cleanId = fileId.replace(/[^a-zA-Z0-9_-]/g, '_');
+    const localMomentPath = path.join(__dirname, 'images', 'moments', `moment_${cleanId}.jpg`);
+
+    // 1. If cached on local disk, serve immediately
+    if (fs.existsSync(localMomentPath)) {
+      res.writeHead(200, {
+        'Content-Type': 'image/jpeg',
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800'
+      });
+      fs.createReadStream(localMomentPath).pipe(res);
+      return;
+    }
+
+    // 2. Fetch fresh file from Telegram cloud & pipe to browser
+    const config = loadConfig();
+    (async () => {
+      try {
+        const fileUrl = await getTelegramFileUrl(config.bot_token, fileId);
+        if (!fileUrl) {
+          res.writeHead(404, { 'Content-Type': 'text/plain' });
+          res.end('Photo not available on Telegram cloud');
+          return;
+        }
+
+        const telegramRes = await fetch(fileUrl);
+        if (!telegramRes.ok) {
+          res.writeHead(telegramRes.status, { 'Content-Type': 'text/plain' });
+          res.end('Failed to retrieve photo from Telegram');
+          return;
+        }
+
+        const arrayBuf = await telegramRes.arrayBuffer();
+        const buf = Buffer.from(arrayBuf);
+
+        res.writeHead(200, {
+          'Content-Type': telegramRes.headers.get('content-type') || 'image/jpeg',
+          'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800'
+        });
+        res.end(buf);
+
+        // Asynchronously cache on disk for subsequent speed
+        try {
+          fs.mkdirSync(path.dirname(localMomentPath), { recursive: true });
+          fs.writeFileSync(localMomentPath, buf);
+        } catch (cacheErr) {}
+      } catch (err) {
+        console.error('[Moment Photo Proxy Error]:', err.message);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Error streaming photo from cloud');
+      }
+    })();
+    return;
+  }
+
+  // --------------------------------------------------------------------------
+  // API ROUTE: POST /api/upload-moment (DIRECT WEBSITE PHOTO UPLOAD)
+  // --------------------------------------------------------------------------
+  if (pathname === '/api/upload-moment' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+      if (body.length > 15e6) req.destroy(); // 15MB limit
+    });
+
+    req.on('end', async () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const senderName = (payload.senderName || 'Honored Guest').trim();
+        const caption = (payload.caption || '').trim();
+        const base64Data = payload.imageBase64 || '';
+
+        if (!base64Data) {
+          sendJsonResponse(res, 400, { success: false, error: 'Image data is required' });
+          return;
+        }
+
+        const base64Clean = base64Data.replace(/^data:image\/\w+;base64,/, '');
+        const imageBuffer = Buffer.from(base64Clean, 'base64');
+        const safeSender = senderName.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 20);
+        const fileName = `moment_${Date.now()}_${safeSender}.jpg`;
+        const localPath = path.join(__dirname, 'images', 'moments', fileName);
+
+        fs.mkdirSync(path.dirname(localPath), { recursive: true });
+        fs.writeFileSync(localPath, imageBuffer);
+
+        const config = loadConfig();
+        let telegramFileId = null;
+
+        // Post to Telegram Photo Stream & Admins
+        if (config && config.bot_token) {
+          try {
+            // Forward to Wedding Photo Group
+            if (config.photos_group_id) {
+              const groupForm = new FormData();
+              groupForm.append('chat_id', config.photos_group_id);
+              groupForm.append('caption', `📸 Shared by <b>${escapeHtml(senderName)}</b> (via Wedding Website)${caption ? `\n<i>"${escapeHtml(caption)}"</i>` : ''}`);
+              groupForm.append('parse_mode', 'HTML');
+              groupForm.append('photo', new Blob([imageBuffer], { type: 'image/jpeg' }), fileName);
+
+              const groupRes = await fetch(`https://api.telegram.org/bot${config.bot_token}/sendPhoto`, {
+                method: 'POST',
+                body: groupForm
+              });
+              const groupJson = await groupRes.json().catch(() => null);
+              if (groupJson && groupJson.ok && groupJson.result && groupJson.result.photo) {
+                telegramFileId = groupJson.result.photo[groupJson.result.photo.length - 1].file_id;
+                console.log(`[Group Stream]: Streamed website photo to Wedding Photo Group (${config.photos_group_id})`);
+              }
+            }
+
+            // Forward to Admins
+            const adminIds = (config.admins || []).map(a => a.chat_id).filter(Boolean);
+            for (const aId of adminIds) {
+              try {
+                const adminForm = new FormData();
+                adminForm.append('chat_id', aId);
+                adminForm.append('caption', `📸 <b>NEW WEDDING PHOTO UPLOADED FROM WEBSITE!</b>\nFrom: <b>${escapeHtml(senderName)}</b>\n${caption ? `Caption: <i>"${escapeHtml(caption)}"</i>\n` : ''}⏰ Time: ${new Date().toLocaleTimeString('en-US')}`);
+                adminForm.append('parse_mode', 'HTML');
+                adminForm.append('photo', new Blob([imageBuffer], { type: 'image/jpeg' }), fileName);
+
+                const aRes = await fetch(`https://api.telegram.org/bot${config.bot_token}/sendPhoto`, {
+                  method: 'POST',
+                  body: adminForm
+                });
+                const aJson = await aRes.json().catch(() => null);
+                if (!telegramFileId && aJson && aJson.ok && aJson.result && aJson.result.photo) {
+                  telegramFileId = aJson.result.photo[aJson.result.photo.length - 1].file_id;
+                }
+              } catch (e) {}
+            }
+          } catch (teleErr) {
+            console.error('[Website Photo Telegram Error]:', teleErr.message);
+          }
+        }
+
+        // Save Moment Entry
+        const momentEntry = {
+          id: 'moment_web_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+          sender_name: senderName,
+          from_user: senderName,
+          caption: caption,
+          file_id: telegramFileId || '',
+          file_path: telegramFileId ? `/api/moment-photo?file_id=${encodeURIComponent(telegramFileId)}` : `/images/moments/${fileName}`,
+          source: 'website',
+          timestamp: new Date().toISOString()
+        };
+
+        const dataStore = loadData();
+        dataStore.moments.push(momentEntry);
+        saveData(dataStore);
+
+        console.log(`[Website Photo Uploaded]: ${senderName}`);
+        sendJsonResponse(res, 200, {
+          success: true,
+          message: 'Moment uploaded and shared successfully!',
+          moment: momentEntry
+        });
+      } catch (err) {
+        console.error('[Upload Moment Error]:', err);
+        sendJsonResponse(res, 500, { success: false, error: 'Failed to process moment upload' });
       }
     });
     return;
@@ -257,4 +561,23 @@ server.listen(PORT, () => {
   console.log(`✨ Eng. Tewodros & Dr. Sara Wedding Server is live at http://localhost:${PORT}/`);
   // Automatically start Telegram Bot engine
   startPolling();
+
+  // Keep-alive heartbeat for Render free tier:
+  // Render suspends inactive free services after 15 minutes. Self-pinging every 12 minutes
+  // keeps the server and Telegram bot continuously active in the cloud!
+  const externalUrl = process.env.RENDER_EXTERNAL_URL || 'https://sara-wedding.onrender.com';
+  if (externalUrl.startsWith('http')) {
+    setInterval(async () => {
+      try {
+        const pingUrl = `${externalUrl}/api/status`;
+        const res = await fetch(pingUrl);
+        if (res.ok) {
+          console.log(`[Keep-Alive]: Server heartbeat active (${new Date().toLocaleTimeString('en-US')})`);
+        }
+      } catch (err) {
+        // Silently ignore during transient network glitches
+      }
+    }, 12 * 60 * 1000); // Every 12 minutes
+  }
 });
+

@@ -1750,7 +1750,7 @@ body.splash-active .main-content {
   background-position: center 25%;
   background-size: cover;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-attachment: scroll;
   z-index: 0;
   opacity: 0.55;
   pointer-events: none;
@@ -2882,9 +2882,13 @@ footer {
     background: #e5ded4 !important;
   }
 
-  /* 4. Disable fixed background attachment on body for mobile performance */
+  /* 4. Disable fixed background attachment on body and timeline for mobile & iOS performance */
   body {
     background-attachment: scroll !important;
+  }
+  #timelineSection::before {
+    background-attachment: scroll !important;
+    background-size: cover !important;
   }
 
   /* 5. Touch responsiveness & eliminate 300ms click delay */

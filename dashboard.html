@@ -519,6 +519,68 @@
         }
 
         /* --------------------------------------------------------------------------
+           WISHES & MESSAGES CARDS (Dedicated Dynamic Feed)
+           -------------------------------------------------------------------------- */
+        .wish-card {
+            background: var(--dash-card-bg);
+            border: 1px solid var(--dash-card-border);
+            border-radius: var(--radius-sm);
+            padding: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .wish-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            border-color: rgba(212, 175, 55, 0.45);
+        }
+
+        .wish-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .wish-card-author {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--dash-gold-bright);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .wish-card-body {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--dash-text);
+            font-style: italic;
+            background: rgba(212, 175, 55, 0.05);
+            border-left: 3px solid var(--dash-gold);
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            margin: 0.5rem 0;
+            word-break: break-word;
+        }
+
+        .wish-card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--dash-text-muted);
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        /* --------------------------------------------------------------------------
            DESKTOP/EXPANDED TABLE VIEW
            -------------------------------------------------------------------------- */
         .dash-table-container {
@@ -636,6 +698,114 @@
             padding: 2.5rem 1rem;
             color: var(--dash-text-muted);
             font-size: 0.88rem;
+        }
+
+        /* --------------------------------------------------------------------------
+           GROUP CONNECTION CARD
+           -------------------------------------------------------------------------- */
+        .dash-group-card {
+            background: var(--dash-card-bg);
+            border: 1px solid var(--dash-card-border);
+            border-radius: var(--radius-md);
+            padding: 1.1rem 1.3rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+        }
+        .group-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 0.6rem;
+        }
+        .group-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--dash-gold-bright);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .group-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+        }
+        .group-status-badge.connected {
+            background: rgba(46, 204, 113, 0.18);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.4);
+        }
+        .group-status-badge.disconnected {
+            background: rgba(231, 76, 60, 0.18);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.4);
+        }
+        .group-input-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 0.7rem;
+        }
+        .group-input-field {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--dash-card-border);
+            border-radius: var(--radius-full);
+            color: var(--dash-text);
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            outline: none;
+        }
+        .group-save-btn {
+            background: var(--gold-gradient);
+            color: #0b0c10;
+            font-weight: 700;
+            font-size: 0.78rem;
+            padding: 8px 18px;
+            border-radius: var(--radius-full);
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition-smooth);
+        }
+        .group-save-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
+        }
+        .group-help-text {
+            font-size: 0.73rem;
+            color: var(--dash-text-muted);
+            margin-top: 0.5rem;
+            line-height: 1.45;
+        }
+
+        /* --------------------------------------------------------------------------
+           WISHES CARDS & STYLING
+           -------------------------------------------------------------------------- */
+        .dash-wish-card {
+            border-left: 3px solid var(--dash-gold-bright) !important;
+            margin-bottom: 0.85rem;
+        }
+        .dash-wish-card .guest-wishes-quote {
+            font-family: var(--font-display, Georgia, serif);
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #fceda9;
+            background: rgba(212, 175, 55, 0.08);
+            border-left: 3px solid var(--dash-gold-bright);
+            padding: 11px 15px;
+            border-radius: 8px;
+            margin: 0.6rem 0;
+            font-style: italic;
+        }
+        body.theme-light .dash-wish-card .guest-wishes-quote {
+            color: #4a3810;
+            background: rgba(212, 175, 55, 0.12);
         }
 
         /* --------------------------------------------------------------------------
@@ -852,10 +1022,13 @@
             </div>
         </section>
 
-        <!-- View Tabs Bar: RSVPs vs Shared Moments -->
+        <!-- View Tabs Bar: RSVPs vs Wishes vs Shared Moments -->
         <nav class="dash-tabs-bar" aria-label="Dashboard views">
             <button type="button" class="dash-tab-btn active" id="tabBtnRsvps" onclick="switchTab('rsvps')">
                 💌 Guest RSVPs <span class="dash-tab-badge" id="badgeRsvpCount">0</span>
+            </button>
+            <button type="button" class="dash-tab-btn" id="tabBtnWishes" onclick="switchTab('wishes')">
+                💐 Wishes & Messages <span class="dash-tab-badge" id="badgeWishesCount">0</span>
             </button>
             <button type="button" class="dash-tab-btn" id="tabBtnMoments" onclick="switchTab('moments')">
                 📸 Shared Moments <span class="dash-tab-badge" id="badgeMomentsCount">0</span>
@@ -918,8 +1091,50 @@
             </div>
         </div>
 
-        <!-- SECTION 2: SHARED MOMENTS / PHOTOS VIEW -->
+        <!-- SECTION 2: GUEST WISHES & MESSAGES VIEW (100% DYNAMIC) -->
+        <div id="viewWishes" style="display: none;">
+            <div class="dash-controls-card">
+                <div class="dash-search-wrapper">
+                    <span class="dash-search-icon">🔍</span>
+                    <input type="text" id="wishesSearchInput" class="dash-search-input" placeholder="Search wishes by guest name, message text, or relation..." oninput="filterWishes()">
+                    <button type="button" class="dash-search-clear" id="wishesSearchClearBtn" onclick="clearWishesSearch()">✕</button>
+                </div>
+                <button type="button" class="dash-export-btn" onclick="exportWishes()" style="margin-top: 0.7rem;">
+                    📋 Export All Wishes (TXT / Excel)
+                </button>
+            </div>
+
+            <!-- Dynamic Wishes Cards List -->
+            <div class="dash-cards-list" id="wishesCardsContainer">
+                <div class="empty-view-state">Loading guest wishes...</div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: SHARED MOMENTS / PHOTOS VIEW -->
         <div id="viewMoments" style="display: none;">
+            <!-- PHOTO GROUP CONNECTION STATUS & SETUP CARD -->
+            <div class="dash-group-card" id="groupSettingsCard">
+                <div class="group-card-header">
+                    <div class="group-card-title">
+                        📸 Wedding Photo Telegram Group
+                    </div>
+                    <div class="group-status-badge disconnected" id="groupStatusBadge">
+                        ⚠️ Disconnected
+                    </div>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--dash-text); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+                    <span>Group Stream Link: <a href="https://t.me/+3WRHqclWRQJlYzBk" target="_blank" rel="noopener" style="color: var(--dash-gold-bright); font-weight: bold; text-decoration: underline;" id="groupLinkAnchor">t.me/+3WRHqclWRQJlYzBk ↗</a></span>
+                    <span id="groupIdDisplay" style="color: var(--dash-text-muted); font-size: 0.75rem;">Chat ID: None</span>
+                </div>
+                <div class="group-input-row">
+                    <input type="text" id="groupChatIdInput" class="group-input-field" placeholder="Enter Telegram Group Chat ID (e.g. -100xxxxxxxxxx)">
+                    <button type="button" class="group-save-btn" onclick="saveGroupSettings()">💾 Save & Connect</button>
+                </div>
+                <div class="group-help-text">
+                    💡 <b>How to link:</b> 1. Add <code>@sara_tewodros_wedding_bot</code> as an <b>Admin</b> in your Telegram Photo Group. 2. Send <code>/connect_group</code> inside the group, or paste the group's Chat ID above and click Save. All guest photos will automatically stream to the group!
+                </div>
+            </div>
+
             <div class="moments-grid" id="momentsGrid">
                 <div class="empty-view-state" style="grid-column: 1 / -1;">No celebration photos shared yet.</div>
             </div>
@@ -930,6 +1145,7 @@
     <script>
         const DEFAULT_PASSCODE = 'sara_tewodros_2026';
         let allRsvps = [];
+        let allWishes = [];
         let allMoments = [];
         let currentFilter = 'all';
         let currentTab = 'rsvps';
@@ -995,14 +1211,102 @@
             loadRsvpData();
         }
 
+        function updateGroupUI(groupId, groupLink) {
+            const badge = document.getElementById('groupStatusBadge');
+            const idDisplay = document.getElementById('groupIdDisplay');
+            const input = document.getElementById('groupChatIdInput');
+            const linkAnchor = document.getElementById('groupLinkAnchor');
+
+            if (groupLink && linkAnchor) {
+                linkAnchor.href = groupLink;
+                linkAnchor.textContent = groupLink.replace('https://', '') + ' ↗';
+            }
+
+            if (groupId) {
+                badge.className = 'group-status-badge connected';
+                badge.textContent = '✅ Connected';
+                idDisplay.textContent = 'Chat ID: ' + groupId;
+                if (!input.value) input.value = groupId;
+            } else {
+                badge.className = 'group-status-badge disconnected';
+                badge.textContent = '⚠️ Disconnected';
+                idDisplay.textContent = 'Chat ID: None';
+            }
+        }
+
+        async function saveGroupSettings() {
+            const input = document.getElementById('groupChatIdInput');
+            const val = input.value.trim();
+            if (!val) {
+                showToast('⚠️ Please enter a group chat ID (e.g. -100xxxxxxxxxx)');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/set-group?passcode=' + encodeURIComponent(DEFAULT_PASSCODE), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ photos_group_id: val })
+                });
+                const data = await res.json();
+                if (data && data.success) {
+                    showToast('✅ Photo Group Connected! Test message sent to group.');
+                    updateGroupUI(data.photos_group_id, null);
+                } else {
+                    showToast('⚠️ Failed: ' + (data.error || 'Check server status'));
+                }
+            } catch (err) {
+                showToast('⚠️ Connection error saving group settings');
+            }
+        }
+
+        function deduplicateList(list, keyFn) {
+            const seen = new Set();
+            const result = [];
+            for (const item of (list || [])) {
+                if (!item) continue;
+                const key = keyFn(item);
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    result.push(item);
+                }
+            }
+            return result;
+        }
+
         async function loadRsvpData(isManualRefresh = false) {
             try {
                 const res = await fetch('/api/admin/rsvps?passcode=' + encodeURIComponent(DEFAULT_PASSCODE));
                 if (res.ok) {
                     const data = await res.json();
                     if (data) {
-                        allRsvps = Array.isArray(data.rsvps) ? data.rsvps : [];
-                        allMoments = Array.isArray(data.moments) ? data.moments : [];
+                        const rawRsvps = Array.isArray(data.rsvps) ? data.rsvps : [];
+                        const rawWishes = Array.isArray(data.wishes) ? data.wishes : [];
+                        const rawMoments = Array.isArray(data.moments) ? data.moments : [];
+
+                        // Zero-duplication guarantee across all arrays
+                        allRsvps = deduplicateList(rawRsvps, r => (r.id || ((r.guestName || '') + ':::' + (r.timestamp || ''))));
+                        allWishes = deduplicateList(rawWishes, w => (((w.guestName || '').toLowerCase().trim()) + ':::' + ((w.message || '').trim().toLowerCase().replace(/\s+/g, ' '))));
+                        allMoments = deduplicateList(rawMoments, m => (m.file_id || m.id || m.file_path || ((m.sender_name || '') + '_' + (m.timestamp || ''))));
+
+                        // If server did not pre-aggregate wishes, extract dynamically from rsvps
+                        if (allWishes.length === 0 && allRsvps.length > 0) {
+                            allRsvps.forEach(r => {
+                                if (r.message && r.message.trim().length > 0) {
+                                    allWishes.push({
+                                        id: 'wish_' + (r.id || Math.random().toString(36).substring(2, 8)),
+                                        guestName: r.guestName || 'Anonymous Guest',
+                                        relation: r.relation || 'Friend',
+                                        message: r.message.trim(),
+                                        source: r.source || 'website',
+                                        timestamp: r.timestamp || new Date().toISOString()
+                                    });
+                                }
+                            });
+                            allWishes = deduplicateList(allWishes, w => (((w.guestName || '').toLowerCase().trim()) + ':::' + ((w.message || '').trim().toLowerCase().replace(/\s+/g, ' '))));
+                        }
+
+                        updateGroupUI(data.photos_group_id, data.photos_group_link);
                         renderDashboard();
                         if (isManualRefresh) {
                             showToast('✅ Data refreshed successfully');
@@ -1019,6 +1323,19 @@
             if (local) {
                 try {
                     allRsvps = JSON.parse(local);
+                    allWishes = [];
+                    allRsvps.forEach(r => {
+                        if (r.message && r.message.trim().length > 0) {
+                            allWishes.push({
+                                id: 'wish_' + (r.id || Math.random().toString(36).substring(2, 8)),
+                                guestName: r.guestName,
+                                relation: r.relation || 'Friend',
+                                message: r.message.trim(),
+                                source: r.source || 'website',
+                                timestamp: r.timestamp || new Date().toISOString()
+                            });
+                        }
+                    });
                 } catch(e) {}
             }
             renderDashboard();
@@ -1046,29 +1363,35 @@
             document.getElementById('statResponses').textContent = allRsvps.length;
 
             document.getElementById('badgeRsvpCount').textContent = allRsvps.length;
+            document.getElementById('badgeWishesCount').textContent = allWishes.length;
             document.getElementById('badgeMomentsCount').textContent = allMoments.length;
 
             filterRsvps();
+            renderWishes();
             renderMoments();
         }
 
         function switchTab(tab) {
             currentTab = tab;
             const btnRsvps = document.getElementById('tabBtnRsvps');
+            const btnWishes = document.getElementById('tabBtnWishes');
             const btnMoments = document.getElementById('tabBtnMoments');
             const viewRsvps = document.getElementById('viewRsvps');
+            const viewWishes = document.getElementById('viewWishes');
             const viewMoments = document.getElementById('viewMoments');
+
+            [btnRsvps, btnWishes, btnMoments].forEach(b => { if (b) b.classList.remove('active'); });
+            [viewRsvps, viewWishes, viewMoments].forEach(v => { if (v) v.style.display = 'none'; });
 
             if (tab === 'rsvps') {
                 btnRsvps.classList.add('active');
-                btnMoments.classList.remove('active');
                 viewRsvps.style.display = 'block';
-                viewMoments.style.display = 'none';
+            } else if (tab === 'wishes') {
+                btnWishes.classList.add('active');
+                viewWishes.style.display = 'block';
             } else {
                 btnMoments.classList.add('active');
-                btnRsvps.classList.remove('active');
                 viewMoments.style.display = 'block';
-                viewRsvps.style.display = 'none';
             }
         }
 
@@ -1209,7 +1532,7 @@
                 <div class="empty-view-state" style="grid-column: 1 / -1;">
                     <div style="font-size: 2rem; margin-bottom: 0.5rem;">📸</div>
                     <strong>No guest photos uploaded yet.</strong>
-                    <p style="font-size: 0.78rem; margin-top: 0.3rem;">Photos shared by guests via the Telegram Bot will appear here automatically.</p>
+                    <p style="font-size: 0.78rem; margin-top: 0.3rem;">Photos shared by guests via the Telegram Bot or Website will appear here automatically.</p>
                 </div>`;
                 return;
             }
@@ -1218,9 +1541,12 @@
                 const author = escapeHtml(m.sender_name || m.from_user || 'Guest');
                 const caption = escapeHtml(m.caption || '');
                 const dateStr = m.timestamp ? new Date(m.timestamp).toLocaleDateString() : '';
-                const imgWrap = m.file_path
-                    ? `<div class="moment-img-wrap" onclick="window.open('${m.file_path}', '_blank')">
-                         <img src="${m.file_path}" alt="Shared Moment by ${author}" loading="lazy">
+                const photoSrc = m.file_id 
+                    ? ('/api/moment-photo?file_id=' + encodeURIComponent(m.file_id)) 
+                    : (m.file_path || (m.local_path || ''));
+                const imgWrap = photoSrc
+                    ? `<div class="moment-img-wrap" onclick="window.open('${photoSrc}', '_blank')">
+                         <img src="${photoSrc}" alt="Shared Moment by ${author}" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;color:#c8aa6e;font-size:2rem;\'>📸</div>'">
                        </div>`
                     : `<div class="moment-img-wrap" style="display:flex;align-items:center;justify-content:center;background:rgba(212,175,55,0.08);color:var(--dash-gold-bright);font-size:2.5rem;">
                          📸
@@ -1231,10 +1557,92 @@
                     <div class="moment-info">
                         <div class="moment-author">${author}</div>
                         ${caption ? `<div class="moment-caption">"${caption}"</div>` : ''}
-                        <div style="font-size: 0.65rem; color: var(--dash-text-muted);">${dateStr}</div>
+                        <div style="font-size: 0.65rem; color: var(--dash-text-muted);">${dateStr} • ${escapeHtml(m.source || 'Bot')}</div>
                     </div>
                 </div>`;
             }).join('');
+        }
+
+        function renderWishes() {
+            filterWishes();
+        }
+
+        function filterWishes() {
+            const search = (document.getElementById('wishesSearchInput')?.value || '').toLowerCase().trim();
+            const clearBtn = document.getElementById('wishesSearchClearBtn');
+            if (clearBtn) clearBtn.style.display = search ? 'block' : 'none';
+
+            const container = document.getElementById('wishesCardsContainer');
+            if (!container) return;
+
+            const filtered = allWishes.filter(w => {
+                if (!search) return true;
+                const matchName = (w.guestName || '').toLowerCase().includes(search);
+                const matchMsg = (w.message || '').toLowerCase().includes(search);
+                const matchRel = (w.relation || '').toLowerCase().includes(search);
+                return matchName || matchMsg || matchRel;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                <div class="empty-view-state">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">💌</div>
+                    <strong>No wishes match your search.</strong>
+                    <p style="font-size: 0.78rem; margin-top: 0.3rem;">Try searching another keyword or clear the search.</p>
+                </div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(w => {
+                const author = escapeHtml(w.guestName || 'Honored Guest');
+                const rel = escapeHtml(w.relation || 'Friend');
+                const msg = escapeHtml(w.message || '');
+                const src = escapeHtml(w.source || 'Website');
+                const dateStr = w.timestamp ? (new Date(w.timestamp).toLocaleDateString() + ' • ' + new Date(w.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})) : '—';
+
+                return `
+                <div class="wish-card">
+                    <div class="wish-card-top">
+                        <span class="wish-card-author">💌 ${author}</span>
+                        <span class="guest-meta-pill">🏷️ ${rel}</span>
+                    </div>
+                    <div class="wish-card-body">
+                        "${msg}"
+                    </div>
+                    <div class="wish-card-meta">
+                        <span>🕒 ${dateStr} (${src})</span>
+                        <button type="button" class="guest-copy-btn" onclick="copyText('${escapeJs(w.message)}')">📋 Copy Wish</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function clearWishesSearch() {
+            const input = document.getElementById('wishesSearchInput');
+            if (input) input.value = '';
+            const clearBtn = document.getElementById('wishesSearchClearBtn');
+            if (clearBtn) clearBtn.style.display = 'none';
+            filterWishes();
+        }
+
+        function exportWishes() {
+            if (allWishes.length === 0) {
+                alert('No wishes to export yet.');
+                return;
+            }
+
+            const header = `💐 WEDDING WISHES & BLESSINGS FOR DR. SARA & ENG. TEWODROS\nExport Date: ${new Date().toLocaleString()}\nTotal Wishes: ${allWishes.length}\n${'='.repeat(70)}\n\n`;
+            const content = allWishes.map((w, i) => {
+                return `[#${i + 1}] From: ${w.guestName || 'Anonymous'} (${w.relation || 'Friend'}) via ${w.source || 'Website'}\nDate: ${w.timestamp ? new Date(w.timestamp).toLocaleString() : '—'}\nWish: "${w.message}"\n${'-'.repeat(50)}`;
+            }).join('\n\n');
+
+            const blob = new Blob([header + content], { type: 'text/plain;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', `Wedding_Wishes_Dr_Sara_and_Eng_Tewodros_${new Date().toISOString().slice(0,10)}.txt`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function copyText(text) {

@@ -473,6 +473,14 @@
                         <div class="qr-label-pill" id="botHandleLabel">@sara_tewodros_wedding_bot</div>
                         <div class="qr-tap-instruction">👆 Tap QR to Open Bot</div>
                     </a>
+
+                    <!-- Direct Web Upload Option -->
+                    <div style="margin-top: 1.4rem; text-align: center; width: 100%;">
+                        <div style="font-size: 0.78rem; color: var(--gold-300); margin-bottom: 0.6rem; letter-spacing: 0.5px;">— OR UPLOAD DIRECTLY FROM PHONE —</div>
+                        <button type="button" class="btn-primary" id="btnOpenWebUpload" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 22px; font-size: 0.88rem; border-radius: 30px;">
+                            📸 Upload Photo from Device
+                        </button>
+                    </div>
                 </div>
             </section>
 
@@ -502,7 +510,32 @@
         </div>
     </div>
 
-
+    <!-- DIRECT PHOTO UPLOAD MODAL -->
+    <div class="lightbox-modal" id="uploadModal" aria-hidden="true" role="dialog" style="display: none; z-index: 100000; align-items: center; justify-content: center; background: rgba(5,6,10,0.85); backdrop-filter: blur(10px);">
+        <div style="background: rgba(18, 22, 34, 0.96); border: 1.5px solid rgba(212, 175, 55, 0.45); border-radius: 16px; padding: 24px; max-width: 440px; width: 90%; box-shadow: 0 16px 40px rgba(0,0,0,0.85); position: relative; color: #fff;">
+            <button type="button" class="lightbox-close-btn" id="closeUploadModalBtn" aria-label="Close Upload Modal" style="top: 12px; right: 12px;">✕</button>
+            <h3 style="font-family: var(--font-display); font-size: 1.4rem; color: var(--gold-200); margin-bottom: 6px; text-align: center;">📸 Share a Celebration Photo</h3>
+            <p style="font-size: 0.8rem; color: var(--text-dim); text-align: center; margin-bottom: 16px;">Photos appear in the VIP Admin Portal and Wedding Photo Stream!</p>
+            <form id="webUploadForm">
+                <div style="margin-bottom: 12px;">
+                    <label style="display: block; font-size: 0.8rem; color: var(--gold-300); margin-bottom: 4px;">Your Name *</label>
+                    <input type="text" id="uploadSenderName" class="rsvp-input" placeholder="e.g. Nate Beka" required style="width: 100%;">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label style="display: block; font-size: 0.8rem; color: var(--gold-300); margin-bottom: 4px;">Select Photo *</label>
+                    <input type="file" id="uploadPhotoFile" accept="image/*" required class="rsvp-input" style="width: 100%; padding: 8px;">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 0.8rem; color: var(--gold-300); margin-bottom: 4px;">Caption or Blessing (Optional)</label>
+                    <input type="text" id="uploadCaption" class="rsvp-input" placeholder="Congratulations to Sara & Tewodros!" style="width: 100%;">
+                </div>
+                <button type="submit" class="btn-primary" id="uploadSubmitBtn" style="width: 100%; padding: 12px; font-size: 0.95rem;">
+                    ✨ Share Photo Now ✨
+                </button>
+                <div id="uploadFeedback" style="margin-top: 10px; font-size: 0.82rem; text-align: center;"></div>
+            </form>
+        </div>
+    </div>
 
     <script src="app.min.js" defer></script>
 </body>

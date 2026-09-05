@@ -41,23 +41,141 @@ function escapeHtml(str) {
 // In-memory cached data model to eliminate disk I/O and JSON parse churn
 let cachedData = null;
 
+// GitHub Cloud Persistence Config (guarantees dynamic data is never lost across Render restarts)
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
+const GITHUB_REPO = 'natebeka/sara-wedding';
+let lastGitHubSha = null;
+let isSyncing = false;
+let pendingSyncTimer = null;
+
+async function fetchFromGitHub() {
+    if (!GITHUB_TOKEN) return null;
+    try {
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/data/rsvps.json`, {
+            headers: {
+                'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                'User-Agent': 'Sara-Wedding-App',
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            lastGitHubSha = data.sha;
+            const content = Buffer.from(data.content, 'base64').toString('utf8');
+            return JSON.parse(content);
+        }
+    } catch (err) {
+        console.error('[GitHub Cloud Fetch Error]:', err.message);
+    }
+    return null;
+}
+
+async function syncToGitHub(data) {
+    if (!GITHUB_TOKEN || isSyncing) return;
+    isSyncing = true;
+    try {
+        // Fetch current file SHA if not cached
+        const check = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/data/rsvps.json`, {
+            headers: {
+                'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                'User-Agent': 'Sara-Wedding-App',
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        if (check.ok) {
+            const j = await check.json();
+            lastGitHubSha = j.sha;
+        }
+
+        const jsonStr = JSON.stringify(data, null, 2);
+        const base64Content = Buffer.from(jsonStr).toString('base64');
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/data/rsvps.json`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                'User-Agent': 'Sara-Wedding-App',
+                'Content-Type': 'application/json',
+                'Accept': 'application/vnd.github.v3+json'
+            },
+            body: JSON.stringify({
+                message: 'sync: dynamic wedding rsvps, wishes & moments [skip ci]',
+                content: base64Content,
+                sha: lastGitHubSha
+            })
+        });
+        if (res.ok) {
+            const result = await res.json();
+            lastGitHubSha = result.content ? result.content.sha : null;
+            console.log('[GitHub Cloud Sync]: Persisted wedding database to GitHub cloud!');
+        } else {
+            const errBody = await res.text();
+            console.error('[GitHub Cloud Sync Failed]:', res.status, errBody);
+        }
+    } catch (err) {
+        console.error('[GitHub Cloud Sync Exception]:', err.message);
+    } finally {
+        isSyncing = false;
+    }
+}
+
 function loadData() {
     if (cachedData) return cachedData;
+    let localData = { rsvps: [], guest_users: {}, moments: [] };
     try {
         if (!fs.existsSync(DATA_PATH)) {
-            const initial = { rsvps: [], guest_users: {}, moments: [] };
             fs.mkdirSync(path.dirname(DATA_PATH), { recursive: true });
-            fs.writeFileSync(DATA_PATH, JSON.stringify(initial, null, 2), 'utf8');
-            cachedData = initial;
-            return initial;
+            fs.writeFileSync(DATA_PATH, JSON.stringify(localData, null, 2), 'utf8');
+        } else {
+            localData = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
         }
-        cachedData = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
-        return cachedData;
     } catch (err) {
         console.error('[Bot Data Load Error]:', err);
-        cachedData = { rsvps: [], guest_users: {}, moments: [] };
-        return cachedData;
     }
+    cachedData = localData;
+
+    // Asynchronously restore & merge any cloud records missing locally
+    fetchFromGitHub().then(cloudData => {
+        if (cloudData && Array.isArray(cloudData.rsvps)) {
+            const existingIds = new Set((cachedData.rsvps || []).map(r => r.id || `${r.guestName}_${r.timestamp}`));
+            let merged = 0;
+            for (const r of cloudData.rsvps) {
+                const key = r.id || `${r.guestName}_${r.timestamp}`;
+                if (!existingIds.has(key)) {
+                    cachedData.rsvps.push(r);
+                    existingIds.add(key);
+                    merged++;
+                }
+            }
+            if (Array.isArray(cloudData.moments)) {
+                const existingMomentIds = new Set((cachedData.moments || []).map(m => m.id || m.file_id));
+                for (const m of cloudData.moments) {
+                    const mKey = m.id || m.file_id;
+                    if (!existingMomentIds.has(mKey)) {
+                        cachedData.moments.push(m);
+                        existingMomentIds.add(mKey);
+                        merged++;
+                    }
+                }
+            }
+            // Also restore group ID if stored in cloud
+            if (cloudData.photos_group_id && !cachedData.photos_group_id) {
+                cachedData.photos_group_id = cloudData.photos_group_id;
+                const cfg = loadConfig();
+                if (!cfg.photos_group_id) {
+                    cfg.photos_group_id = cloudData.photos_group_id;
+                    saveConfig(cfg);
+                }
+            }
+            if (merged > 0) {
+                console.log(`[Cloud Sync]: Merged ${merged} dynamic records into local memory.`);
+                try {
+                    fs.writeFileSync(DATA_PATH, JSON.stringify(cachedData, null, 2), 'utf8');
+                } catch (e) {}
+            }
+        }
+    }).catch(err => console.warn('[Cloud Restore Skipped]:', err.message));
+
+    return cachedData;
 }
 
 function saveData(data) {
@@ -68,6 +186,12 @@ function saveData(data) {
     } catch (err) {
         console.error('[Bot Data Save Error]:', err);
     }
+
+    // Debounce cloud persistence to prevent rate-limiting
+    if (pendingSyncTimer) clearTimeout(pendingSyncTimer);
+    pendingSyncTimer = setTimeout(() => {
+        syncToGitHub(data);
+    }, 2500);
 }
 
 function loadConfig() {
@@ -98,7 +222,7 @@ function loadConfig() {
     if (process.env.TELEGRAM_BOT_TOKEN) cfg.bot_token = process.env.TELEGRAM_BOT_TOKEN;
     if (process.env.TELEGRAM_BOT_USERNAME) cfg.bot_username = process.env.TELEGRAM_BOT_USERNAME;
     if (process.env.ADMIN_PASSCODE) cfg.admin_passcode = process.env.ADMIN_PASSCODE;
-    if (process.env.PHOTOS_GROUP_ID) cfg.photos_group_id = process.env.PHOTOS_GROUP_ID;
+    if (process.env.PHOTOS_GROUP_ID) cfg.photos_group_id = isNaN(process.env.PHOTOS_GROUP_ID) ? process.env.PHOTOS_GROUP_ID : Number(process.env.PHOTOS_GROUP_ID);
     if (process.env.PHOTOS_GROUP_LINK) cfg.photos_group_link = process.env.PHOTOS_GROUP_LINK;
     if (process.env.SARA_CHAT_ID && cfg.admins) {
         const sara = cfg.admins.find(a => a.id === 'sara');
@@ -109,6 +233,11 @@ function loadConfig() {
         if (tewodros) tewodros.chat_id = isNaN(process.env.TEWODROS_CHAT_ID) ? process.env.TEWODROS_CHAT_ID : Number(process.env.TEWODROS_CHAT_ID);
     }
 
+    // If photos_group_id is not set in config, restore from dataStore if available
+    if (!cfg.photos_group_id && cachedData && cachedData.photos_group_id) {
+        cfg.photos_group_id = cachedData.photos_group_id;
+    }
+
     return cfg;
 }
 
@@ -117,6 +246,15 @@ function saveConfig(cfg) {
         fs.writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2), 'utf8');
     } catch (err) {
         console.error('[Bot Config Save Error]:', err);
+    }
+
+    // Keep dataStore.photos_group_id in sync so it's persisted in cloud database
+    if (cfg && cfg.photos_group_id) {
+        const ds = cachedData || loadData();
+        if (ds.photos_group_id !== cfg.photos_group_id) {
+            ds.photos_group_id = cfg.photos_group_id;
+            saveData(ds);
+        }
     }
 }
 
@@ -1141,13 +1279,15 @@ async function processUpdate(botToken, update) {
 
             // 2. Save moment metadata into database for the Admin Dashboard
             const momentEntry = {
-                id: 'moment_' + Date.now(),
+                id: 'moment_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
                 sender_name: fullSender,
                 from_user: fullSender,
                 from_id: user.id,
                 file_id: fileId,
-                file_path: savedInfo ? savedInfo.webPath : (savedInfo ? savedInfo.fileUrl : ''),
+                file_path: `/api/moment-photo?file_id=${encodeURIComponent(fileId)}`,
+                local_path: savedInfo ? savedInfo.webPath : '',
                 caption: msg.caption || '',
+                source: 'telegram_bot',
                 timestamp: new Date().toISOString()
             };
             dataStore.moments.push(momentEntry);
@@ -1376,6 +1516,57 @@ async function processUpdate(botToken, update) {
             return;
         }
 
+        // ----------------------------------------------------------------------
+        // CAPTURE ALL SENT GUEST MESSAGES / WISHES (WITH DEDUPLICATION)
+        // ----------------------------------------------------------------------
+        const cleanMsg = text.trim();
+        const commonGreetings = ['hi', 'hello', 'hey', 'start', '/start', 'ሰላም', 'ሰላም ነው', 'selam', 'ciao'];
+        const isOnlyGreeting = commonGreetings.includes(cleanMsg.toLowerCase());
+
+        if (cleanMsg.length >= 3 && !isOnlyGreeting) {
+            const senderName = [user.first_name, user.last_name].filter(Boolean).join(' ') || (user.username ? `@${user.username}` : 'Honored Guest');
+            const dataStore = loadData();
+            if (!Array.isArray(dataStore.wishes)) dataStore.wishes = [];
+
+            // Prevent duplicate insertion if the user already sent this exact message
+            const isDuplicate = dataStore.wishes.some(w => 
+                (w.chatId === chatId || (w.guestName && w.guestName.toLowerCase() === senderName.toLowerCase())) &&
+                w.message && w.message.trim().toLowerCase() === cleanMsg.toLowerCase()
+            );
+
+            if (!isDuplicate) {
+                const wishEntry = {
+                    id: 'wish_tg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+                    guestName: senderName,
+                    relation: 'Guest',
+                    message: cleanMsg,
+                    source: 'telegram_bot',
+                    chatId: chatId,
+                    username: user.username || '',
+                    timestamp: new Date().toISOString()
+                };
+                dataStore.wishes.push(wishEntry);
+                saveData(dataStore);
+
+                // Notify Dr. Sara & Eng. Tewodros
+                await notifyAdmins(botToken, 
+                    `💌 <b>NEW GUEST WISH RECEIVED!</b>\n` +
+                    `✦ ══════════════════════════ ✦\n` +
+                    `👤 <b>From:</b> ${escapeHtml(senderName)} ${user.username ? `(@${escapeHtml(user.username)})` : ''}\n` +
+                    `💬 <b>Message:</b> <i>"${escapeHtml(cleanMsg)}"</i>\n` +
+                    `🌐 <b>Channel:</b> Telegram Bot\n` +
+                    `⏰ <b>Time:</b> ${new Date().toLocaleTimeString('en-US')}`
+                );
+
+                const ackMsg = userLang === 'am'
+                    ? `🎉 <b>እናመሰግናለን ${escapeHtml(senderName)}!</b>\n\nየላኩት የበረከት ቃል በደስታ ተመዝግቧል ለሙሽሮቹም ደርሷል! 💛`
+                    : `🎉 <b>Thank you, ${escapeHtml(senderName)}!</b>\n\nYour heartfelt wish and blessing has been lovingly recorded and delivered to Dr. Sara & Eng. Tewodros! 💛`;
+
+                await sendMessage(botToken, chatId, ackMsg, getMainKeyboard(userLang));
+                return;
+            }
+        }
+
         // Default response
         await sendMessage(botToken, chatId, getWelcomeMessage(userLang, user), getMainKeyboard(userLang));
     }
@@ -1460,7 +1651,10 @@ module.exports = {
     saveConfig,
     loadData,
     saveData,
+    syncToGitHub,
     escapeHtml,
+    callTelegram,
+    sendMessage,
     getTelegramFileUrl,
     downloadAndSavePhoto,
     sendAllMomentsToAdmin,
