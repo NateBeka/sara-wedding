@@ -251,6 +251,65 @@ const server = http.createServer((req, res) => {
   }
 
   // --------------------------------------------------------------------------
+  // API ROUTE: POST /api/admin/add-wish (MANUALLY RECORD / PASTE GUEST WISH)
+  // --------------------------------------------------------------------------
+  if (pathname === '/api/admin/add-wish' && req.method === 'POST') {
+    const config = loadConfig();
+    const providedPasscode = parsedUrl.searchParams.get('passcode') || req.headers['x-admin-passcode'];
+    const expectedPasscode = (config && config.admin_passcode) || 'sara_tewodros_2026';
+
+    if (providedPasscode !== expectedPasscode) {
+      sendJsonResponse(res, 401, { success: false, error: 'Unauthorized: invalid passcode' });
+      return;
+    }
+
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+      if (body.length > 1e5) req.destroy();
+    });
+
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const guestName = (payload.guestName || 'Honored Guest').trim();
+        const message = (payload.message || '').trim();
+        const relation = (payload.relation || 'Friend').trim();
+        const source = (payload.source || 'Telegram Bot').trim();
+
+        if (!message) {
+          sendJsonResponse(res, 400, { success: false, error: 'Message content is required' });
+          return;
+        }
+
+        const dataStore = loadData();
+        if (!Array.isArray(dataStore.wishes)) dataStore.wishes = [];
+
+        const newWish = {
+          id: 'wish_manual_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+          guestName: guestName,
+          relation: relation,
+          message: message,
+          source: source,
+          timestamp: new Date().toISOString()
+        };
+
+        dataStore.wishes.unshift(newWish);
+        saveData(dataStore);
+
+        sendJsonResponse(res, 200, {
+          success: true,
+          message: 'Wish added successfully',
+          wish: newWish
+        });
+      } catch (err) {
+        sendJsonResponse(res, 500, { success: false, error: 'Failed to add wish' });
+      }
+    });
+    return;
+  }
+
+  // --------------------------------------------------------------------------
   // API ROUTE: GET /api/moment-photo (RESILIENT CLOUD PHOTO STREAMING)
   // --------------------------------------------------------------------------
   if (pathname === '/api/moment-photo' && req.method === 'GET') {

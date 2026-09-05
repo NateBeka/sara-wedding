@@ -1099,9 +1099,14 @@
                     <input type="text" id="wishesSearchInput" class="dash-search-input" placeholder="Search wishes by guest name, message text, or relation..." oninput="filterWishes()">
                     <button type="button" class="dash-search-clear" id="wishesSearchClearBtn" onclick="clearWishesSearch()">✕</button>
                 </div>
-                <button type="button" class="dash-export-btn" onclick="exportWishes()" style="margin-top: 0.7rem;">
-                    📋 Export All Wishes (TXT / Excel)
-                </button>
+                <div style="display: flex; gap: 8px; margin-top: 0.7rem; flex-wrap: wrap;">
+                    <button type="button" class="dash-export-btn" onclick="openAddWishModal()" style="flex: 1; min-width: 150px; background: rgba(212,175,55,0.15); border-color: var(--dash-gold-bright); color: var(--dash-gold-bright);">
+                        ➕ Add / Paste Wish
+                    </button>
+                    <button type="button" class="dash-export-btn" onclick="exportWishes()" style="flex: 1; min-width: 150px;">
+                        📋 Export All Wishes
+                    </button>
+                </div>
             </div>
 
             <!-- Dynamic Wishes Cards List -->
@@ -1140,6 +1145,34 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- MODAL: ADD / PASTE WISH -->
+    <div class="auth-overlay" id="addWishModal" style="display: none; z-index: 100000; align-items: center; justify-content: center;">
+        <div class="auth-card" style="max-width: 440px; width: 90%; text-align: left; padding: 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="color: var(--dash-gold-bright); margin: 0; font-size: 1.15rem;">➕ Record Guest Wish</h3>
+                <button type="button" onclick="closeAddWishModal()" style="background:none; border:none; color:var(--dash-text-muted); font-size:1.3rem; cursor:pointer;">✕</button>
+            </div>
+            <p style="font-size: 0.78rem; color: var(--dash-text-muted); margin-bottom: 12px;">Paste or record wishes received via Telegram, WhatsApp, SMS, or cards.</p>
+            <form id="addWishForm" onsubmit="submitManualWish(event)">
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 0.78rem; color: var(--dash-text-muted); display: block; margin-bottom: 4px;">Guest Name *</label>
+                    <input type="text" id="manualWishName" class="auth-pass-input" placeholder="e.g. KEBEK FITALA NEBI" required style="width: 100%; border-radius: 8px; font-size: 0.88rem; padding: 8px 12px;">
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 0.78rem; color: var(--dash-text-muted); display: block; margin-bottom: 4px;">Relation</label>
+                    <input type="text" id="manualWishRel" class="auth-pass-input" placeholder="e.g. Groom's Family / Friend" style="width: 100%; border-radius: 8px; font-size: 0.88rem; padding: 8px 12px;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="font-size: 0.78rem; color: var(--dash-text-muted); display: block; margin-bottom: 4px;">Wishes / Message *</label>
+                    <textarea id="manualWishText" class="auth-pass-input" rows="3" placeholder="Type or paste the message here..." required style="width: 100%; border-radius: 8px; font-size: 0.88rem; padding: 8px 12px; resize: vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn-primary auth-submit-btn" style="width: 100%; padding: 10px; font-size: 0.92rem;">
+                    💾 Save Wish to Portal
+                </button>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -1706,6 +1739,46 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+
+        function openAddWishModal() {
+            document.getElementById('addWishModal').style.display = 'flex';
+            document.getElementById('manualWishName').focus();
+        }
+
+        function closeAddWishModal() {
+            document.getElementById('addWishModal').style.display = 'none';
+        }
+
+        async function submitManualWish(e) {
+            e.preventDefault();
+            const name = document.getElementById('manualWishName').value.trim();
+            const rel = document.getElementById('manualWishRel').value.trim() || 'Friend';
+            const msg = document.getElementById('manualWishText').value.trim();
+
+            if (!msg) {
+                alert('Please enter the message.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/add-wish?passcode=' + encodeURIComponent(DEFAULT_PASSCODE), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ guestName: name, relation: rel, message: msg, source: 'Telegram Bot' })
+                });
+                const data = await res.json();
+                if (data && data.success) {
+                    showToast('✅ Wish added successfully to portal!');
+                    closeAddWishModal();
+                    document.getElementById('addWishForm').reset();
+                    loadRsvpData(true);
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to save wish'));
+                }
+            } catch (err) {
+                alert('Connection error saving wish.');
+            }
         }
 
         // Initialize session on load
