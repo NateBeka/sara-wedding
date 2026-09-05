@@ -114,5 +114,17 @@
       "source": "telegram_bot",
       "timestamp": "2026-09-05T11:20:35.618Z"
     }
+  ],
+  "wishes": [
+    {
+      "id": "wish_tg_1788607261530_e30t",
+      "guestName": "Emnet Bekalu",
+      "relation": "Guest",
+      "message": "Elelelelelelelele",
+      "source": "telegram_bot",
+      "chatId": 197987588,
+      "username": "Emybekalu",
+      "timestamp": "2026-09-05T11:21:01.530Z"
+    }
   ]
 }
