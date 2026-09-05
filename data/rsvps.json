@@ -101,6 +101,18 @@
       "caption": "",
       "source": "telegram_bot",
       "timestamp": "2026-09-04T18:24:22.000Z"
+    },
+    {
+      "id": "moment_1788607235618_qpnv",
+      "sender_name": "Emnet Bekalu (@Emybekalu)",
+      "from_user": "Emnet Bekalu (@Emybekalu)",
+      "from_id": 197987588,
+      "file_id": "AgACAgQAAxkBAAOnapv7Au5zHwABIlXshfxwgPzfK6xfAAJ7D2sbPu_QUPeF_62LD0yhAQADAgADeQADPQQ",
+      "file_path": "/api/moment-photo?file_id=AgACAgQAAxkBAAOnapv7Au5zHwABIlXshfxwgPzfK6xfAAJ7D2sbPu_QUPeF_62LD0yhAQADAgADeQADPQQ",
+      "local_path": "/images/moments/moment_1788607234985_Emnet_Bekalu.jpg",
+      "caption": "",
+      "source": "telegram_bot",
+      "timestamp": "2026-09-05T11:20:35.618Z"
     }
   ]
 }
