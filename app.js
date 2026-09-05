@@ -159,15 +159,15 @@ const translations = {
         splash_title: "ኢ/ር ቴዎድሮስ እና ዶ/ር ሳራ",
         splash_tap: "✨ ጥሪውን ይክፈቱ ✨",
         splash_hint: "✦ ለመግባት የትም ይንኩ ✦",
-        middle_date_main: "እሑድ መስከረም 10 ቀን 2018 ዓ.ም",
+        middle_date_main: "እሑድ መስከረም 10 ቀን 2019 ዓ.ም",
         fancy_title: "ኢ/ር ቴዎድሮስ በላይ እና ዶ/ር ሳራ አየለ",
         hero_tagline: "ዘላለማዊ ፍቅርና በረከት",
-        hero_meta: "🗓️ እሑድ መስከረም 10 ቀን 2018 ዓ.ም • 📍 ሀዋሳ ፣ ኢትዮጵያ",
+        hero_meta: "🗓️ እሑድ መስከረም 10 ቀን 2019 ዓ.ም • 📍 ሀዋሳ ፣ ኢትዮጵያ",
         btn_rsvp_hero: "ምላሽ ይላኩ",
         btn_view_program: "ፕሮግራሙን ይመልከቱ ↓",
         save_date_badge: "ቀኑን ያስቀምጡ",
         save_date_title: '<span class="title-icon">💍</span> <span class="title-text">በደስታችን አብረውን ይሁኑ</span>',
-        save_date_subtitle: "እሑድ መስከረም 10 ቀን 2018 ዓ.ም",
+        save_date_subtitle: "እሑድ መስከረም 10 ቀን 2019 ዓ.ም",
         countdown_heading: "ወደ ደማቁ የሠርግ ቀን ቆጠራ",
         countdown_header: "የሠርግ ቆጠራ",
         timer_label: "ለሠርጋችን የሚቀረው ጊዜ",
@@ -176,7 +176,7 @@ const translations = {
         unit_min: "ደቂቃዎች",
         unit_sec: "ሰከንዶች",
         btn_add_calendar: "ወደ Google Calendar ያክሉ",
-        calendar_header: "መስከረም 2018 ዓ.ም",
+        calendar_header: "መስከረም 2019 ዓ.ም",
         cal_badge_day: "መስከረም 10",
         day_sun: "እሑድ", day_mon: "ሰኞ", day_tue: "ማክሰ", day_wed: "ረቡዕ", day_thu: "ሐሙስ", day_fri: "ዓርብ", day_sat: "ቅዳሜ",
         card_tag: "የጥሪ ካርድ",
@@ -240,7 +240,7 @@ const translations = {
         share_tag: "ቀጥታ ይላኩ",
         qr_title: '<span class="title-icon">📸</span> <span class="title-text">ፎቶዎችና ቪዲዮዎችን ያጋሩ</span>',
         qr_subtitle: "በሠርጉ ላይ የሚያነሷቸውን ልዩ ፎቶዎችና ቪዲዮዎች ለቴሌግራም ቦቱ በቀጥታ ይላኩ!",
-        footer_text: "ኢ/ር ቴዎድሮስ በላይ እና ዶ/ር ሳራ አየለ — ዘላለማዊ ፍቅር | እሑድ መስከረም 10 ቀን 2018 ዓ.ም | ሀዋሳ ፣ ኢትዮጵያ",
+        footer_text: "ኢ/ር ቴዎድሮስ በላይ እና ዶ/ር ሳራ አየለ — ዘላለማዊ ፍቅር | እሑድ መስከረም 10 ቀን 2019 ዓ.ም | ሀዋሳ ፣ ኢትዮጵያ",
         footer_credits: "በታላቅ ደስታና ፍቅር የተዘጋጀ 💛"
     }
 };
@@ -960,11 +960,11 @@ function renderCalendarForCurrentLanguage() {
             grid.appendChild(dayCell);
         }
     } else {
-        // Ethiopian Meskerem 2018 (for AM and AO):
-        // Meskerem 1, 2018 is Friday (0=Sun, 1=Mon, ..., 5=Fri)
+        // Ethiopian Meskerem 2019 (for AM and AO):
+        // Meskerem 1, 2019 is Friday (0=Sun, 1=Mon, ..., 5=Fri)
         const startDayIndex = 5;
         const totalDays = 30;
-        const weddingDay = 10; // Meskerem 10, 2018
+        const weddingDay = 10; // Meskerem 10, 2019
 
         for (let i = 0; i < startDayIndex; i++) {
             const emptyCell = document.createElement('div');
