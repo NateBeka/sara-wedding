@@ -551,7 +551,7 @@ function getWelcomeMessage(userLang = 'en', user = {}) {
             `እንኳን ወደ <b>ኢ/ር ቴዎድሮስ በላይ</b> እና <b>ዶ/ር ሳራ አየለ</b> ይፋዊ የሰርግ ቦት በደህና መጡ፣ <b>${safeName}</b>!\n\n` +
             `🕊️ <i>"ቤት ሁሉ በአንድ ሰው ይዘጋጃል፥ ሁሉን ያዘጋጀ ግን እግዚአብሔር ነው።"</i>\n` +
             `— <b>ዕብራውያን 3:4</b>\n\n` +
-            `📅 <b>የሰርግ ቀን:</b> እሁድ መስከረም 10 ቀን 2018 ዓ.ም (September 20, 2026)\n` +
+            `📅 <b>የሰርግ ቀን:</b> እሁድ መስከረም 10 ቀን 2019 ዓ.ም (September 20, 2026)\n` +
             `📍 <b>ቦታ:</b> ዲላ እና ሴንትራል ሆቴል ሀዋሳ፣ ኢትዮጵያ\n\n` +
             `ይህንን የተባረከ ቀን በጋራ ለማክበር ከታች ያሉትን አማራጮች ይጠቀሙ:`
         );
@@ -564,7 +564,7 @@ function getWelcomeMessage(userLang = 'en', user = {}) {
         `Welcome, <b>${safeName}</b>! It is our greatest honor to celebrate the holy matrimony of <b>Eng. Tewodros & Dr. Sara</b>.\n\n` +
         `🕊️ <i>"For every house is built by someone, but God is the builder of everything."</i>\n` +
         `— <b>Hebrews 3:4</b>\n\n` +
-        `📅 <b>Date:</b> Sunday, September 20, 2026 (መስከረም 10, 2018 ዓ.ም)\n` +
+        `📅 <b>Date:</b> Sunday, September 20, 2026 (መስከረም 10, 2019 ዓ.ም)\n` +
         `📍 <b>City:</b> Hawassa, Ethiopia\n\n` +
         `Kindly use the menu below to RSVP, explore the event schedule, find venue directions, or share your loving photos & wishes!`
     );
@@ -574,7 +574,7 @@ function getScheduleMessage(userLang = 'en') {
     if (userLang === 'am') {
         return (
             `📅 <b>የሰርግ ቀን ሙሉ መርሃ ግብር</b>\n` +
-            `<b>እሁድ መስከረም 10 ቀን 2018 ዓ.ም (Sept 20, 2026)</b>\n` +
+            `<b>እሁድ መስከረም 10 ቀን 2019 ዓ.ም (Sept 20, 2026)</b>\n` +
             `✦ ══════════════════════════ ✦\n\n` +
             `<b>1️⃣ 4:00 - 6:00</b> (10:00 AM - 12:00 PM)\n` +
             `🚗 <b>ጉዞ ወደ ሙሽሪት ቤት</b>\n` +
@@ -599,7 +599,7 @@ function getScheduleMessage(userLang = 'en') {
 
     return (
         `📅 <b>WEDDING DAY SCHEDULE & PROCESSION</b>\n` +
-        `<b>Sunday, September 20, 2026 (መስከረም 10, 2018)</b>\n` +
+        `<b>Sunday, September 20, 2026 (መስከረም 10, 2019)</b>\n` +
         `✦ ══════════════════════════ ✦\n\n` +
         `<b>1️⃣ 4:00 - 6:00</b> (10:00 AM - 12:00 PM)\n` +
         `🚗 <b>Journey to Bride's Residence</b>\n` +
@@ -832,7 +832,7 @@ async function finalizeRsvp(botToken, chatId, session) {
             (rsvp.isAttending ? `• <b>የእንግዶች ብዛት:</b> ${rsvp.guestCount}\n` : '') +
             `• <b>ዝምድና:</b> ${safeRelation}\n` +
             `• <b>ምርቃት:</b> <i>"${safeWishes}"</i>\n\n` +
-            `መስከረም 10 ቀን 2018 ዓ.ም በሀዋሳ በደስታ እንገናኝ! 💛`;
+            `መስከረም 10 ቀን 2019 ዓ.ም በሀዋሳ በደስታ እንገናኝ! 💛`;
     } else {
         confirmMsg = `🎉 <b>THANK YOU, ${safeGuestName}!</b>\n✦ ══════════════════════════ ✦\n\nYour RSVP has been joyfully recorded!\n\n` +
             `• <b>Attendance:</b> ${rsvp.isAttending ? 'Yes, Delighted! 💐' : 'Regretfully No 💌'}\n` +
