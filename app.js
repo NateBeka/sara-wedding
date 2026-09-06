@@ -162,7 +162,7 @@ const translations = {
         middle_date_main: "እሑድ መስከረም 10 ቀን 2019 ዓ.ም",
         fancy_title: "ኢ/ር ቴዎድሮስ በላይ እና ዶ/ር ሳራ አየለ",
         hero_tagline: "ዘላለማዊ ፍቅርና በረከት",
-        hero_meta: "🗓️ እሑድ መስከረም 10 ቀን 2019 ኢ.አ • 📍 ሀዋሳ ፣ ኢትዮጵያ",
+        hero_meta: "🗓️ እሑድ መስከረም 10 ቀን 2019 ዓ.ም • 📍 ሀዋሳ ፣ ኢትዮጵያ",
         btn_rsvp_hero: "ምላሽ ይላኩ",
         btn_view_program: "ፕሮግራሙን ይመልከቱ ↓",
         save_date_badge: "ቀኑን ያስቀምጡ",
