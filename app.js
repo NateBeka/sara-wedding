@@ -1513,8 +1513,41 @@ function setupLazyMaps() {
 }
 
 // --------------------------------------------------------------------------
-// 9.2 DIRECT CELEBRATION PHOTO UPLOAD
+// 9.2 DIRECT CELEBRATION PHOTO UPLOAD (WITH CLIENT-SIDE COMPRESSION & PREVIEW)
 // --------------------------------------------------------------------------
+function compressImage(file, maxDimension = 1920, quality = 0.85) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onerror = reject;
+            img.onload = () => {
+                let width = img.naturalWidth || img.width;
+                let height = img.naturalHeight || img.height;
+                if (width > maxDimension || height > maxDimension) {
+                    if (width > height) {
+                        height = Math.round((height * maxDimension) / width);
+                        width = maxDimension;
+                    } else {
+                        width = Math.round((width * maxDimension) / height);
+                        height = maxDimension;
+                    }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                resolve(compressedDataUrl);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 function setupDirectPhotoUpload() {
     const btnOpen = document.getElementById('btnOpenWebUpload');
     const modal = document.getElementById('uploadModal');
@@ -1522,6 +1555,12 @@ function setupDirectPhotoUpload() {
     const form = document.getElementById('webUploadForm');
     const submitBtn = document.getElementById('uploadSubmitBtn');
     const feedback = document.getElementById('uploadFeedback');
+    const fileInput = document.getElementById('uploadPhotoFile');
+    const previewWrap = document.getElementById('uploadPreviewWrap');
+    const previewImg = document.getElementById('uploadPreviewImg');
+    const btnRemovePhoto = document.getElementById('uploadRemovePhotoBtn');
+
+    let preparedBase64 = null;
 
     function openModal() {
         if (!modal) return;
@@ -1535,6 +1574,13 @@ function setupDirectPhotoUpload() {
         modal.classList.remove('open');
         modal.setAttribute('aria-hidden', 'true');
         if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+
+    function clearSelectedPhoto() {
+        if (fileInput) fileInput.value = '';
+        preparedBase64 = null;
+        if (previewWrap) previewWrap.style.display = 'none';
+        if (previewImg) previewImg.src = '';
     }
 
     if (btnOpen) {
@@ -1565,24 +1611,59 @@ function setupDirectPhotoUpload() {
         }
     });
 
+    if (btnRemovePhoto) {
+        btnRemovePhoto.addEventListener('click', (e) => {
+            e.preventDefault();
+            clearSelectedPhoto();
+        });
+    }
+
+    if (fileInput) {
+        fileInput.addEventListener('change', async () => {
+            const file = fileInput.files && fileInput.files[0];
+            if (!file) {
+                clearSelectedPhoto();
+                return;
+            }
+            if (feedback) {
+                feedback.innerHTML = '<span style="color:var(--gold-300);">✨ Optimizing photo...</span>';
+            }
+            try {
+                preparedBase64 = await compressImage(file, 1920, 0.85);
+                if (previewImg && previewWrap) {
+                    previewImg.src = preparedBase64;
+                    previewWrap.style.display = 'flex';
+                }
+                if (feedback) feedback.innerHTML = '';
+            } catch (err) {
+                console.error('[Photo Optimize Error]:', err);
+                // Fallback to direct read
+                const r = new FileReader();
+                r.onload = () => {
+                    preparedBase64 = r.result;
+                    if (previewImg && previewWrap) {
+                        previewImg.src = preparedBase64;
+                        previewWrap.style.display = 'flex';
+                    }
+                    if (feedback) feedback.innerHTML = '';
+                };
+                r.readAsDataURL(file);
+            }
+        });
+    }
+
     if (form) {
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const nameInput = document.getElementById('uploadSenderName');
             const captionInput = document.getElementById('uploadCaption');
-            const fileInput = document.getElementById('uploadPhotoFile');
 
             const senderName = nameInput ? nameInput.value.trim() : '';
             const caption = captionInput ? captionInput.value.trim() : '';
             const file = fileInput && fileInput.files ? fileInput.files[0] : null;
 
-            if (!file) {
+            if (!file && !preparedBase64) {
                 if (feedback) feedback.innerHTML = '<span style="color:#ff7575;">⚠️ Please select an image file.</span>';
-                return;
-            }
-
-            if (file.size > 15 * 1024 * 1024) {
-                if (feedback) feedback.innerHTML = '<span style="color:#ff7575;">⚠️ Photo size must be under 15MB.</span>';
                 return;
             }
 
@@ -1594,40 +1675,38 @@ function setupDirectPhotoUpload() {
                 feedback.innerHTML = '<span style="color:var(--gold-300);">⏳ Streaming photo to wedding live stream...</span>';
             }
 
-            const reader = new FileReader();
-            reader.onload = async () => {
-                try {
-                    const res = await fetch('/api/upload-moment', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            senderName: senderName || 'Valued Guest',
-                            caption: caption,
-                            imageBase64: reader.result
-                        })
-                    });
-                    const json = await res.json();
-                    if (json && json.success) {
-                        if (feedback) feedback.innerHTML = '<span style="color:#6be285; font-weight:bold;">🎉 Photo shared successfully! 📸</span>';
-                        form.reset();
-                        if (typeof fireConfetti === 'function') fireConfetti();
-                        setTimeout(() => {
-                            closeModal();
-                            if (feedback) feedback.innerHTML = '';
-                        }, 2800);
-                    } else {
-                        if (feedback) feedback.innerHTML = `<span style="color:#ff7575;">⚠️ ${json && json.error ? json.error : 'Upload failed. Please try again.'}</span>`;
-                    }
-                } catch (err) {
-                    if (feedback) feedback.innerHTML = '<span style="color:#ff7575;">⚠️ Connection error. Please try again.</span>';
-                } finally {
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = '✨ Share Photo Now ✨';
-                    }
+            try {
+                const finalBase64 = preparedBase64 || await compressImage(file, 1920, 0.85);
+                const res = await fetch('/api/upload-moment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        senderName: senderName || 'Valued Guest',
+                        caption: caption,
+                        imageBase64: finalBase64
+                    })
+                });
+                const json = await res.json();
+                if (json && json.success) {
+                    if (feedback) feedback.innerHTML = '<span style="color:#6be285; font-weight:bold;">🎉 Photo shared successfully! 📸</span>';
+                    form.reset();
+                    clearSelectedPhoto();
+                    if (typeof fireConfetti === 'function') fireConfetti();
+                    setTimeout(() => {
+                        closeModal();
+                        if (feedback) feedback.innerHTML = '';
+                    }, 2800);
+                } else {
+                    if (feedback) feedback.innerHTML = `<span style="color:#ff7575;">⚠️ ${json && json.error ? json.error : 'Upload failed. Please try again.'}</span>`;
                 }
-            };
-            reader.readAsDataURL(file);
+            } catch (err) {
+                if (feedback) feedback.innerHTML = '<span style="color:#ff7575;">⚠️ Connection error. Please try again.</span>';
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '✨ Share Photo Now ✨';
+                }
+            }
         });
     }
 }

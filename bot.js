@@ -381,34 +381,15 @@ async function getTelegramFileUrl(botToken, fileId) {
     return null;
 }
 
-// Download and permanently save incoming guest photo to disk with streaming (Zero heap buffer spike)
+// Get Telegram File URL and return web path without saving to disk (Zero local disk storage)
 async function downloadAndSavePhoto(botToken, fileId, senderName) {
     try {
         const fileUrl = await getTelegramFileUrl(botToken, fileId);
         if (!fileUrl) return null;
 
-        const safeSender = (senderName || 'guest').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 20);
-        const fileName = `moment_${Date.now()}_${safeSender}.jpg`;
-        const localPath = path.join(MOMENTS_DIR, fileName);
-
-        const res = await fetch(fileUrl);
-        if (!res.ok) return null;
-
-        // Stream direct to disk via pipeline (<64KB buffer footprint)
-        const fileStream = fs.createWriteStream(localPath);
-        if (res.body && res.body.getReader) {
-            await pipeline(Readable.fromWeb(res.body), fileStream);
-        } else if (res.body) {
-            await pipeline(res.body, fileStream);
-        } else {
-            const ab = await res.arrayBuffer();
-            fs.writeFileSync(localPath, Buffer.from(ab));
-        }
-
-        console.log(`[Moment Photo Streamed & Saved]: ${localPath}`);
         return {
-            localPath: localPath,
-            webPath: `/images/moments/${fileName}`,
+            localPath: '',
+            webPath: `/api/moment-photo?file_id=${encodeURIComponent(fileId)}`,
             fileUrl: fileUrl
         };
     } catch (err) {
@@ -1377,13 +1358,7 @@ async function processUpdate(botToken, update) {
 
             console.log(`[Media Received]: Received media from ${fullSender} (File ID: ${fileId})`);
 
-            // 1. Download and save photo directly to images/moments/ on disk
-            let savedInfo = null;
-            if (msg.photo) {
-                savedInfo = await downloadAndSavePhoto(botToken, fileId, senderName);
-            }
-
-            // 2. Save moment metadata into database for the Admin Dashboard
+            // 1. Save moment metadata into database for the Admin Dashboard (Telegram CDN Cloud Storage)
             const momentEntry = {
                 id: 'moment_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
                 sender_name: fullSender,
@@ -1391,7 +1366,7 @@ async function processUpdate(botToken, update) {
                 from_id: user.id,
                 file_id: fileId,
                 file_path: `/api/moment-photo?file_id=${encodeURIComponent(fileId)}`,
-                local_path: savedInfo ? savedInfo.webPath : '',
+                local_path: '',
                 caption: msg.caption || '',
                 source: 'telegram_bot',
                 timestamp: new Date().toISOString()

@@ -2,7 +2,12 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
+const { pipeline } = require('stream/promises');
+const { Readable } = require('stream');
 const { startPolling, notifyAdmins, loadConfig, loadData, saveData, escapeHtml, getTelegramFileUrl, callTelegram, sendMessage } = require('./bot');
+
+// In-memory cache for resolved Telegram CDN URLs (fileId -> { url, expiresAt })
+const telegramUrlCache = new Map();
 
 const PORT = process.env.PORT || 8080;
 const MIME_TYPES = {
@@ -316,7 +321,7 @@ const server = http.createServer((req, res) => {
   }
 
   // --------------------------------------------------------------------------
-  // API ROUTE: GET /api/moment-photo (RESILIENT CLOUD PHOTO STREAMING)
+  // API ROUTE: GET /api/moment-photo (RESILIENT ZERO-DISK TELEGRAM CLOUD STREAMING)
   // --------------------------------------------------------------------------
   if (pathname === '/api/moment-photo' && req.method === 'GET') {
     const fileId = parsedUrl.searchParams.get('file_id');
@@ -326,30 +331,34 @@ const server = http.createServer((req, res) => {
       return;
     }
 
-    const cleanId = fileId.replace(/[^a-zA-Z0-9_-]/g, '_');
-    const localMomentPath = path.join(__dirname, 'images', 'moments', `moment_${cleanId}.jpg`);
-
-    // 1. If cached on local disk, serve immediately
-    if (fs.existsSync(localMomentPath)) {
-      res.writeHead(200, {
-        'Content-Type': 'image/jpeg',
-        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800'
-      });
-      fs.createReadStream(localMomentPath).pipe(res);
-      return;
-    }
-
-    // 2. Fetch fresh file from Telegram cloud & pipe to browser
     const config = loadConfig();
     (async () => {
       try {
-        const fileUrl = await getTelegramFileUrl(config.bot_token, fileId);
+        if (!config || !config.bot_token) {
+          res.writeHead(503, { 'Content-Type': 'text/plain' });
+          res.end('Bot token is not configured');
+          return;
+        }
+
+        // 1. Check in-memory cache for resolved Telegram CDN file URL
+        let fileUrl = null;
+        const cached = telegramUrlCache.get(fileId);
+        if (cached && cached.expiresAt > Date.now()) {
+          fileUrl = cached.url;
+        } else {
+          fileUrl = await getTelegramFileUrl(config.bot_token, fileId);
+          if (fileUrl) {
+            telegramUrlCache.set(fileId, { url: fileUrl, expiresAt: Date.now() + 30 * 60 * 1000 });
+          }
+        }
+
         if (!fileUrl) {
           res.writeHead(404, { 'Content-Type': 'text/plain' });
           res.end('Photo not available on Telegram cloud');
           return;
         }
 
+        // 2. Stream directly from Telegram CDN to browser with zero disk I/O
         const telegramRes = await fetch(fileUrl);
         if (!telegramRes.ok) {
           res.writeHead(telegramRes.status, { 'Content-Type': 'text/plain' });
@@ -357,37 +366,41 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        const arrayBuf = await telegramRes.arrayBuffer();
-        const buf = Buffer.from(arrayBuf);
-
+        const contentType = telegramRes.headers.get('content-type') || 'image/jpeg';
         res.writeHead(200, {
-          'Content-Type': telegramRes.headers.get('content-type') || 'image/jpeg',
-          'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800'
+          'Content-Type': contentType,
+          'Cache-Control': 'public, max-age=604800, immutable',
+          'Access-Control-Allow-Origin': '*'
         });
-        res.end(buf);
 
-        // Asynchronously cache on disk for subsequent speed
-        try {
-          fs.mkdirSync(path.dirname(localMomentPath), { recursive: true });
-          fs.writeFileSync(localMomentPath, buf);
-        } catch (cacheErr) {}
+        if (telegramRes.body && telegramRes.body.getReader) {
+          await pipeline(Readable.fromWeb(telegramRes.body), res);
+        } else if (telegramRes.body) {
+          await pipeline(telegramRes.body, res);
+        } else {
+          const ab = await telegramRes.arrayBuffer();
+          res.end(Buffer.from(ab));
+        }
       } catch (err) {
         console.error('[Moment Photo Proxy Error]:', err.message);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Error streaming photo from cloud');
+        if (!res.headersSent) {
+          res.writeHead(500, { 'Content-Type': 'text/plain' });
+          res.end('Error streaming photo from cloud');
+        }
       }
     })();
     return;
   }
 
   // --------------------------------------------------------------------------
-  // API ROUTE: POST /api/upload-moment (DIRECT WEBSITE PHOTO UPLOAD)
+  // API ROUTE: POST /api/upload-moment (ZERO-DISK DIRECT CLOUD PHOTO UPLOAD)
   // --------------------------------------------------------------------------
   if (pathname === '/api/upload-moment' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => {
       body += chunk;
-      if (body.length > 15e6) req.destroy(); // 15MB limit
+      // 12MB limit (client pre-compresses to ~600KB)
+      if (body.length > 12e6) req.destroy();
     });
 
     req.on('end', async () => {
@@ -406,18 +419,14 @@ const server = http.createServer((req, res) => {
         const imageBuffer = Buffer.from(base64Clean, 'base64');
         const safeSender = senderName.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 20);
         const fileName = `moment_${Date.now()}_${safeSender}.jpg`;
-        const localPath = path.join(__dirname, 'images', 'moments', fileName);
-
-        fs.mkdirSync(path.dirname(localPath), { recursive: true });
-        fs.writeFileSync(localPath, imageBuffer);
 
         const config = loadConfig();
         let telegramFileId = null;
 
-        // Post to Telegram Photo Stream & Admins
+        // Post directly to Telegram Cloud (Wedding Photo Group & Admins) - NO DISK WRITE
         if (config && config.bot_token) {
           try {
-            // Forward to Wedding Photo Group
+            // 1. Post to Wedding Photo Group
             if (config.photos_group_id) {
               const groupForm = new FormData();
               groupForm.append('chat_id', config.photos_group_id);
@@ -436,23 +445,35 @@ const server = http.createServer((req, res) => {
               }
             }
 
-            // Forward to Admins
+            // 2. Forward to Admins (use existing file_id if available for instant zero-bandwidth dispatch)
             const adminIds = (config.admins || []).map(a => a.chat_id).filter(Boolean);
             for (const aId of adminIds) {
               try {
-                const adminForm = new FormData();
-                adminForm.append('chat_id', aId);
-                adminForm.append('caption', `📸 <b>NEW WEDDING PHOTO UPLOADED FROM WEBSITE!</b>\nFrom: <b>${escapeHtml(senderName)}</b>\n${caption ? `Caption: <i>"${escapeHtml(caption)}"</i>\n` : ''}⏰ Time: ${new Date().toLocaleTimeString('en-US')}`);
-                adminForm.append('parse_mode', 'HTML');
-                adminForm.append('photo', new Blob([imageBuffer], { type: 'image/jpeg' }), fileName);
+                const adminCaption = `📸 <b>NEW WEDDING PHOTO UPLOADED FROM WEBSITE!</b>\nFrom: <b>${escapeHtml(senderName)}</b>\n${caption ? `Caption: <i>"${escapeHtml(caption)}"</i>\n` : ''}⏰ Time: ${new Date().toLocaleTimeString('en-US')}`;
+                if (telegramFileId) {
+                  // Forward existing Telegram cloud file_id directly without re-uploading bytes
+                  await callTelegram(config.bot_token, 'sendPhoto', {
+                    chat_id: aId,
+                    photo: telegramFileId,
+                    caption: adminCaption,
+                    parse_mode: 'HTML'
+                  });
+                } else {
+                  // Fallback: upload binary if group wasn't configured
+                  const adminForm = new FormData();
+                  adminForm.append('chat_id', aId);
+                  adminForm.append('caption', adminCaption);
+                  adminForm.append('parse_mode', 'HTML');
+                  adminForm.append('photo', new Blob([imageBuffer], { type: 'image/jpeg' }), fileName);
 
-                const aRes = await fetch(`https://api.telegram.org/bot${config.bot_token}/sendPhoto`, {
-                  method: 'POST',
-                  body: adminForm
-                });
-                const aJson = await aRes.json().catch(() => null);
-                if (!telegramFileId && aJson && aJson.ok && aJson.result && aJson.result.photo) {
-                  telegramFileId = aJson.result.photo[aJson.result.photo.length - 1].file_id;
+                  const aRes = await fetch(`https://api.telegram.org/bot${config.bot_token}/sendPhoto`, {
+                    method: 'POST',
+                    body: adminForm
+                  });
+                  const aJson = await aRes.json().catch(() => null);
+                  if (!telegramFileId && aJson && aJson.ok && aJson.result && aJson.result.photo) {
+                    telegramFileId = aJson.result.photo[aJson.result.photo.length - 1].file_id;
+                  }
                 }
               } catch (e) {}
             }
@@ -461,14 +482,14 @@ const server = http.createServer((req, res) => {
           }
         }
 
-        // Save Moment Entry
+        // Save Moment Metadata in Cloud Data Store (ZERO local disk file created!)
         const momentEntry = {
           id: 'moment_web_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
           sender_name: senderName,
           from_user: senderName,
           caption: caption,
           file_id: telegramFileId || '',
-          file_path: telegramFileId ? `/api/moment-photo?file_id=${encodeURIComponent(telegramFileId)}` : `/images/moments/${fileName}`,
+          file_path: telegramFileId ? `/api/moment-photo?file_id=${encodeURIComponent(telegramFileId)}` : '',
           source: 'website',
           timestamp: new Date().toISOString()
         };
@@ -477,7 +498,7 @@ const server = http.createServer((req, res) => {
         dataStore.moments.push(momentEntry);
         saveData(dataStore);
 
-        console.log(`[Website Photo Uploaded]: ${senderName}`);
+        console.log(`[Website Photo Uploaded to Telegram Cloud]: ${senderName} (file_id: ${telegramFileId || 'pending'})`);
         sendJsonResponse(res, 200, {
           success: true,
           message: 'Moment uploaded and shared successfully!',
