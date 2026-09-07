@@ -3,6 +3,17 @@
   "photos_group_link": "https://t.me/+3WRHqclWRQJlYzBk",
   "rsvps": [
     {
+      "id": "web_1788776985858_vvkx",
+      "guestName": "Frehiwet Merkeb",
+      "attending": "Yes",
+      "isAttending": true,
+      "guestCount": "1",
+      "relation": "Groom's Family",
+      "message": "Congratulations \nMay your marriage be blessed with endless love, laughter and joy. Congratulations on your special day!",
+      "source": "website",
+      "timestamp": "2026-09-07T10:29:45.858Z"
+    },
+    {
       "id": "rsvp_tenagne",
       "guestName": "Tenagne",
       "attending": "Yes",
