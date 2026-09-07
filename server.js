@@ -95,6 +95,9 @@ const server = http.createServer((req, res) => {
       }
     }
 
+    // Sort RSVPs chronologically (newest first)
+    dedupRsvps.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+
     // ------------------------------------------------------------------------
     // 2. COMPREHENSIVELY AGGREGATE ALL SENT MESSAGES & DEDUPLICATE
     // ------------------------------------------------------------------------
@@ -185,6 +188,9 @@ const server = http.createServer((req, res) => {
         dedupMoments.push(m);
       }
     }
+
+    // Sort moments chronologically (newest first)
+    dedupMoments.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
 
     sendJsonResponse(res, 200, {
       success: true,
@@ -518,9 +524,9 @@ const server = http.createServer((req, res) => {
           timestamp: new Date().toISOString()
         };
 
-        // Save RSVP into private database
+        // Save RSVP into private database (newest on top)
         const dataStore = loadData();
-        dataStore.rsvps.push(rsvpEntry);
+        dataStore.rsvps.unshift(rsvpEntry);
         saveData(dataStore);
 
         // Notify Sara & Tewodros via Telegram Bot if active

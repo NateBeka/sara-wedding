@@ -157,6 +157,18 @@ function loadData() {
                     }
                 }
             }
+            if (Array.isArray(cloudData.wishes)) {
+                if (!Array.isArray(cachedData.wishes)) cachedData.wishes = [];
+                const existingWishIds = new Set(cachedData.wishes.map(w => w.id || `${w.guestName}_${w.timestamp}`));
+                for (const w of cloudData.wishes) {
+                    const wKey = w.id || `${w.guestName}_${w.timestamp}`;
+                    if (!existingWishIds.has(wKey)) {
+                        cachedData.wishes.push(w);
+                        existingWishIds.add(wKey);
+                        merged++;
+                    }
+                }
+            }
             // Also restore group ID if stored in cloud
             if (cloudData.photos_group_id && !cachedData.photos_group_id) {
                 cachedData.photos_group_id = cloudData.photos_group_id;
@@ -655,16 +667,116 @@ function getVenuesMessage(userLang = 'en') {
 }
 
 // ============================================================================
-// STEP-BY-STEP RSVP CONVERSATION HANDLER
+// STEP-BY-STEP RSVP CONVERSATION HANDLER & IMMEDIATE FILING
 // ============================================================================
+
+function getRsvpAdminNotificationText(rsvp) {
+    const safeGuestName = escapeHtml(rsvp.guestName);
+    const safeUsername = escapeHtml(rsvp.username);
+    const safeWishes = escapeHtml(rsvp.message || 'Heartfelt congratulations!');
+    const safeRelation = escapeHtml(rsvp.relation);
+    return `💒 <b>NEW WEDDING RSVP RECEIVED!</b> 💒\n` +
+        `✦ ══════════════════════════ ✦\n` +
+        `👤 <b>Guest:</b> ${safeGuestName} ${safeUsername ? `(@${safeUsername})` : ''}\n` +
+        `✅ <b>Attending:</b> ${rsvp.attending}\n` +
+        (rsvp.isAttending ? `👥 <b>Party Count:</b> ${rsvp.guestCount}\n` : '') +
+        `💑 <b>Relation:</b> ${safeRelation}\n` +
+        `💌 <b>Wishes:</b> <i>"${safeWishes}"</i>\n` +
+        `🌐 <b>Channel:</b> Telegram Bot\n` +
+        `⏰ <b>Time:</b> ${new Date().toLocaleTimeString('en-US')}`;
+}
+
+function saveOrUpdateBotRsvp(chatId, session, user = null) {
+    const dataStore = loadData();
+    if (!Array.isArray(dataStore.rsvps)) dataStore.rsvps = [];
+
+    const u = user || {};
+    const fallbackName = [u.first_name, u.last_name].filter(Boolean).join(' ') || (u.username ? `@${u.username}` : 'Honored Guest');
+    const guestName = (session && session.data && session.data.guestName) ? session.data.guestName : fallbackName;
+    const username = (session && session.data && session.data.username) || u.username || '';
+    const isAttending = session && session.data ? (session.data.isAttending !== false && session.data.attending !== 'No') : true;
+    const guestCount = isAttending ? ((session && session.data && session.data.guestCount) || '1') : '0';
+    const relation = (session && session.data && session.data.relation) || 'Friend';
+    const message = (session && session.data && session.data.message) ? session.data.message.trim() : '';
+    const nowIso = new Date().toISOString();
+
+    let existingIndex = dataStore.rsvps.findIndex(r => 
+        (r.chatId && String(r.chatId) === String(chatId)) ||
+        (r.source === 'telegram_bot' && r.username && username && r.username.toLowerCase() === username.toLowerCase())
+    );
+
+    let record;
+    if (existingIndex >= 0) {
+        record = dataStore.rsvps[existingIndex];
+        record.guestName = guestName;
+        record.username = username || record.username || '';
+        record.attending = isAttending ? 'Yes' : 'No';
+        record.isAttending = isAttending;
+        record.guestCount = guestCount;
+        record.relation = relation;
+        if (message) record.message = message;
+        record.source = 'telegram_bot';
+        record.timestamp = nowIso;
+        // Move to front of array so newest updates are on top
+        dataStore.rsvps.splice(existingIndex, 1);
+        dataStore.rsvps.unshift(record);
+    } else {
+        record = {
+            id: 'rsvp_tg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+            chatId: chatId,
+            userId: (session && session.data && session.data.userId) || (u.id || chatId),
+            guestName: guestName,
+            username: username,
+            attending: isAttending ? 'Yes' : 'No',
+            isAttending: isAttending,
+            guestCount: guestCount,
+            relation: relation,
+            message: message,
+            source: 'telegram_bot',
+            timestamp: nowIso
+        };
+        dataStore.rsvps.unshift(record);
+    }
+
+    saveData(dataStore);
+    console.log(`[Bot RSVP Filed]: ${guestName} (${record.attending}, Party: ${record.guestCount}, Rel: ${record.relation})`);
+    return record;
+}
+
+function getOrCreateRsvpSession(chatId, user, defaultStep = 'AWAIT_ATTENDANCE', userLang = 'en') {
+    let session = userSessions.get(chatId);
+    if (!session) {
+        const u = user || {};
+        const rawName = [u.first_name, u.last_name].filter(Boolean).join(' ') || (u.username ? `@${u.username}` : 'Honored Guest');
+        session = {
+            step: defaultStep,
+            data: {
+                userId: u.id || chatId,
+                username: u.username || '',
+                guestName: rawName,
+                attending: 'Yes',
+                isAttending: true,
+                guestCount: '1',
+                relation: 'Friend',
+                message: '',
+                source: 'telegram_bot'
+            },
+            lang: userLang
+        };
+        userSessions.set(chatId, session);
+    }
+    return session;
+}
+
 async function startRsvpFlow(botToken, chatId, user, userLang = 'en') {
-    const safeGuestName = escapeHtml([user.first_name, user.last_name].filter(Boolean).join(' ') || 'Honored Guest');
+    const rawName = [user.first_name, user.last_name].filter(Boolean).join(' ') || (user.username ? `@${user.username}` : 'Honored Guest');
+    const safeGuestName = escapeHtml(rawName);
     userSessions.set(chatId, {
         step: 'AWAIT_ATTENDANCE',
         data: {
             userId: user.id,
             username: user.username || '',
-            guestName: [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Honored Guest',
+            guestName: rawName,
             attending: null,
             guestCount: '1',
             relation: 'Friend',
@@ -697,14 +809,16 @@ async function startRsvpFlow(botToken, chatId, user, userLang = 'en') {
     await sendMessage(botToken, chatId, text, inlineMarkup);
 }
 
-async function handleRsvpStep(botToken, chatId, session, action, callbackQuery = null, textInput = null) {
+async function handleRsvpStep(botToken, chatId, session, action, callbackQuery = null, textInput = null, user = null) {
     const isAm = session.lang === 'am';
+    const u = user || (callbackQuery ? callbackQuery.from : null);
 
     if (session.step === 'AWAIT_ATTENDANCE') {
         if (action === 'yes') {
             session.data.attending = 'Yes';
             session.data.isAttending = true;
             session.step = 'AWAIT_GUESTS';
+            userSessions.set(chatId, session);
 
             const msg = isAm
                 ? `👥 <b>ስንት ሆነው ይመጣሉ? (የእርስዎ እና የአጃቢዎ ብዛት)</b>`
@@ -729,14 +843,19 @@ async function handleRsvpStep(botToken, chatId, session, action, callbackQuery =
             session.data.isAttending = false;
             session.data.guestCount = '0';
             session.step = 'AWAIT_WISHES';
+            userSessions.set(chatId, session);
+
+            // Immediately file the RSVP as declined into the database!
+            const saved = saveOrUpdateBotRsvp(chatId, session, u);
+            await notifyAdmins(botToken, getRsvpAdminNotificationText(saved));
 
             const msg = isAm
-                ? `💌 መልእክትዎን ተቀብለናል! ለሙሽሮቹ የመልካም ምኞት እና የበረከት ቃል መጻፍ ይፈልጋሉ?\n\n<i>መልእክትዎን ጽፈው ይላኩ ወይም 'ዝለል' የሚለውን ይጫኑ:</i>`
-                : `💌 We will miss you! Would you like to leave a warm blessing or congratulations for Eng. Tewodros & Dr. Sara?\n\n<i>Type your message below, or tap 'Skip':</i>`;
+                ? `💌 <b>ምላሽዎ ተመዝግቧል!</b>\nአብረውን መሆን ባይችሉም እንኳን ከልብ እናመሰግናለን!\n\nለዶ/ር ሳራ እና ኢ/ር ቴዎድሮስ የበረከት ቃል መጻፍ ይፈልጋሉ?\n<i>(መልእክትዎን ጽፈው ይላኩ፣ ወይም 'ጨርሻለሁ' የሚለውን ይጫኑ)</i>`
+                : `💌 <b>Your response has been recorded!</b>\nWe will truly miss you celebrating in person!\n\nWould you like to leave a blessing or congratulations for Dr. Sara & Eng. Tewodros?\n<i>(Type your message below, or tap 'Done')</i>`;
 
             const markup = {
                 inline_keyboard: [
-                    [{ text: isAm ? '⏩ ዝለል / አልፈው' : '⏩ Skip Wishes', callback_data: 'rsvp_skip_wishes' }]
+                    [{ text: isAm ? '✅ ጨርሻለሁ / አልፈው' : '✅ Done / All Set', callback_data: 'rsvp_skip_wishes' }]
                 ]
             };
             await sendMessage(botToken, chatId, msg, markup);
@@ -747,6 +866,7 @@ async function handleRsvpStep(botToken, chatId, session, action, callbackQuery =
     if (session.step === 'AWAIT_GUESTS') {
         session.data.guestCount = action || '1';
         session.step = 'AWAIT_RELATION';
+        userSessions.set(chatId, session);
 
         const msg = isAm
             ? `💑 <b>ከሙሽሮቹ ጋር ያለዎት ዝምድና:</b>`
@@ -772,91 +892,72 @@ async function handleRsvpStep(botToken, chatId, session, action, callbackQuery =
     if (session.step === 'AWAIT_RELATION') {
         session.data.relation = action || "Friend";
         session.step = 'AWAIT_WISHES';
+        userSessions.set(chatId, session);
 
-        const msg = isAm
-            ? `✍️ <b>ለሙሽሮቹ የመልካም ምኞት እና የበረከት ቃል ይጻፉ:</b>\n\n<i>(ምክር፣ ጸሎት ወይም የበረከት ቃል ጽፈው ይላኩ፣ ወይም 'ዝለል' ይጫኑ)</i>`
-            : `✍️ <b>Share your heartfelt blessings & wishes for Eng. Tewodros & Dr. Sara:</b>\n\n<i>(Type your message below, or tap 'Skip')</i>`;
+        // Immediately file the confirmed RSVP into the database!
+        const saved = saveOrUpdateBotRsvp(chatId, session, u);
+        await notifyAdmins(botToken, getRsvpAdminNotificationText(saved));
+
+        const safeGuestName = escapeHtml(saved.guestName);
+        const safeRelation = escapeHtml(saved.relation);
+
+        let confirmNotice = '';
+        if (isAm) {
+            confirmNotice =
+                `🎉 <b>እናመሰግናለን ${safeGuestName}!</b>\n` +
+                `✦ ══════════════════════════ ✦\n\n` +
+                `የሰርግ ምላሽዎ (RSVP) <b>በይፋ ተመዝግቧል!</b> ✅\n\n` +
+                `• <b>ተሳትፎ:</b> አዎ፣ በደስታ እገኛለሁ 💐\n` +
+                `• <b>የእንግዶች ብዛት:</b> ${saved.guestCount} ሰው\n` +
+                `• <b>ዝምድና:</b> ${safeRelation}\n\n` +
+                `✍️ <i>ለዶ/ር ሳራ እና ኢ/ር ቴዎድሮስ የበረከት ወይም የመልካም ምኞት ቃል መጻፍ ይፈልጋሉ?\n(መልእክትዎን ጽፈው ይላኩ ወይም 'ጨርሻለሁ' የሚለውን ይጫኑ)</i>`;
+        } else {
+            confirmNotice =
+                `🎉 <b>THANK YOU, ${safeGuestName}!</b>\n` +
+                `✦ ══════════════════════════ ✦\n\n` +
+                `Your RSVP is <b>confirmed and officially recorded!</b> ✅\n\n` +
+                `• <b>Attendance:</b> Yes, Delighted! 💐\n` +
+                `• <b>Party Size:</b> ${saved.guestCount} guest(s)\n` +
+                `• <b>Relation:</b> ${safeRelation}\n\n` +
+                `✍️ <i>Would you like to add personal wishes or advice for Dr. Sara & Eng. Tewodros?\n(Type your message below, or tap 'Done' if all set)</i>`;
+        }
 
         const markup = {
             inline_keyboard: [
-                [{ text: isAm ? '⏩ ዝለል' : '⏩ Skip Wishes', callback_data: 'rsvp_skip_wishes' }]
+                [{ text: isAm ? '✅ ጨርሻለሁ / አልፈው' : '✅ Done / All Set', callback_data: 'rsvp_skip_wishes' }]
             ]
         };
 
-        await sendMessage(botToken, chatId, msg, markup);
+        await sendMessage(botToken, chatId, confirmNotice, markup);
         return;
     }
 
     if (session.step === 'AWAIT_WISHES') {
-        const defaultWishes = isAm ? 'ከልብ የመነጨ መልካም ምኞት!' : 'Warmest congratulations and blessings!';
-        session.data.message = (textInput || defaultWishes).trim();
+        const wishText = (textInput || '').trim();
+        if (wishText) {
+            session.data.message = wishText;
+            const updated = saveOrUpdateBotRsvp(chatId, session, u);
+            await notifyAdmins(botToken, getRsvpAdminNotificationText(updated));
 
-        // Finalize RSVP
-        await finalizeRsvp(botToken, chatId, session);
+            const ack = isAm
+                ? `🎉 <b>እናመሰግናለን ${escapeHtml(updated.guestName)}!</b>\nየላኩት የበረከት ቃል በምላሽዎ ላይ ተመዝግቧል ለሙሽሮቹም ደርሷል! 💛\n\nመስከረም 10 ቀን 2019 ዓ.ም በሀዋሳ በደስታ እንገናኝ!`
+                : `🎉 <b>Thank you, ${escapeHtml(updated.guestName)}!</b>\nYour heartfelt wish has been attached to your RSVP and delivered to Dr. Sara & Eng. Tewodros! 💛\n\nWe look forward to celebrating together on September 20, 2026 in Hawassa!`;
+
+            await sendMessage(botToken, chatId, ack, getMainKeyboard(session.lang));
+        } else {
+            const doneMsg = isAm
+                ? `✅ <b>ምላሽዎ ተመዝግቧል!</b>\nመስከረም 10 ቀን 2019 ዓ.ም በሀዋሳ በደስታ እንገናኝ! 💛`
+                : `✅ <b>You're all set!</b>\nWe look forward to celebrating together on September 20, 2026 in Hawassa! 💛`;
+            await sendMessage(botToken, chatId, doneMsg, getMainKeyboard(session.lang));
+        }
         userSessions.delete(chatId);
     }
 }
 
-async function finalizeRsvp(botToken, chatId, session) {
-    const dataStore = loadData();
-    const isAm = session.lang === 'am';
-
-    const rsvp = {
-        id: 'rsvp_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
-        chatId: chatId,
-        guestName: session.data.guestName,
-        username: session.data.username,
-        attending: session.data.attending,
-        isAttending: session.data.isAttending,
-        guestCount: session.data.guestCount,
-        relation: session.data.relation,
-        message: session.data.message,
-        source: 'telegram_bot',
-        timestamp: new Date().toISOString()
-    };
-
-    // Save to database
-    dataStore.rsvps.push(rsvp);
-    saveData(dataStore);
-
-    const safeGuestName = escapeHtml(rsvp.guestName);
-    const safeWishes = escapeHtml(rsvp.message);
-    const safeRelation = escapeHtml(rsvp.relation);
-    const safeUsername = escapeHtml(rsvp.username);
-
-    // Confirmation message to the guest
-    let confirmMsg = '';
-    if (isAm) {
-        confirmMsg = `🎉 <b>እናመሰግናለን ${safeGuestName}!</b>\n✦ ══════════════════════════ ✦\n\nምላሽዎ በደስታ ተመዝግቧል!\n\n` +
-            `• <b>ተሳትፎ:</b> ${rsvp.isAttending ? 'አዎ፣ በደስታ እገኛለሁ 💐' : 'አልችልም 💌'}\n` +
-            (rsvp.isAttending ? `• <b>የእንግዶች ብዛት:</b> ${rsvp.guestCount}\n` : '') +
-            `• <b>ዝምድና:</b> ${safeRelation}\n` +
-            `• <b>ምርቃት:</b> <i>"${safeWishes}"</i>\n\n` +
-            `መስከረም 10 ቀን 2019 ዓ.ም በሀዋሳ በደስታ እንገናኝ! 💛`;
-    } else {
-        confirmMsg = `🎉 <b>THANK YOU, ${safeGuestName}!</b>\n✦ ══════════════════════════ ✦\n\nYour RSVP has been joyfully recorded!\n\n` +
-            `• <b>Attendance:</b> ${rsvp.isAttending ? 'Yes, Delighted! 💐' : 'Regretfully No 💌'}\n` +
-            (rsvp.isAttending ? `• <b>Party Size:</b> ${rsvp.guestCount} guests\n` : '') +
-            `• <b>Relation:</b> ${safeRelation}\n` +
-            `• <b>Blessings:</b> <i>"${safeWishes}"</i>\n\n` +
-            `We eagerly anticipate celebrating together on September 20, 2026 in Hawassa! 💛`;
-    }
-
-    await sendMessage(botToken, chatId, confirmMsg, getMainKeyboard(session.lang));
-
-    // Send instant priority push alert to Sara & Tewodros
-    const adminAlert =
-        `💒 <b>NEW WEDDING RSVP RECEIVED!</b> 💒\n` +
-        `✦ ══════════════════════════ ✦\n` +
-        `👤 <b>Guest:</b> ${safeGuestName} ${safeUsername ? `(@${safeUsername})` : ''}\n` +
-        `✅ <b>Attending:</b> ${rsvp.attending}\n` +
-        (rsvp.isAttending ? `👥 <b>Party Count:</b> ${rsvp.guestCount}\n` : '') +
-        `💑 <b>Relation:</b> ${safeRelation}\n` +
-        `💌 <b>Wishes:</b> <i>"${safeWishes}"</i>\n` +
-        `🌐 <b>Channel:</b> Telegram Bot\n` +
-        `⏰ <b>Time:</b> ${new Date().toLocaleTimeString('en-US')}`;
-
-    await notifyAdmins(botToken, adminAlert);
+async function finalizeRsvp(botToken, chatId, session, user = null) {
+    // Forward to saveOrUpdateBotRsvp for backwards compatibility
+    const saved = saveOrUpdateBotRsvp(chatId, session, user);
+    await notifyAdmins(botToken, getRsvpAdminNotificationText(saved));
 }
 
 // ============================================================================
@@ -1065,19 +1166,19 @@ async function processUpdate(botToken, update) {
 
         // RSVP Inline Buttons
         if (data === 'rsvp_attending_yes') {
-            const session = userSessions.get(chatId) || { step: 'AWAIT_ATTENDANCE', data: {}, lang: userLang };
-            await handleRsvpStep(botToken, chatId, session, 'yes', cq);
+            const session = getOrCreateRsvpSession(chatId, user, 'AWAIT_ATTENDANCE', userLang);
+            await handleRsvpStep(botToken, chatId, session, 'yes', cq, null, user);
             return;
         }
         if (data === 'rsvp_attending_no') {
-            const session = userSessions.get(chatId) || { step: 'AWAIT_ATTENDANCE', data: {}, lang: userLang };
-            await handleRsvpStep(botToken, chatId, session, 'no', cq);
+            const session = getOrCreateRsvpSession(chatId, user, 'AWAIT_ATTENDANCE', userLang);
+            await handleRsvpStep(botToken, chatId, session, 'no', cq, null, user);
             return;
         }
         if (data.startsWith('rsvp_guests_')) {
             const count = data.replace('rsvp_guests_', '');
-            const session = userSessions.get(chatId);
-            if (session) await handleRsvpStep(botToken, chatId, session, count, cq);
+            const session = getOrCreateRsvpSession(chatId, user, 'AWAIT_GUESTS', userLang);
+            await handleRsvpStep(botToken, chatId, session, count, cq, null, user);
             return;
         }
         if (data.startsWith('rsvp_rel_')) {
@@ -1087,16 +1188,13 @@ async function processUpdate(botToken, update) {
                 'rsvp_rel_friend': "Friend of Both",
                 'rsvp_rel_colleague': "Colleague"
             };
-            const session = userSessions.get(chatId);
-            if (session) await handleRsvpStep(botToken, chatId, session, relMap[data] || 'Friend', cq);
+            const session = getOrCreateRsvpSession(chatId, user, 'AWAIT_RELATION', userLang);
+            await handleRsvpStep(botToken, chatId, session, relMap[data] || 'Friend', cq, null, user);
             return;
         }
         if (data === 'rsvp_skip_wishes') {
-            const session = userSessions.get(chatId);
-            if (session) {
-                await finalizeRsvp(botToken, chatId, session);
-                userSessions.delete(chatId);
-            }
+            const session = getOrCreateRsvpSession(chatId, user, 'AWAIT_WISHES', userLang);
+            await handleRsvpStep(botToken, chatId, session, null, cq, null, user);
             return;
         }
         if (data === 'rsvp_cancel') {
@@ -1204,27 +1302,27 @@ async function processUpdate(botToken, update) {
         const userLang = dataStore.guest_users[chatId]?.lang || 'en';
         const isAdmin = isUserAdmin(config, user);
 
-        // Intercept navigation commands / menu button presses
-        const MENU_TRIGGERS = [
-            '💌', 'RSVP', 'ምላሽ',
-            '📅', 'Program', 'Schedule', 'መርሃ ግብር',
-            '📍', 'Venues', 'Maps', 'ቦታዎች',
-            '📸', 'Photos', 'ፎቶ',
-            '💐', 'Wishes', 'Blessings', 'ምርቃት',
-            '🌐', '🌍', 'Language', 'ቋንቋ',
-            '/start', '/rsvp', '/schedule', '/venues', '/photos', '/wishes', '/admin', '/language', '/lang', '/claim_admin', '/get_photos', '/moments', '/cancel'
+        // Intercept navigation commands / exact menu button presses
+        const EXACT_MENU_BUTTONS = [
+            '💌 RSVP', '💌 ምላሽ ይስጡ (RSVP)',
+            '📅 Program & Schedule', '📅 የሰርግ መርሃ ግብር',
+            '📍 Venues & Maps', '📍 የሰርግ ቦታዎችና ካርታ',
+            '📸 Send Photos & Wishes', '📸 ፎቶዎችና ቪዲዮ ይላኩ',
+            '💐 Leave Blessings', '💐 ምርቃት ይጻፉ',
+            '🌐 Language / ቋንቋ', '🌐 ቋንቋ / Language'
         ];
 
-        const isNavigationCommand = text.startsWith('/') || MENU_TRIGGERS.some(trigger => text.includes(trigger));
+        const isExplicitSlashCommand = text.startsWith('/');
+        const isExactMenuAction = EXACT_MENU_BUTTONS.includes(text);
 
         // Check if user is in an active multi-step session
         const session = userSessions.get(chatId);
-        if (session && !isNavigationCommand) {
-            if (session.step === 'AWAIT_ADMIN_PASSCODE') {
+        if (session) {
+            if (session.step === 'AWAIT_ADMIN_PASSCODE' && !isExplicitSlashCommand) {
                 await handleAdminClaim(botToken, chatId, user, text, userLang);
                 return;
             }
-            if (session.step === 'AWAIT_BROADCAST_TEXT') {
+            if (session.step === 'AWAIT_BROADCAST_TEXT' && !isExplicitSlashCommand) {
                 if (text.toLowerCase() === 'cancel') {
                     userSessions.delete(chatId);
                     await sendMessage(botToken, chatId, `❌ Broadcast cancelled.`);
@@ -1253,10 +1351,18 @@ async function processUpdate(botToken, update) {
                 return;
             }
             if (session.step === 'AWAIT_WISHES') {
-                await handleRsvpStep(botToken, chatId, session, null, null, text);
-                return;
+                if (text === '/cancel') {
+                    userSessions.delete(chatId);
+                    await sendMessage(botToken, chatId, `✅ <i>Action cancelled.</i>`, getMainKeyboard(userLang));
+                    return;
+                }
+                // If user did not explicitly click another menu button or slash command, treat any message as their personal wish!
+                if (!isExactMenuAction && !isExplicitSlashCommand) {
+                    await handleRsvpStep(botToken, chatId, session, null, null, text, user);
+                    return;
+                }
             }
-        } else if (session && isNavigationCommand) {
+            // User explicitly tapped another menu action or slash command: clear active session
             userSessions.delete(chatId);
         }
 
@@ -1446,17 +1552,19 @@ async function processUpdate(botToken, update) {
             return;
         }
 
-        if (text === '/rsvp' || text.includes('RSVP') || text.includes('ምላሽ')) {
+        const lowerText = text.toLowerCase().trim();
+
+        if (text === '/rsvp' || text === '💌 RSVP' || text === '💌 ምላሽ ይስጡ (RSVP)' || lowerText === 'rsvp') {
             await startRsvpFlow(botToken, chatId, user, userLang);
             return;
         }
 
-        if (text === '/schedule' || text.includes('Program') || text.includes('መርሃ ግብር')) {
+        if (text === '/schedule' || text === '📅 Program & Schedule' || text === '📅 የሰርግ መርሃ ግብር' || lowerText === 'schedule' || lowerText === 'program') {
             await sendMessage(botToken, chatId, getScheduleMessage(userLang), getMainKeyboard(userLang));
             return;
         }
 
-        if (text === '/venues' || text.includes('Venues') || text.includes('ቦታዎች')) {
+        if (text === '/venues' || text === '📍 Venues & Maps' || text === '📍 የሰርግ ቦታዎችና ካርታ' || lowerText === 'venues' || lowerText === 'venue' || lowerText === 'map') {
             await sendMessage(botToken, chatId, getVenuesMessage(userLang), getMainKeyboard(userLang));
             // Send Native Telegram Venue GPS Pins
             if (config.event && config.event.venues) {
@@ -1469,7 +1577,7 @@ async function processUpdate(botToken, update) {
             return;
         }
 
-        if (text === '/photos' || text.includes('Photos') || text.includes('ፎቶ')) {
+        if (text === '/photos' || text === '📸 Send Photos & Wishes' || text === '📸 ፎቶዎችና ቪዲዮ ይላኩ' || lowerText === 'photos') {
             const prompt = userLang === 'am'
                 ? `📸 <b>የሰርግ ፎቶዎችና ቪዲዮዎችን ይላኩ</b>\n✦ ══════════════════════════ ✦\n\nበሰርጉ ወቅት ያነሷቸውን ምርጥ ፎቶዎችና ቪዲዮዎች እዚህ በቀጥታ ይላኩ። ፎቶዎችዎ በቀጥታ ለዶ/ር ሳራ እና ኢ/ር ቴዎድሮስ የሰርግ አልበም ይደርሳሉ! 💛`
                 : `📸 <b>SHARE YOUR WEDDING MOMENTS</b>\n✦ ══════════════════════════ ✦\n\nCapture memories during the celebration and send your photos/videos directly to this chat. They will be shared exclusively with Dr. Sara & Eng. Tewodros! 💛`;
@@ -1482,16 +1590,20 @@ async function processUpdate(botToken, update) {
             return;
         }
 
-        if (text === '/wishes' || text.includes('Blessings') || text.includes('ምርቃት')) {
+        if (text === '/wishes' || text === '💐 Leave Blessings' || text === '💐 ምርቃት ይጻፉ' || lowerText === 'wishes' || lowerText === 'blessings') {
+            const rawName = [user.first_name, user.last_name].filter(Boolean).join(' ') || (user.username ? `@${user.username}` : 'Honored Guest');
             userSessions.set(chatId, {
                 step: 'AWAIT_WISHES',
                 data: {
-                    guestName: [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Honored Guest',
-                    username: user.username,
+                    userId: user.id,
+                    guestName: rawName,
+                    username: user.username || '',
                     attending: 'Yes',
                     isAttending: true,
                     guestCount: '1',
-                    relation: 'Friend'
+                    relation: 'Friend',
+                    message: '',
+                    source: 'telegram_bot'
                 },
                 lang: userLang
             });
@@ -1502,12 +1614,12 @@ async function processUpdate(botToken, update) {
             return;
         }
 
-        if (text === '/admin' || text.includes('Admin') || text.includes('አድሚን')) {
+        if (text === '/admin' || text.startsWith('/admin') || text === '👑 Admin' || lowerText === 'admin' || lowerText === 'አድሚን') {
             await handleAdminPanel(botToken, chatId, user, userLang);
             return;
         }
 
-        if (text === '/language' || text === '/lang' || text.includes('Language') || text.includes('ቋንቋ')) {
+        if (text === '/language' || text === '/lang' || text === '🌐 Language / ቋንቋ' || text === '🌐 ቋንቋ / Language' || lowerText === 'language' || lowerText === 'lang') {
             const isAm = userLang === 'am';
             const prompt = isAm
                 ? `🌐 <b>እባክዎ የሚፈልጉትን ቋንቋ ይምረጡ / Please select your preferred language:</b>`
@@ -1517,7 +1629,7 @@ async function processUpdate(botToken, update) {
         }
 
         // ----------------------------------------------------------------------
-        // CAPTURE ALL SENT GUEST MESSAGES / WISHES (WITH DEDUPLICATION)
+        // CAPTURE ALL SENT GUEST MESSAGES / WISHES (WITH DEDUPLICATION & RSVP LINK)
         // ----------------------------------------------------------------------
         const cleanMsg = text.trim();
         const commonGreetings = ['hi', 'hello', 'hey', 'start', '/start', 'ሰላም', 'ሰላም ነው', 'selam', 'ciao'];
@@ -1545,7 +1657,21 @@ async function processUpdate(botToken, update) {
                     username: user.username || '',
                     timestamp: new Date().toISOString()
                 };
-                dataStore.wishes.push(wishEntry);
+                // Place newest wishes on top!
+                dataStore.wishes.unshift(wishEntry);
+
+                // If this guest already has an RSVP, also update their RSVP's message
+                if (Array.isArray(dataStore.rsvps)) {
+                    const guestRsvp = dataStore.rsvps.find(r => 
+                        (r.chatId && String(r.chatId) === String(chatId)) ||
+                        (r.username && user.username && r.username.toLowerCase() === user.username.toLowerCase())
+                    );
+                    if (guestRsvp) {
+                        guestRsvp.message = cleanMsg;
+                        guestRsvp.timestamp = new Date().toISOString();
+                    }
+                }
+
                 saveData(dataStore);
 
                 // Notify Dr. Sara & Eng. Tewodros
@@ -1660,7 +1786,12 @@ module.exports = {
     sendAllMomentsToAdmin,
     getMainKeyboard,
     getLanguageInlineKeyboard,
-    getWelcomeMessage
+    getWelcomeMessage,
+    saveOrUpdateBotRsvp,
+    getOrCreateRsvpSession,
+    startRsvpFlow,
+    handleRsvpStep,
+    finalizeRsvp
 };
 
 // Run standalone if executed directly

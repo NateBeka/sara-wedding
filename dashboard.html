@@ -628,6 +628,41 @@
             background: rgba(212, 175, 55, 0.05);
         }
 
+        .dash-channel-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: var(--radius-full);
+            white-space: nowrap;
+        }
+
+        .dash-channel-pill.bot {
+            background: rgba(0, 136, 204, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+        }
+
+        .dash-channel-pill.web {
+            background: rgba(212, 175, 55, 0.12);
+            color: var(--dash-gold-bright);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+        }
+
+        body.theme-light .dash-channel-pill.bot {
+            background: rgba(0, 136, 204, 0.12);
+            color: #0284c7;
+            border: 1px solid rgba(2, 132, 199, 0.4);
+        }
+
+        body.theme-light .dash-channel-pill.web {
+            background: rgba(168, 129, 29, 0.12);
+            color: #85610e;
+            border: 1px solid rgba(168, 129, 29, 0.35);
+        }
+
         /* --------------------------------------------------------------------------
            SHARED MOMENTS TAB (Mobile-First Photo Grid)
            -------------------------------------------------------------------------- */
@@ -1078,13 +1113,14 @@
                             <th>Status</th>
                             <th>Party</th>
                             <th>Relation</th>
+                            <th>Channel</th>
                             <th>Personal Wishes</th>
                             <th>Date</th>
                         </tr>
                     </thead>
                     <tbody id="rsvpTableBody">
                         <tr>
-                            <td colspan="7" class="empty-view-state">Loading RSVPs...</td>
+                            <td colspan="8" class="empty-view-state">Loading RSVPs...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1339,6 +1375,11 @@
                             allWishes = deduplicateList(allWishes, w => (((w.guestName || '').toLowerCase().trim()) + ':::' + ((w.message || '').trim().toLowerCase().replace(/\s+/g, ' '))));
                         }
 
+                        // Chronological sorting guarantee: NEWEST MESSAGES & RSVPS ON TOP!
+                        allRsvps.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+                        allWishes.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+                        allMoments.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+
                         updateGroupUI(data.photos_group_id, data.photos_group_link);
                         renderDashboard();
                         if (isManualRefresh) {
@@ -1369,6 +1410,8 @@
                             });
                         }
                     });
+                    allRsvps.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+                    allWishes.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
                 } catch(e) {}
             }
             renderDashboard();
@@ -1490,7 +1533,7 @@
 
             if (filtered.length === 0) {
                 cardsContainer.innerHTML = `<div class="empty-view-state">No matching RSVPs found.</div>`;
-                tableBody.innerHTML = `<tr><td colspan="7" class="empty-view-state">No matching RSVPs found.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="8" class="empty-view-state">No matching RSVPs found.</td></tr>`;
                 return;
             }
 
@@ -1538,6 +1581,10 @@
                 const badge = isYes 
                     ? `<span class="guest-card-status yes">✅ Attending</span>` 
                     : `<span class="guest-card-status no">❌ Declined</span>`;
+                const isBot = (r.source || '').toLowerCase().includes('bot') || (r.source || '').toLowerCase().includes('telegram');
+                const channelBadge = isBot
+                    ? `<span class="dash-channel-pill bot" title="Submitted via Telegram Bot">🤖 Bot</span>`
+                    : `<span class="dash-channel-pill web" title="Submitted via Website">🌐 Web</span>`;
                 const dateStr = r.timestamp ? new Date(r.timestamp).toLocaleDateString() : '—';
                 const messageHtml = r.message ? `<div class="guest-wishes-quote" style="max-width: 260px; margin: 0;">"${escapeHtml(r.message)}"</div>` : '<span style="color:#666;">—</span>';
 
@@ -1547,6 +1594,7 @@
                     <td>${badge}</td>
                     <td><strong>${isYes ? (r.guestCount || '1') : '0'}</strong></td>
                     <td>${escapeHtml(r.relation || 'Friend')}</td>
+                    <td>${channelBadge}</td>
                     <td>${messageHtml}</td>
                     <td style="color: var(--dash-text-muted); font-size: 0.75rem; white-space: nowrap;">${dateStr}</td>
                 </tr>`;
