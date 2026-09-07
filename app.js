@@ -1523,21 +1523,47 @@ function setupDirectPhotoUpload() {
     const submitBtn = document.getElementById('uploadSubmitBtn');
     const feedback = document.getElementById('uploadFeedback');
 
-    if (btnOpen && modal) {
-        btnOpen.addEventListener('click', () => {
-            modal.style.display = 'flex';
+    function openModal() {
+        if (!modal) return;
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    }
+
+    function closeModal() {
+        if (!modal) return;
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+
+    if (btnOpen) {
+        btnOpen.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal();
         });
     }
-    if (btnClose && modal) {
-        btnClose.addEventListener('click', () => {
-            modal.style.display = 'none';
+
+    if (btnClose) {
+        btnClose.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeModal();
         });
     }
+
     if (modal) {
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.style.display = 'none';
+            if (e.target === modal) {
+                closeModal();
+            }
         });
     }
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
+            closeModal();
+        }
+    });
 
     if (form) {
         form.addEventListener('submit', (e) => {
@@ -1586,11 +1612,11 @@ function setupDirectPhotoUpload() {
                         form.reset();
                         if (typeof fireConfetti === 'function') fireConfetti();
                         setTimeout(() => {
-                            if (modal) modal.style.display = 'none';
+                            closeModal();
                             if (feedback) feedback.innerHTML = '';
                         }, 2800);
                     } else {
-                        if (feedback) feedback.innerHTML = `<span style="color:#ff7575;">⚠️ ${json.error || 'Upload failed. Please try again.'}</span>`;
+                        if (feedback) feedback.innerHTML = `<span style="color:#ff7575;">⚠️ ${json && json.error ? json.error : 'Upload failed. Please try again.'}</span>`;
                     }
                 } catch (err) {
                     if (feedback) feedback.innerHTML = '<span style="color:#ff7575;">⚠️ Connection error. Please try again.</span>';
