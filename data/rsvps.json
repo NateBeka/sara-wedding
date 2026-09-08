@@ -3,6 +3,20 @@
   "photos_group_link": "https://t.me/+3WRHqclWRQJlYzBk",
   "rsvps": [
     {
+      "id": "rsvp_tg_1788892088307_l2kn",
+      "chatId": 327171467,
+      "userId": 327171467,
+      "guestName": "Biniam Bekele",
+      "username": "Biniam_Bekele",
+      "attending": "Yes",
+      "isAttending": true,
+      "guestCount": "1",
+      "relation": "Friend of Both",
+      "message": "",
+      "source": "telegram_bot",
+      "timestamp": "2026-09-08T18:28:08.307Z"
+    },
+    {
       "id": "web_1788776985858_vvkx",
       "guestName": "Frehiwet Merkeb",
       "attending": "Yes",
