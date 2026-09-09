@@ -5,40 +5,14 @@
 
 const WEDDING_DATE = new Date(2026, 8, 20, 12, 0, 0); // Sept 20, 2026 12:00 PM
 
+// Global CDN Asset Base URL for fast, zero-bandwidth media delivery
+const CDN_BASE = "https://cdn.jsdelivr.net/gh/natebeka/sara-wedding@main/";
+
 // 28 Real Couple Photos in Sequential Order (1 to 28)
-const PHOTO_ARRAY = [
-    "images/photo_1_2026-09-03_19-04-18.jpg",
-    "images/photo_2_2026-09-03_19-04-18.jpg",
-    "images/photo_3_2026-09-03_19-04-18.jpg",
-    "images/photo_4_2026-09-03_19-04-18.jpg",
-    "images/photo_5_2026-09-03_19-04-18.jpg",
-    "images/photo_6_2026-09-03_19-04-18.jpg",
-    "images/photo_7_2026-09-03_19-04-18.jpg",
-    "images/photo_8_2026-09-03_19-04-18.jpg",
-    "images/photo_9_2026-09-03_19-04-18.jpg",
-    "images/photo_10_2026-09-03_19-04-18.jpg",
-    "images/photo_11_2026-09-03_19-04-18.jpg",
-    "images/photo_12_2026-09-03_19-04-18.jpg",
-    "images/photo_13_2026-09-03_19-04-18.jpg",
-    "images/photo_14_2026-09-03_19-04-18.jpg",
-    "images/photo_15_2026-09-03_19-04-18.jpg",
-    "images/photo_16_2026-09-03_19-04-18.jpg",
-    "images/photo_17_2026-09-03_19-04-18.jpg",
-    "images/photo_18_2026-09-03_19-04-18.jpg",
-    "images/photo_19_2026-09-03_19-04-18.jpg",
-    "images/photo_20_2026-09-03_19-04-18.jpg",
-    "images/photo_21_2026-09-03_19-04-18.jpg",
-    "images/photo_22_2026-09-03_19-04-18.jpg",
-    "images/photo_23_2026-09-03_19-04-18.jpg",
-    "images/photo_24_2026-09-03_19-04-18.jpg",
-    "images/photo_25_2026-09-03_19-04-18.jpg",
-    "images/photo_26_2026-09-03_19-04-18.jpg",
-    "images/photo_27_2026-09-03_19-04-18.jpg",
-    "images/photo_28_2026-09-03_19-04-18.jpg"
-];
+const PHOTO_ARRAY = Array.from({ length: 28 }, (_, i) => `${CDN_BASE}images/photo_${i + 1}_2026-09-03_19-04-18.jpg`);
 
 // Lightweight thumbnails for the filmstrip to eliminate memory & decode bottlenecks on mobile
-const THUMB_ARRAY = PHOTO_ARRAY.map(src => src.replace('images/', 'images/thumbs/'));
+const THUMB_ARRAY = Array.from({ length: 28 }, (_, i) => `${CDN_BASE}images/thumbs/photo_${i + 1}_2026-09-03_19-04-18.jpg`);
 
 // Hardware-aware mobile smoothness detector
 const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);

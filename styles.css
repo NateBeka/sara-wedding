@@ -131,7 +131,7 @@ body.theme-light .music-pill-label {
 }
 
 body.theme-light .royal-splash {
-  background-image: url('images/photo_23_2026-09-03_19-04-18.jpg');
+  background-image: url('https://cdn.jsdelivr.net/gh/natebeka/sara-wedding@main/images/photo_23_2026-09-03_19-04-18.jpg');
   background-position: center 28%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -833,7 +833,7 @@ body.splash-active .main-content {
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  background-image: url('images/photo_23_2026-09-03_19-04-18.jpg');
+  background-image: url('https://cdn.jsdelivr.net/gh/natebeka/sara-wedding@main/images/photo_23_2026-09-03_19-04-18.jpg');
   background-position: center 28%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -1746,7 +1746,7 @@ body.splash-active .main-content {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('images/photo_10_2026-09-03_19-04-18.jpg');
+  background-image: url('https://cdn.jsdelivr.net/gh/natebeka/sara-wedding@main/images/photo_10_2026-09-03_19-04-18.jpg');
   background-position: center 25%;
   background-size: cover;
   background-repeat: no-repeat;
